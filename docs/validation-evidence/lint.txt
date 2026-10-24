@@ -10,31 +10,16 @@
 
    https://goo.gle/TrustAllX509TrustManager
 
-/workspace/studyfuse/app/src/main/java/org/studyfuse/data/ProjectArchive.kt:65: Warning: Consider also using StorageManager#getAllocatableBytes and allocateBytes which will consider clearable cached data [UsableSpace]
-                    check(info.getLong("bytes")<dir.usableSpace-16*1024*1024) {"Yedek için yeterli boş alan yok"}
-                                                    ~~~~~~~~~~~
-
-   Explanation for issues of type "UsableSpace":
-   When you need to allocate disk space for large files, consider using the
-   new allocateBytes(FileDescriptor, long) API, which will automatically clear
-   cached files belonging to other apps (as needed) to meet your request.
-
-   When deciding if the device has enough disk space to hold your new data,
-   call getAllocatableBytes(UUID) instead of using getUsableSpace(), since the
-   former will consider any cached data that the system is willing to clear on
-   your behalf.
-
-   Note that these methods require API level 26. If your app is running on
-   older devices, you will probably need to use both APIs, conditionally
-   switching on Build.VERSION.SDK_INT. Lint only looks in the same compilation
-   unit to see if you are already using both APIs, so if it warns even though
-   you are already using the new API, consider moving the calls to the same
-   file or suppressing the warning.
-
 /workspace/studyfuse/app/src/main/java/org/studyfuse/ui/DocumentView.kt:31: Warning: Use the KTX function createBitmap instead? [UseKtx]
         val bitmap=Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888)
                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/workspace/studyfuse/app/src/main/java/org/studyfuse/ui/StudyViewModel.kt:38: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+/workspace/studyfuse/app/src/main/java/org/studyfuse/ui/ExamWorkshop.kt:107: Warning: Use the KTX extension function String.toUri instead? [UseKtx]
+                        TextButton(onClick={runCatching{context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse("https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm")))}.onFailure{error="Tarayıcı açılamadı"}}){Text("Model indirme sayfası")}
+                                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/studyfuse/app/src/main/java/org/studyfuse/ui/StudyViewModel.kt:66: Warning: Use the KTX function createBitmap instead? [UseKtx]
+                val bitmap=android.graphics.Bitmap.createBitmap(1024,512,android.graphics.Bitmap.Config.ARGB_8888)
+                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/studyfuse/app/src/main/java/org/studyfuse/ui/StudyViewModel.kt:94: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
     fun theme(mode:Int) { dark.value=mode; app.getSharedPreferences("ui",0).edit().putInt("theme",mode).apply() }
                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -94,4 +79,4 @@
    </lint>
    ```
 
-0 errors, 6 warnings
+0 errors, 7 warnings

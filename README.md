@@ -8,6 +8,8 @@ Compile PDFs, handwritten-note screenshots and UTF-8 text into one organized stu
 
 ## New in 1.2: Sınav atölyesi · Yerel AI
 
+![StudyFuse local exam workshop — actual Compose test capture, before importing a model](examples/tablet-exam-workshop.png)
+
 - Real local multimodal inference through pinned **LiteRT-LM 0.16.1**, in a private Android process. Native model failures are isolated from the document UI. No fake/model-free AI answers.
 - Streamed SAF import of `.litertlm` files, SHA-256 identity, disk checks and a required randomized image-code input test. Model weights are not bundled or uploaded to this repository.
 - Default **Yalnızca belgelerim / Documents Only** policy; optional **Ek kaynaklarla öğren / Enriched Learning** permits labelled local-model knowledge and explicitly marked reference documents. There is **no web retrieval**. Changing mode/model/source/settings invalidates the current study pack.

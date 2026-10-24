@@ -5,15 +5,23 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "0.458"
+    "time": "0.447"
   },
   {
-    "name": "org.studyfuse.engine.UiTest",
-    "tests": "3",
+    "name": "org.studyfuse.core.LearningTest",
+    "tests": "8",
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "4.124"
+    "time": "0.117"
+  },
+  {
+    "name": "org.studyfuse.engine.UiTest",
+    "tests": "4",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "8.752"
   },
   {
     "name": "org.studyfuse.engine.RepositoryTest",
@@ -21,15 +29,15 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "0.205"
+    "time": "0.606"
   },
   {
     "name": "org.studyfuse.engine.ArchiveTest",
-    "tests": "6",
+    "tests": "7",
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "10.353"
+    "time": "7.53"
   },
   {
     "name": "org.studyfuse.engine.MigrationTest",
@@ -37,7 +45,7 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "0.081"
+    "time": "0.196"
   },
   {
     "name": "org.studyfuse.engine.CompilerTest",
@@ -45,6 +53,14 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "19.053"
+    "time": "31.693"
+  },
+  {
+    "name": "org.studyfuse.engine.ExamTest",
+    "tests": "10",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.899"
   }
 ]

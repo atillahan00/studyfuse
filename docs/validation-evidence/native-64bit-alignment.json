@@ -1,22 +1,26 @@
-{
-  "arm64-v8a/libandroidx.graphics.path.so": [
-    "0x4000",
-    "0x4000",
-    "0x4000"
-  ],
-  "arm64-v8a/libmlkit_google_ocr_pipeline.so": [
-    "0x4000",
-    "0x4000",
-    "0x4000"
-  ],
-  "x86_64/libandroidx.graphics.path.so": [
-    "0x4000",
-    "0x4000",
-    "0x4000"
-  ],
-  "x86_64/libmlkit_google_ocr_pipeline.so": [
-    "0x4000",
-    "0x4000",
-    "0x4000"
-  ]
-}
+[
+  {
+    "library": "lib/arm64-v8a/libandroidx.graphics.path.so",
+    "loadAlignment": [
+      16384,
+      16384,
+      16384
+    ]
+  },
+  {
+    "library": "lib/arm64-v8a/liblitertlm_jni.so",
+    "loadAlignment": [
+      16384,
+      16384,
+      16384
+    ]
+  },
+  {
+    "library": "lib/arm64-v8a/libmlkit_google_ocr_pipeline.so",
+    "loadAlignment": [
+      16384,
+      16384,
+      16384
+    ]
+  }
+]
