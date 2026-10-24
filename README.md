@@ -59,7 +59,7 @@ python3 scripts/verify_pdf_artifacts.py
 
 Gradle 8.13 is pinned with a verified distribution checksum. Build dependencies need network on the first build; document processing does not. MuPDF is a development-only verifier, not linked into the Android app. Test reports are under `core/build/reports/tests/` and `app/build/reports/tests/testDebugUnitTest/`; lint is under `app/build/reports/`.
 
-The GitHub workflow installs supported SDK packages explicitly, runs tests/lint, builds APKs and retains artifacts. A separate API 35 emulator job exercises actual Android PDF rendering, long-image decoding and bundled OCR. Inspect the workflow run for its observed result; configuring a test job is not evidence that it passed.
+The GitHub workflow installs supported SDK packages explicitly, runs tests/lint, builds APKs and retains artifacts. [The 1.1 validation run passed](https://github.com/atillahan00/studyfuse/actions/runs/40111818167): **47 JVM/Robolectric tests and 3 Android 15 / API 35 emulator tests**, including actual Android PDF rendering, long-image decoding and bundled printed-text OCR. See [validation evidence](docs/VALIDATION.md) for the tested commit and practical limits.
 
 For an independently managed production signing key, set `STUDYFUSE_SIGNING_STORE`, `STUDYFUSE_STORE_PASSWORD`, `STUDYFUSE_KEY_ALIAS`, and `STUDYFUSE_KEY_PASSWORD`, then build `:app:assembleRelease`. Keep the same key for updates and keep it private. No signing keys or passwords are committed. CI validation artifacts are not a substitute for a persistent release signing setup.
 

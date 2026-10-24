@@ -48,6 +48,8 @@ APK signature verification and `zipalign -c -P 16 4` passed. Packaged 64-bit nat
 
 ## GitHub Android runtime tests
 
-The workflow fixes the obsolete `tools` SDK request by selecting `platform-tools` explicitly. It includes an API 35 emulator job using actual Android rendering, large-image region decoding/viewport checks and bundled printed-text OCR. Its observed run result is published in the repository/Actions and associated evidence when available; merely defining the job is not counted as a passing test.
+The workflow fixes the obsolete `tools` SDK request by selecting `platform-tools` explicitly. [Run 40111818167](https://github.com/atillahan00/studyfuse/actions/runs/40111818167), for app/source commit `dcfd6966ad66d257d7ba256a9d70b3ed43b98e79`, **completed successfully** on 24 October 2026. Both the build job and the API 35 Android runtime job passed.
+
+The Android 15 / API 35 x86_64 Pixel Tablet emulator completed **3 connected tests**, exercising actual Android PDF rendering, large-image region decoding/viewport checks and bundled printed-text OCR. Its connected-test task reported `BUILD SUCCESSFUL`. The 47 JVM/Robolectric tests also passed in the build job. A concise runtime-log excerpt and observed job results are retained in [android-runtime.txt](validation-evidence/android-runtime.txt).
 
 No physical tablet was connected locally. There is no claim of hardware/OEM certification, reliable handwriting/mathematical OCR, authenticated OneNote/Graph integration or universal Office fidelity. Office/OneNote still require source-app PDF conversion. An incomplete source checkpoint restarts that source; completed sources are reused. Arbitrary huge/malformed documents and every diagram boundary still require care and visual review.

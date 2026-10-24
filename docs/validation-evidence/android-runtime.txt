@@ -1,0 +1,18 @@
+StudyFuse 1.1 observed Android CI results
+Source commit: dcfd6966ad66d257d7ba256a9d70b3ed43b98e79
+Run: https://github.com/atillahan00/studyfuse/actions/runs/40111818167
+Observed: 2026-10-24 UTC
+Emulator: Android 15 / API 35, x86_64 google_apis, Pixel Tablet
+
+Jobs:
+build: completed / success (https://github.com/atillahan00/studyfuse/actions/runs/40111818167/job/120924946887)
+android-runtime: completed / success (https://github.com/atillahan00/studyfuse/actions/runs/40111818167/job/120926401090)
+
+Connected-test log excerpt:
+2026-10-24T16:40:58.2297556Z > Task :app:connectedDebugAndroidTest
+2026-10-24T16:40:58.2304868Z Starting 3 tests on emulator-5554 - 15
+2026-10-24T16:41:04.8328843Z Finished 3 tests on emulator-5554 - 15
+2026-10-24T16:41:06.0344454Z BUILD SUCCESSFUL in 2m 42s
+
+Scope: native PDF rendering, large-image region decoding/viewport rendering, bundled printed-text OCR.
+This run does not certify physical tablets, arbitrary source fidelity, handwriting OCR or native Office/OneNote conversion.
