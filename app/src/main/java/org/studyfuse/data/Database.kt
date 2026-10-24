@@ -47,6 +47,11 @@ abstract class StudyDao {
     @Query("SELECT * FROM sources WHERE id=:id") abstract suspend fun source(id:String):Source?
     @Insert abstract suspend fun addProject(project:Project)
     @Update abstract suspend fun updateProject(project:Project)
+    @Transaction open suspend fun queueExam(projectId:String,expectedReport:String,workId:String) {
+        val p=project(projectId) ?: error("Proje bulunamadı")
+        check(p.status !in setOf("RUNNING","QUEUED") && p.report==expectedReport){"Kaynaklar veya işlem durumu değişti; yeniden deneyin"}
+        updateProject(p.copy(status="QUEUED",workId=workId,message="Yerel AI sıraya alındı"))
+    }
     @Insert abstract suspend fun addSource(source:Source)
     @Update abstract suspend fun updateSource(source:Source)
     @Delete abstract suspend fun deleteSource(source:Source)

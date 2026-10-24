@@ -56,11 +56,22 @@ class UiTest {
         ui.onNodeWithText("Notlarını buraya ekle").assertDoesNotExist()
         ui.onNodeWithText("Proje yedeği kaydet").assertExists()
     }
+    @Test fun localExamWorkshopRequiresRealModelAndDefaultsToDocumentsOnly() {
+        ui.onNodeWithText("Yeni proje").performClick()
+        ui.waitUntil(15000){ui.onAllNodesWithText("Sınav atölyesi · Yerel AI").fetchSemanticsNodes().isNotEmpty()}
+        ui.onNodeWithText("Sınav atölyesi · Yerel AI").performClick()
+        ui.waitUntil(10000){ui.onAllNodesWithText("Yalnızca belgelerim").fetchSemanticsNodes().isNotEmpty()}
+        ui.onNodeWithText("Model içe aktar").assertExists()
+        screenshot("tablet-exam-workshop.png")
+        ui.onNodeWithText("Sınav hazırlığını oluştur / sürdür").performScrollTo().assertIsNotEnabled()
+        ui.onNodeWithText("Notlar",useUnmergedTree=true).performClick()
+        ui.onNodeWithText("Güncel çalışma maddesi yok.",substring=true).assertExists()
+    }
     private fun screenshot(name:String) {
         ui.waitForIdle()
         lateinit var image:android.graphics.Bitmap
         ui.runOnUiThread {
-            val view=ui.activity.window.decorView
+            val view=android.view.inspector.WindowInspector.getGlobalWindowViews().lastOrNull() ?: ui.activity.window.decorView
             image=android.graphics.Bitmap.createBitmap(view.width,view.height,android.graphics.Bitmap.Config.ARGB_8888)
             view.draw(android.graphics.Canvas(image))
         }

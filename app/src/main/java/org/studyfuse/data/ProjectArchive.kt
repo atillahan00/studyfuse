@@ -22,7 +22,11 @@ class ProjectArchive(private val repo:Repository) {
                 .put("active",JSONObject().put("entry",if(s.activePath==s.originalPath) "files/$i/original" else "files/$i/active")
                     .put("sha256",s.activeSha256).put("bytes",File(s.activePath).length()))
         }
-        val manifest=JSONObject().put("schemaVersion",1).put("name",project.name).put("settings",project.settings).put("sources",JSONArray(rows))
+        val studyRoot=File(repo.directory(id),"exam")
+        val studyFiles=studyRoot.walkTopDown().filter{it.isFile && studyEntry(it.relativeTo(studyRoot).invariantSeparatorsPath)}.toList()
+        require(studyFiles.all{it.length()<=16L*1024*1024}){"Bir çalışma kaydı güvenli yedek öğesi boyutunu aşıyor; kaynaklar silinmedi. Notlarını ayrıca dışa aktarın."}
+        val studyRows=studyFiles.map{file->JSONObject().put("entry","study/"+file.relativeTo(studyRoot).invariantSeparatorsPath).put("sha256",sha256(file)).put("bytes",file.length())}
+        val manifest=JSONObject().put("schemaVersion",2).put("name",project.name).put("settings",project.settings).put("sources",JSONArray(rows)).put("studyFiles",JSONArray(studyRows))
         ZipOutputStream(BufferedOutputStream(dest)).use {zip ->
             zip.putNextEntry(ZipEntry("manifest.json"));zip.write(manifest.toString(2).toByteArray(Charsets.UTF_8));zip.closeEntry()
             for((i,s) in sources.withIndex()) {
@@ -32,6 +36,10 @@ class ProjectArchive(private val repo:Repository) {
                     zip.putNextEntry(ZipEntry(entry));file.inputStream().use {input -> copyChecked(input,zip)};zip.closeEntry()
                 }
             }
+            for((i,file) in studyFiles.withIndex()) {
+                check(sha256(file)==studyRows[i].getString("sha256")){"Çalışma kayıtları değişti; yedeği yeniden başlatın"}
+                zip.putNextEntry(ZipEntry(studyRows[i].getString("entry")));file.inputStream().use{copyChecked(it,zip)};zip.closeEntry()
+            }
         }
     }
     suspend fun restore(input:InputStream):String=withContext(Dispatchers.IO) {
@@ -40,7 +48,7 @@ class ProjectArchive(private val repo:Repository) {
             ZipInputStream(BufferedInputStream(input)).use {zip ->
                 require(zip.nextEntry?.name=="manifest.json") {"StudyFuse yedek bildirimi bulunamadı"}
                 val raw=ByteArrayOutputStream();copyChecked(zip,raw,8L*1024*1024)
-                val manifest=JSONObject(raw.toString("UTF-8"));require(manifest.getInt("schemaVersion")==1) {"Desteklenmeyen yedek sürümü"}
+                val manifest=JSONObject(raw.toString("UTF-8"));require(manifest.getInt("schemaVersion") in 1..2) {"Desteklenmeyen yedek sürümü"}
                 SettingsCodec.strictDecode(manifest.getString("settings"))
                 val rows=manifest.getJSONArray("sources");val expected=mutableMapOf<String,JSONObject>()
                 val targets=mutableMapOf<String,File>()
@@ -56,6 +64,13 @@ class ProjectArchive(private val repo:Repository) {
                         expected[entry]=file
                     }
                 }
+                val study=manifest.optJSONArray("studyFiles") ?: JSONArray()
+                for(i in 0 until study.length()) {
+                    val info=study.getJSONObject(i);val entry=info.getString("entry")
+                    require(entry.startsWith("study/") && studyEntry(entry.removePrefix("study/")) && entry !in expected){"Geçersiz çalışma kaydı yolu"}
+                    require(info.getLong("bytes") in 0..16L*1024*1024 && info.getString("sha256").matches(Regex("[0-9a-f]{64}"))){"Geçersiz çalışma kaydı boyutu/özeti"}
+                    expected[entry]=info
+                }
                 require(expected.values.sumOf{it.getLong("bytes")}>=0) {"Geçersiz toplam boyut"}
                 var next=zip.nextEntry
                 while(next!=null) {
@@ -63,9 +78,17 @@ class ProjectArchive(private val repo:Repository) {
                     val name=next.name;val info=expected[name] ?: error("Bildirilmeyen arşiv öğesi: $name")
                     require(!next.isDirectory && name !in targets) {"Tekrarlanan arşiv öğesi"}
                     check(info.getLong("bytes")<dir.usableSpace-16*1024*1024) {"Yedek için yeterli boş alan yok"}
-                    val file=File(dir,"originals/${UUID.randomUUID()}");file.parentFile!!.mkdirs()
+                    val file=if(name.startsWith("study/"))File(dir,"exam/"+name.removePrefix("study/"))else File(dir,"originals/${UUID.randomUUID()}");file.parentFile!!.mkdirs()
                     file.outputStream().use {copyChecked(zip,it,info.getLong("bytes"))}
                     require(file.length()==info.getLong("bytes") && sha256(file)==info.getString("sha256")) {"Yedek bütünlüğü doğrulanamadı: $name"}
+                    if(name.startsWith("study/")) {
+                        val json=JSONObject(file.readText())
+                        if(name=="study/settings.json")org.studyfuse.learning.ExamConfig.decode(json)
+                        if(name=="study/review.json")json.keys().forEach{key->val r=json.getJSONObject(key)
+                            require(r.optInt("stage",0) in 0..6 && r.optInt("attempts",0)>=0 && r.optInt("lapses",0)>=0)
+                            java.time.LocalDate.ofEpochDay(r.optLong("dueDay",0))
+                        }
+                    }
                     targets[name]=file;next=zip.nextEntry
                 }
                 require(targets.keys==expected.keys) {"Yedekte eksik dosyalar var"}
@@ -81,6 +104,7 @@ class ProjectArchive(private val repo:Repository) {
             id
         } catch(e:Exception) {dir.deleteRecursively();throw e}
     }
+    private fun studyEntry(name:String)=name in setOf("settings.json","session.json","review.json") || name.matches(Regex("units/[0-9a-f]{64}\\.json"))
     private suspend fun copyChecked(input:InputStream,out:OutputStream,limit:Long=Long.MAX_VALUE) {
         val buffer=ByteArray(65536);var total=0L
         while(true) {currentCoroutineContext().ensureActive();val n=input.read(buffer);if(n<0)break

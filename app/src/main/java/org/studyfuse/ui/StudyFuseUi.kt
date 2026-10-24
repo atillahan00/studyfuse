@@ -31,7 +31,7 @@ private val Dark=darkColorScheme(primary=Color(0xFF8AD5C5),background=Color(0xFF
 @Composable
 fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onReplace:(Source)->Unit,
     onOpen:(File,String)->Unit,onShare:(List<File>)->Unit,onSave:(File)->Unit,onSaveAll:(List<File>)->Unit,
-    onRestore:()->Unit,onBulkReplace:()->Unit) {
+    onRestore:()->Unit,onBulkReplace:()->Unit,onImportModel:()->Unit) {
     val mode by model.dark.collectAsStateWithLifecycle()
     val project by model.project.collectAsStateWithLifecycle()
     val selected by model.selected.collectAsStateWithLifecycle()
@@ -45,6 +45,7 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
     var preview by remember { mutableStateOf<Pair<File,String>?>(null) }
     var editor by remember{mutableStateOf<Source?>(null)}
     var conversions by remember{mutableStateOf(false)}
+    var workshop by remember{mutableStateOf(false)}
     val replacements by model.replacements.collectAsStateWithLifecycle()
     val dark=if(mode==0) isSystemInDarkTheme() else mode==2
     MaterialTheme(colorScheme=if(dark) Dark else Light) {
@@ -75,6 +76,7 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
                         FlowRow {
                             TextButton(onClick={model.backup(onSave)},enabled=!busy){Text("Proje yedeği kaydet")}
                             TextButton(onClick={conversions=true},enabled=!busy){Text("Office / OneNote hazırlığı")}
+                            TextButton(onClick={workshop=true}){Text("Sınav atölyesi · Yerel AI")}
                         }
                         if(importing) {
                             LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -121,6 +123,7 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
         preview?.let { (file,name) -> PreviewDialog(file,name,{preview=null}) }
         editor?.let{s->PaginationEditor(s,SettingsCodec.decode(project?.settings ?: "{}"),{editor=null}){model.pagination(s,it)}}
         if(conversions)ConversionWizard(sources,onReplace,onBulkReplace,{conversions=false})
+        if(workshop && project!=null)ExamWorkshop(project!!,sources,model,onImportModel,onSave,onShare,{workshop=false})
         if(replacements.isNotEmpty())AlertDialog(onDismissRequest={model.replacements.value=emptyList()},title={Text("PDF eşleştirmelerini onayla")},
             text={Column{Text("PDF'lerin tüm içeriği kapsadığını önizleyerek denetleyin. Orijinaller ve sıraları korunur.");replacements.forEach{Text("${it.source.name} → ${it.name}",style=MaterialTheme.typography.bodySmall)}}},
             confirmButton={TextButton(onClick={model.applyReplacements()}){Text("PDF'leri yerine koy")}},dismissButton={TextButton(onClick={model.replacements.value=emptyList()}){Text("Vazgeç")}})

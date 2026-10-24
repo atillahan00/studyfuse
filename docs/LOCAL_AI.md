@@ -1,0 +1,47 @@
+# Local visual AI and exam preparation — version 1.2
+
+## What is implemented
+
+The Android application imports an image-capable `.litertlm` model through SAF, hashes and copies it to private storage, then uses the actual LiteRT-LM Android engine. Weights are separate from the APK. There is no remote inference client, account requirement or Internet permission. Opening the model download link launches an external browser without attaching documents. Additional reference material can be imported as ordinary project documents and marked as references in the exam settings. Live web research is not implemented.
+
+LiteRT-LM is pinned to 0.16.1, with Kotlin/Compose compiler 2.3.20 and KSP 2.3.9. The published AAR declares minimum API 24; StudyFuse retains API 29. Engine execution uses a private, non-exported `:local_ai` Android service process and Messenger IPC. A native abort/disconnect is reported to the caller rather than crashing the UI process. Language execution offers CPU or GPU; vision uses GPU. Optional OpenCL native libraries are declared. No NPU driver package or accelerated NPU capability is assumed.
+
+Model paths are private, selected metadata is atomic, imports stream and check available space, and SHA-256 is rechecked before inference. A randomized visible-code image test must succeed for the selected model/backend/Android build fingerprint before generation starts. The test is a compatibility/synthetic printed-vision check, not an evaluation of handwriting, German school terminology, diagram understanding or solution correctness. `.gguf`, `.task`, incomplete files, incompatible model revisions or unsuitable GPU drivers may fail. A model-family name alone does not establish file compatibility with the pinned runtime.
+
+## Source policy
+
+The default is DOCUMENTS_ONLY. Only primary sources are analyzed. ENRICHED also allows explicitly assigned reference documents and labelled model-knowledge additions. Duplicate byte-identical sources share the same reference role. The model is instructed to treat document content as data, not commands; no tools or network are exposed.
+
+Structured responses must contain transcription, visual observations, uncertainties, and study items. Each item identifies its origin. Document items need a contiguous supporting excerpt of at least eight characters in native PDF text or the model's visual transcription. Model additions are rejected in DOCUMENTS_ONLY. Exact excerpt matching checks attribution structure, **not entailment, truth, transcription accuracy or completeness**. A model can mislabel an invented claim, misread a minus sign, or confidently misunderstand a diagram. Visual evidence is explicitly marked `unverified_visual`. Native-text evidence is labelled `pdf_text`, not verified factual correctness. Every new item starts unapproved.
+
+The signature includes source byte identities, displayed source layout/coverage, source policy, references, optional exam context/date, language, detail setting, backend and model SHA. A mode change regenerates a separate set of checkpoints and approvals; enriched material is never simply relabelled as document-only. Source IDs, export timestamps and file locations are excluded so a restored project can reuse matching readings after an equivalent PDF compilation. Changed source bytes, layout or policy invalidate reuse.
+
+## Reading and coverage
+
+Only actual visual source content pages are analyzed; contents/dividers and unverified OCR transcript appendices are not used as source pages. Long canvases must first pass the existing PDF pagination pipeline. Detailed mode sends a whole-page view and four overlapping quadrant views, separately, at bounded 1120×1536 rendering resolution. Regions preserve aspect ratio. Native vector PDFs remain untouched; raster rendering is used only as model input. The UI displays the corresponding source region with zoom.
+
+The ledger lists selected sources, failed conversions, planned regions, completed region records, model/parser errors, ambiguities and rejected items. `REVIEW` means that a model response was structurally processed. It does not prove all original marks were understood. Blank/unclear content must remain visible as a review concern. Oversized text contexts fail explicitly instead of silently truncating evidence. Malformed/truncated JSON is retained as a failed region's raw response when available. There is no automatic claim of complete transcription based on a successful model response or an empty uncertainty list.
+
+WorkManager runs generation with a foreground notification, progress and cancellation. Completed region records persist atomically and are reused on retry; failed regions are retried. Cancellation within a region repeats that region. Context is bounded to 8192 tokens with 2200 output tokens, fresh conversations per region and a five-minute inference timeout. Android foreground-service/time/thermal restrictions can interrupt very long batches; resume remains necessary. No whole-library prompt is assumed to fit into memory.
+
+## Learning workflow
+
+Documents alone are sufficient. Exam date and teacher/topic instructions are optional. Without them, the system broadly prepares for the supplied content and does not claim to know actual exam weighting.
+
+The generation prompt requests source-backed explanations, active-recall questions, self-explanation, diagram recall, and worked examples/application tasks only where supported solutions exist. It must not invent a solution merely to populate every question type. Model quality still determines the usefulness of the draft.
+
+Students inspect the source and answer, correct question/answer text if necessary, and explicitly approve practice items. Editing removes approval and resets the scheduling stage. Model-added/reference questions are excluded from practice unless the learner includes extra context. Recall requires an attempt before revealing an answer. Grading is the student's comparison with the source/answer; no automatic correctness or exam-readiness score is fabricated. Topics are alternated and exact repeated question/answer pairs on the same source page are reduced. Review ratings use transparent 1/3/7/14/30/60-day expanding intervals, with a same-day retry after failure and a one-day hard interval. These are practical heuristics, not an individually validated memory model. Progress, attempts and correction history are stored; an error notebook supports later review.
+
+Retrieval practice and distributed practice are supported by broad learning-science evidence. Self-explanation, worked examples and interleaving depend on subject and prior knowledge; none is advertised as a universal optimal learning style. Reference: Dunlosky et al. (2013), [Improving Students' Learning With Effective Learning Techniques](https://doi.org/10.1177/1529100612453266).
+
+## Export, recovery and privacy
+
+PDF/Markdown include source references, uncertainty/review labels, questions before separate answer keys, review information and visual-reading records. The exam PDF includes an appendix of the original compiled PDFs, appended as PDF content to preserve diagrams and vector graphics; source page references refer to that compilation's printed numbering, not the preceding generated-notes pages. Source excerpts remain accessible in-app. Unsupported glyphs in generated text are explicitly represented by codepoint labels, never silently removed.
+
+Backups include exam settings, session manifest, reading checkpoints and student review/corrections/history. Weights, temporary rendered images and regenerated exam exports are excluded. Backup schema 2 accepts schema 1 imports. Entries are restricted to declared study JSON filenames with size/hash checks and no traversal. Restore may require recompiling source PDFs before the readings can be opened. No private model or document content is uploaded by the app. Sharing/exporting is explicit through Android.
+
+## Validation limits
+
+The shipped code has automated policy/parser/scheduler/storage/export/UI checks and connected Android tests. The pipeline test uses a deterministic test inference adapter to test region coverage and cancellation/resume; it is **not** a neural accuracy benchmark. A separate connected test exercises native-engine failure reporting. Neither substitutes for a real compatible model on a physical MagicPad 2. No handwriting/mathematics accuracy percentage or device inference speed is claimed. The next acceptance exercise is a representative set of teacher pages checked against human readings on the user's tablet. Generated study material should not be the sole authority for an exam.
+
+Primary technical references: [LiteRT-LM Kotlin API](https://github.com/google-ai-edge/LiteRT-LM/blob/v0.16.1/docs/api/kotlin/getting_started.md), [pinned published dependency](https://dl.google.com/dl/android/maven2/com/google/ai/edge/litertlm/litertlm-android/0.16.1/litertlm-android-0.16.1.pom), [Gemma 4 model card](https://ai.google.dev/gemma/docs/core/model_card_4), [Android deployment](https://developers.google.com/edge/litert-lm/android). Family capabilities and vendor benchmarks are not StudyFuse-specific accuracy evidence.

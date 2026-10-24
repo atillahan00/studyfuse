@@ -23,6 +23,7 @@ class MainActivity:ComponentActivity() {
     private var pendingSave:File?=null
     private var pendingVolumes:List<File> = emptyList()
     private val picker=registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { model.importUris(it) }
+    private val localModelPicker=registerForActivityResult(ActivityResultContracts.OpenDocument()){uri->if(uri!=null)model.importLocalModel(uri)}
     private val restorePicker=registerForActivityResult(ActivityResultContracts.OpenDocument()){uri->if(uri!=null)model.restore(uri)}
     private val bulkPdfPicker=registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()){model.prepareReplacements(it)}
     private val replacement=registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -70,7 +71,7 @@ class MainActivity:ComponentActivity() {
                 when(file.extension) { "pdf" -> pdfSaver.launch(file.name); "json" -> reportSaver.launch(file.name); "zip"->zipSaver.launch(file.name);else -> textSaver.launch(file.name) }
             },onSaveAll={ pendingVolumes=it; volumeSaver.launch(null) },
             onRestore={restorePicker.launch(arrayOf("application/zip","application/octet-stream"))},
-            onBulkReplace={bulkPdfPicker.launch(arrayOf("application/pdf"))}) }
+            onBulkReplace={bulkPdfPicker.launch(arrayOf("application/pdf"))},onImportModel={localModelPicker.launch(arrayOf("*/*"))}) }
         if(savedInstanceState==null) handleShare(intent)
     }
     override fun onSaveInstanceState(outState:Bundle) {

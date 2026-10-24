@@ -5,11 +5,11 @@ The application source written for StudyFuse is offered under Apache-2.0 (see LI
 | Component | Pinned version | License / compatibility decision |
 |---|---|---|
 | Android Gradle Plugin | 8.10.1 | Apache-2.0 tooling; compile/target 36, Gradle 8.13 |
-| Kotlin / Compose compiler | 2.1.20 | Apache-2.0 |
+| Kotlin / Compose compiler | 2.3.20 | Apache-2.0 |
 | Compose BOM | 2025.04.01 | AndroidX Apache-2.0; UI/material3 1.8-era dependencies resolved by BOM |
 | Activity | 1.10.1 | AndroidX Apache-2.0 |
 | Lifecycle | 2.9.0 | AndroidX Apache-2.0 |
-| Room | 2.7.1 | AndroidX Apache-2.0; KSP 2.1.20-1.0.32 |
+| Room | 2.7.1 | AndroidX Apache-2.0; KSP 2.3.9 |
 | WorkManager | 2.10.1 | AndroidX Apache-2.0; foreground service type dataSync |
 | DocumentFile | 1.0.1 | AndroidX Apache-2.0 |
 | ExifInterface | 1.4.1 | AndroidX Apache-2.0 |
@@ -17,6 +17,9 @@ The application source written for StudyFuse is offered under Apache-2.0 (see LI
 | Bouncy Castle PDFBox transitive components | 1.72 | Bouncy Castle permissive license; full notices in assets. Application does not offer encrypted-PDF import or TLS networking. Lint can flag unused TLS helper trust managers from this dependency. |
 | ML Kit text recognition, bundled Latin | 16.0.1 | **ML Kit Terms of Service, not an open-source OCR engine.** Included as a free local printed-text OCR option with the model packaged in the APK, no mandatory cloud API/account/payment. Published POM explicitly names the ML Kit terms. Google Play services and ML Kit transitive artifacts retain their applicable SDK terms. |
 | Kotlin coroutines / Play-services task bridge | 1.10.1 | Apache-2.0 |
+| LiteRT-LM Android | 0.16.1 | Apache-2.0; official Google Maven AAR declares API 24 minimum and ARM64/x86_64 native binaries. Kotlin API requires the updated compiler. Its LICENSE and full bundled THIRD_PARTY_NOTICE are retained in APK assets. CPU/GPU/vision compatibility must be tested with the actual model/device. |
+| Gson, Kotlin reflection (LiteRT-LM transitive) | 2.13.2 / 2.2.21 | Apache-2.0; resolved dependency graph retained by Gradle. |
+| Optional imported model weights | user supplied | Not bundled. Recommended Gemma 4 model family uses Apache-2.0; users must check the exact downloaded artifact's terms. A model-family license does not establish an arbitrary third-party conversion's provenance. |
 | Noto Sans, Noto Sans Math | bundled TTF assets | SIL Open Font License 1.1. Exact font project license and notices included in assets. |
 | Selected Material icons | sources from AndroidX 1.7.8 | Apache-2.0. Sixteen selected generated Kotlin files retain original copyright/license headers. Vendoring only used icons avoids packaging all thousands of extended icons in a debug APK. |
 | JUnit, Robolectric, AndroidX test | test-only | EPL-1.0 / Apache-2.0 according to component; not shipped in main APK |
@@ -30,5 +33,8 @@ References inspected:
 - https://developers.google.com/ml-kit/vision/text-recognition/v2/android
 - https://github.com/notofonts/noto-fonts (hinted TTF fonts and OFL)
 - https://dl.google.com/dl/android/maven2/androidx/compose/material/material-icons-extended-android/1.7.8/material-icons-extended-android-1.7.8-sources.jar
+- https://dl.google.com/dl/android/maven2/com/google/ai/edge/litertlm/litertlm-android/0.16.1/litertlm-android-0.16.1.pom
+- https://github.com/google-ai-edge/LiteRT-LM/tree/v0.16.1
+- https://ai.google.dev/gemma/docs/core/model_card_4
 
 The build resolves the actual runtime dependency graph through Google Maven and Maven Central. Build-time downloads are not application cloud processing. Transitive component notices are included under `app/src/main/assets/licenses/`. Native-library 16 KiB alignment and APK alignment are checked in the delivery validation, not assumed merely from the target SDK. Compatibility of the dependency graph was verified by the recorded builds/tests; no claim is made of a full legal audit or physical-device certification.

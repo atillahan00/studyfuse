@@ -10,6 +10,8 @@ import org.studyfuse.StudyFuseApp
 import org.studyfuse.core.*
 import org.studyfuse.data.*
 import org.studyfuse.worker.CompileWorker
+import org.studyfuse.worker.ExamWorker
+import org.studyfuse.learning.*
 import java.io.File
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -35,6 +37,60 @@ class StudyViewModel(application:Application):AndroidViewModel(application) {
     val replacements=MutableStateFlow<List<Replacement>>(emptyList())
     private var importJob:Job?=null
     val dark=MutableStateFlow(app.getSharedPreferences("ui",0).getInt("theme",0))
+    val modelMessage=MutableStateFlow("")
+    val modelBusy=MutableStateFlow(false)
+    private var modelSetupJob:Job?=null
+    fun cancelModelSetup(){modelSetupJob?.cancel()}
+    val examRevision=MutableStateFlow(0)
+    val examWork=selected.flatMapLatest { id -> if(id==null)flowOf(emptyList())else WorkManager.getInstance(app).getWorkInfosForUniqueWorkFlow("exam-$id") }
+        .stateIn(viewModelScope,SharingStarted.WhileSubscribed(5000),emptyList())
+    fun importLocalModel(uri:Uri) {
+        if(modelBusy.value)return
+        modelBusy.value=true
+        modelSetupJob=viewModelScope.launch(Dispatchers.IO){var locked=false
+            try {locked=ExamStore.execution.tryLock();check(locked){"Önce yerel AI işlemini bitirin"}
+                val result=ModelStore(app).import(uri){bytes->modelMessage.value="Model kopyalanıyor · ${bytes/(1024*1024)} MB"}
+                modelMessage.value="${result.name} içe aktarıldı. Görüntü testini çalıştırın. SHA-256: ${result.digest}"
+                examRevision.value++
+            }catch(e:Exception){modelMessage.value="Model alınamadı: ${e.message}"}finally{if(locked)ExamStore.execution.unlock();modelBusy.value=false}
+        }
+    }
+    fun testLocalModel(gpu:Boolean) {
+        if(modelBusy.value)return;modelBusy.value=true;modelMessage.value="Model ve görüntü girişi sınanıyor; birkaç dakika sürebilir…"
+        modelSetupJob=viewModelScope.launch(Dispatchers.IO){var locked=false;val image=File(app.filesDir,"local-models/probe.png")
+            try {locked=ExamStore.execution.tryLock();check(locked){"Başka bir AI işlemi sürüyor"}
+                File(app.filesDir,"local-models/vision-test.json").delete()
+                val local=ModelStore(app).selected() ?: error("Önce .litertlm modeli içe aktarın")
+                check(org.studyfuse.engine.sha256(local.file)==local.digest){"Model özeti değişmiş"}
+                val token="SF"+java.util.UUID.randomUUID().toString().take(8).uppercase()
+                val bitmap=android.graphics.Bitmap.createBitmap(1024,512,android.graphics.Bitmap.Config.ARGB_8888)
+                try{val canvas=android.graphics.Canvas(bitmap);canvas.drawColor(android.graphics.Color.WHITE)
+                    canvas.drawText(token,70f,250f,android.graphics.Paint().apply{color=android.graphics.Color.BLACK;textSize=80f;isAntiAlias=true})
+                    image.outputStream().use{bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG,100,it)}
+                }finally{bitmap.recycle()}
+                val answer=LocalAiClient(app).use{client->client.connect();client.generate(local,gpu,"Read the image literally.","Return only the exact alphanumeric code visible in the image.",image)}
+                check(answer.filter{it.isLetterOrDigit()}.contains(token)){"Görüntü kodu doğru okunamadı. Model yanıtı: $answer"}
+                atomicJson(File(app.filesDir,"local-models/vision-test.json"),org.json.JSONObject().put("sha256",local.digest).put("gpu",gpu).put("fingerprint",android.os.Build.FINGERPRINT))
+                modelMessage.value="Görüntü giriş testi geçti. Bu sentetik basılı kod testi el yazısı, matematik veya MagicPad doğruluk garantisi değildir."
+            }catch(e:Exception){modelMessage.value="Test başarısız: ${e.message}"}finally{image.delete();if(locked)ExamStore.execution.unlock();modelBusy.value=false;examRevision.value++}
+        }
+    }
+    fun startExam(config:ExamConfig)=viewModelScope.launch {
+        val id=selected.value ?: return@launch;val p=dao.project(id) ?: return@launch
+        if(importing.value || modelBusy.value || p.status in setOf("RUNNING","QUEUED"))return@launch
+        try {
+            val request=OneTimeWorkRequestBuilder<ExamWorker>().setInputData(workDataOf("projectId" to id,"previousStatus" to p.status)).addTag("project-$id").build()
+            withContext(Dispatchers.IO){config.validate();check(p.report!=null){"Önce PDF oluşturun"}
+                check(visionReady(app,config.gpu)){"Önce seçili model için görüntü giriş testini geçirin"}
+                val store=ExamStore(repo.directory(id));store.saveConfig(config)
+                atomicJson(File(store.root,"requests/${request.id}.json"),config.json())}
+            dao.queueExam(id,p.report!!,request.id.toString())
+            try {withContext(Dispatchers.IO){WorkManager.getInstance(app).enqueueUniqueWork("exam-$id",ExistingWorkPolicy.REPLACE,request).result.get()}}
+            catch(e:Exception){dao.workStatus(id,request.id.toString(),p.status,"AI sıraya alınamadı: ${e.message}");throw e}
+            examRevision.value++
+        }catch(e:Exception){notice.value=e.message}
+    }
+    fun cancelExam(){selected.value?.let{WorkManager.getInstance(app).cancelUniqueWork("exam-$it")}}
     fun theme(mode:Int) { dark.value=mode; app.getSharedPreferences("ui",0).edit().putInt("theme",mode).apply() }
     fun select(id:String?) { if(!importing.value) selected.value=id }
     fun create()=viewModelScope.launch { if(!importing.value) selected.value=repo.create() }
@@ -169,8 +225,10 @@ class StudyViewModel(application:Application):AndroidViewModel(application) {
     }
     fun cancel() {
         val id=selected.value ?: return
+        if(examWork.value.any{!it.state.isFinished}){cancelExam();return}
         val workId=project.value?.workId ?: return
         WorkManager.getInstance(app).cancelUniqueWork("compile-$id")
+        WorkManager.getInstance(app).cancelUniqueWork("exam-$id")
         viewModelScope.launch { dao.workStatus(id,workId,"CANCELLED","İşlem iptal edildi") }
     }
     fun deleteProject(p:Project)=viewModelScope.launch(Dispatchers.IO) {

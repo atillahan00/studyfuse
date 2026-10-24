@@ -1,55 +1,31 @@
-# StudyFuse 1.1 validation — 24 October 2026
+# StudyFuse 1.2 validation — 24 October 2026
 
-## Observed local results
+## Local results
 
-The complete project built successfully using JDK 21.0.2, Gradle 8.13, Android SDK 36, AGP 8.10.1 and Kotlin 2.1.20. These tasks passed:
+The project builds with JDK 21.0.2, Gradle 8.13, Android SDK 36, AGP 8.10.1, Kotlin/Compose compiler 2.3.20 and KSP 2.3.9. The local full validation includes `:core:test`, `:app:testDebugUnitTest`, `:app:lintDebug`, `:app:assembleDebug` and `:app:assembleDebugAndroidTest`.
 
-```
-:core:test :app:testDebugUnitTest :app:lintDebug
-:app:assembleDebug :app:assembleDebugAndroidTest
-```
+There are **67 JVM/Robolectric tests**, covering the existing PDF/image/text compiler and its 200-band long-page fixture, backup/restore, migrations and tablet UI, plus new learning scheduling/interleaving, source-policy/evidence rejection, unverified visual transcription, model-output parse failure, optional exam details, signature isolation, atomic review persistence, study export, exam-state backup and the actual workshop UI. These are engineering checks, not a handwriting or exam-solution accuracy benchmark. Detailed observed results are retained under `validation-evidence/` when packaged.
 
-| Suite | Passing tests | Failures / errors / skipped |
-|---|---:|---:|
-| Pagination, manual cuts, natural ordering and formats | 14 | 0 / 0 / 0 |
-| PDF/image/text, checkpoints and companion extraction | 18 | 0 / 0 / 0 |
-| Repository/import transactions | 5 | 0 / 0 / 0 |
-| Backup/restore, archive rejection and removal recovery | 6 | 0 / 0 / 0 |
-| Existing database migration 1→2 | 1 | 0 / 0 / 0 |
-| Actual Compose tablet interactions | 3 | 0 / 0 / 0 |
-| **Total** | **47** | **0 / 0 / 0** |
+PyMuPDF independently checks the existing mixed export colours, all 200 long-page markers including the final band, 29 output pages against the report, and independently visible JPX content. The JPX source remains marked REVIEW by the app's conservative verifier.
 
-Notable checks include all 200 known marker bands in the long-page fixture; uniform PDF transformations for rotations and nonzero origins; German/Turkish/math Unicode; corrupt inputs; 105 sources; cancellation; source byte identity; PDF volume coverage; actual ink annotations; retention/review of JPX images; SHA-verified cache reuse/rebuild; manual-cut coverage and invalid-boundary rejection; missing/off-page text filtering and overlap de-duplication; ZIP traversal/truncation rejection; original/replacement backup round-trip; undo-state preservation; migration of existing project/source records; and multi-select removal followed by UI undo.
+## Connected Android checks
 
-Local Android integration tests use Robolectric API 34 with native graphics. Native Android PdfRenderer is not assumed to work in Robolectric; rendering tests requiring it are supplied as connected-device tests. Source/companion coordinate tests use actual generated PDFs, not mocked conversion success.
+The workflow includes an Android 15 / API 35 x86_64 Pixel Tablet emulator job. It exercises bundled printed-text OCR, Android PDF rendering, long-image region decoding, the five-region exam pipeline with cancellation/cache recovery, and native AI failure reporting through the separate process. The exam-pipeline test uses an explicitly deterministic inference adapter: it verifies pipeline behavior and **does not test neural handwriting accuracy**. The missing-model test must report a failure and must not produce a substitute answer.
 
-## Independent PDF checks
+Observed CI results are recorded here and in `validation-evidence/android-runtime.txt` after the run completes. A configured job, compiled instrumentation APK, or successful deterministic test is not represented as a successful real-model benchmark. The [1.1 validation run](https://github.com/atillahan00/studyfuse/actions/runs/40111818167) is historical evidence for its own commit only.
 
-PyMuPDF 1.26.6 independently verified:
+## APK and update identity
 
-- Expected red image and blue source-PDF colours in a mixed export.
-- All 200 known source markers, including the last band, in the generated long-note PDF.
-- The final source text remains searchable and the **29 output pages** match the completeness report.
-- JPX image data retained in the PDF is independently visible even though the local PDFBox raster verifier flags REVIEW.
-
-Run `python3 scripts/verify_pdf_artifacts.py` after successful JVM tests to repeat these checks. PDF opening or geometric coverage alone is not a proof of complete visual fidelity.
-
-## APK update and packaging
-
-The delivered APK declares `org.studyfuse`, **version 1.1.0 / versionCode 2**, minimum API 29 and target API 36. Its signing certificate SHA-256 matches the original version 1.0 downloadable APK:
+The direct download is an **ARM64 debug APK**, package `org.studyfuse`, version **1.2.0 / versionCode 3**, minimum API 29, target API 36. CI also compiles x86_64 support for emulator checks. The delivered APK must retain the previous direct download's certificate SHA-256:
 
 ```
 1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b
 ```
 
-That permits an in-place update of the original delivery installation, subject to Android's normal package checks. It remains a development/debug certificate, not a production release certification. Future CI debug keys may differ. Production signing hooks accept an external private keystore and credentials without committing them.
+Signature verification, APK 16 KiB alignment and 64-bit ELF LOAD alignment are checked from the final packaged APK and recorded in the evidence. The app's merged manifest is inspected for absence of Internet/broad storage permissions. No keystore or private key is included in the source ZIP. CI debug keys can differ from the persistent direct-download key.
 
-APK signature verification and `zipalign -c -P 16 4` passed. Packaged 64-bit native libraries have 0x4000 ELF LOAD alignment. The app has no Internet or broad storage permission. Backup/cloud transfer exclusions remain explicit. Lint reports **0 errors**; dependency/internal trust-manager and style/backup advisories are retained in the supplied report rather than hidden.
+## Material limits
 
-## GitHub Android runtime tests
+No physical HONOR MagicPad 2 or compatible multi-GB vision model is available in this build environment. Actual model loading/image-code testing, handwriting/graph/formula interpretation, German/Turkish quality, device speed, memory pressure and thermal/OEM behavior need the on-device acceptance exercise. The application implements real local inference, but the build/test results do not establish its accuracy on a teacher's notebook. Generated items begin unapproved. Evidence matching and self-reported uncertainty cannot guarantee correctness or complete understanding.
 
-The workflow fixes the obsolete `tools` SDK request by selecting `platform-tools` explicitly. [Run 40111818167](https://github.com/atillahan00/studyfuse/actions/runs/40111818167), for app/source commit `dcfd6966ad66d257d7ba256a9d70b3ed43b98e79`, **completed successfully** on 24 October 2026. Both the build job and the API 35 Android runtime job passed.
-
-The Android 15 / API 35 x86_64 Pixel Tablet emulator completed **3 connected tests**, exercising actual Android PDF rendering, large-image region decoding/viewport checks and bundled printed-text OCR. Its connected-test task reported `BUILD SUCCESSFUL`. The 47 JVM/Robolectric tests also passed in the build job. A concise runtime-log excerpt and observed job results are retained in [android-runtime.txt](validation-evidence/android-runtime.txt).
-
-No physical tablet was connected locally. There is no claim of hardware/OEM certification, reliable handwriting/mathematical OCR, authenticated OneNote/Graph integration or universal Office fidelity. Office/OneNote still require source-app PDF conversion. An incomplete source checkpoint restarts that source; completed sources are reused. Arbitrary huge/malformed documents and every diagram boundary still require care and visual review.
+Office/OneNote still require source-app PDF export/replacement. Enriched Learning supports imported reference documents and labelled local-model knowledge, without live web retrieval. See [local AI design/limits](LOCAL_AI.md) and [known limitations](KNOWN_LIMITATIONS.md). The [1.1 validation record](VALIDATION-1.1.md) is retained as history.

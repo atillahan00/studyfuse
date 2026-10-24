@@ -1,10 +1,32 @@
-# StudyFuse 1.1 — Android study notes compiler
+# StudyFuse 1.2 — Local visual AI and exam preparation for Android
 
-Compile PDFs, handwritten-note screenshots and UTF-8 text into one organized study document. Native Kotlin, Jetpack Compose and Material 3, with a Turkish tablet interface. Android 10+; targets Android 16.
+Compile PDFs, handwritten-note screenshots and UTF-8 text into one organized study document, then prepare source-linked exam notes with an imported on-device vision model. Native Kotlin, Jetpack Compose and Material 3, with a Turkish tablet interface. Android 10+; targets Android 16. The direct APK is **ARM64**, suitable for the HONOR MagicPad 2; CI also builds x86_64 support for emulator testing.
 
 [Download APK](https://github.com/atillahan00/studyfuse/raw/refs/heads/main/downloads/StudyFuse-debug.apk) · [Android Studio project ZIP](https://github.com/atillahan00/studyfuse/raw/refs/heads/main/downloads/StudyFuse-Android-Studio.zip) · [Download checksums](downloads/SHA256SUMS.txt) · [Builds and Android tests](https://github.com/atillahan00/studyfuse/actions/workflows/android.yml)
 
-**Office and OneNote files require source-app PDF export/replacement.** They are not advertised as native conversions. Unsupported sources receive explicit warning pages. OCR recognizes printed Latin text; it is not handwriting or equation recognition. Essential PDF/image/text processing, backup, search and prompt generation work offline, without accounts, ads, subscriptions or an Internet permission.
+**Office and OneNote files require source-app PDF export/replacement.** Unsupported sources receive explicit warning pages. Bundled ML Kit OCR recognizes printed Latin text. The new, separately imported visual language model can interpret handwriting, images, graphs and equations, but those interpretations are **unverified AI drafts**, not guaranteed recognition. The app has no Internet permission and no mandatory paid API; initial model acquisition is separate from offline analysis.
+
+## New in 1.2: Sınav atölyesi · Yerel AI
+
+- Real local multimodal inference through pinned **LiteRT-LM 0.16.1**, in a private Android process. Native model failures are isolated from the document UI. No fake/model-free AI answers.
+- Streamed SAF import of `.litertlm` files, SHA-256 identity, disk checks and a required randomized image-code input test. Model weights are not bundled or uploaded to this repository.
+- Default **Yalnızca belgelerim / Documents Only** policy; optional **Ek kaynaklarla öğren / Enriched Learning** permits labelled local-model knowledge and explicitly marked reference documents. There is **no web retrieval**. Changing mode/model/source/settings invalidates the current study pack.
+- Exam preparation works from the uploaded documents alone. Exam scope/date are optional; output can be German, Turkish or English. The teacher's actual exam scope is not inferred as a fact.
+- Whole-page reading plus four overlapping close-ups in detailed mode, page/region coverage records, explicit unreadable/failed regions, retained raw responses and source quotation checks. A matching quotation is **not** semantic verification.
+- Source-linked topic notes, retrieval questions, self-explanation, diagram recall and evidence-supported worked-example/application prompts. Actual output depends on the model and material; the app does not fabricate missing solutions to fill a quota.
+- A source-region viewer beside each region's study material, student correction/review, hidden-answer recall practice, mixed-topic queues, expanding review intervals and an error notebook. Only student-reviewed questions enter practice. Extra-context questions are optional.
+- PDF/Markdown export with separate answer keys and uncertainty labels. The exam PDF appends the original compiled PDFs as a visual reference appendix, retaining source diagrams/vector graphics. Citations refer to the source compilation's printed page numbers.
+- Completed region checkpoints survive cancellation. Project backups now include study settings, readings, corrections and review history; model weights and temporary images are excluded. Version 1 backups remain readable.
+
+### Local model setup on MagicPad 2
+
+1. Create/import a project and compile its sources to PDF. Replace unsupported Office/OneNote inputs with source-app PDF exports first.
+2. Open **Sınav atölyesi · Yerel AI**. Obtain a compatible image-capable `.litertlm` model in your browser, then choose **Model içe aktar**. A starting candidate is [Gemma 4 E4B mobile](https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm); E2B is a lighter alternative. GGUF and MediaPipe `.task` files are not supported by this runtime.
+3. Run **Görüntü girişini sına**. The synthetic image test checks that this model/backend can read an unpredictable printed code; it does not establish handwriting or mathematical accuracy. Model/runtime file compatibility and GPU drivers still matter.
+4. Select the source policy, language and optional exam details. Mark additional reference documents explicitly. **Ayrıntılı görsel okuma** inspects a whole-page view plus four overlapping regions per generated source page.
+5. Choose **Sınav hazırlığını oluştur / sürdür**. Inspect **Kapsam** for every failed region and missing source; inspect/correct the notes against the source image. Approve reviewed questions, then use **Hatırla** without looking at the answer first.
+
+Model storage/download size is several GB; runtime memory is additional. Text execution can use CPU or GPU; the image encoder currently uses GPU. No NPU acceleration or MagicPad 2 speed/accuracy is claimed without a device benchmark. Large batches can take substantial time and may need resumed runs. See [local AI design and limits](docs/LOCAL_AI.md).
 
 ![StudyFuse tablet project](examples/tablet-project.png)
 
@@ -24,7 +46,7 @@ Compile PDFs, handwritten-note screenshots and UTF-8 text into one organized stu
 
 ## Install and update
 
-Install `StudyFuse-debug.apk` on an Android 10+ device. This is an evaluation/debug APK, not a Play Store production release. Android may request permission to install from the application opening it. The directly downloadable 1.1 APK is intended to update the original 1.0 download without uninstalling it; back up important projects first.
+Install `StudyFuse-debug.apk` on an ARM64 Android 10+ device. This is an evaluation/debug APK, not a Play Store production release. Android may request permission to install from the application opening it. The directly downloadable 1.2 APK retains the previous direct download's development signing key; back up important projects before updating.
 
 CI-generated debug APKs may have a different signing key. Do not uninstall an existing installation to switch keys until its projects have been backed up. Physical-tablet/OEM behavior and arbitrary Office export fidelity are not universally certified.
 
@@ -49,6 +71,8 @@ Use JDK **21**, Android SDK platform **36**, Build Tools **35.0.0** (AGP default
 
 ```sh
 ./gradlew :core:test :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest
+# Smaller ARM64 APK for MagicPad 2:
+./gradlew -PstudyfuseAbi=arm64-v8a :app:assembleDebug
 # Installable APK: app/build/outputs/apk/debug/app-debug.apk
 # Connected Android device/emulator:
 ./gradlew :app:connectedDebugAndroidTest
@@ -72,4 +96,4 @@ For an independently managed production signing key, set `STUDYFUSE_SIGNING_STOR
 - `app/src/test/`: conversion, archive, migration, cache, text, database and Compose tests.
 - `app/src/androidTest/`: tests that need an actual Android runtime.
 
-Read [format support](docs/FORMATS.md), [OneNote feasibility](docs/ONENOTE.md), [known limitations](docs/KNOWN_LIMITATIONS.md), [architecture](docs/ARCHITECTURE.md), [validation evidence](docs/VALIDATION.md), and [third-party licenses](THIRD_PARTY_NOTICES.md). [Example output](examples/StudyFuse-example.pdf) uses a synthetic long handwritten-style fixture, not a real teacher's notebook. An openable PDF, source hash, OCR confidence score or geometric coverage check alone is never treated as proof that every original mark was preserved.
+Read [format support](docs/FORMATS.md), [OneNote feasibility](docs/ONENOTE.md), [known limitations](docs/KNOWN_LIMITATIONS.md), [architecture](docs/ARCHITECTURE.md), [validation evidence](docs/VALIDATION.md), [local AI](docs/LOCAL_AI.md) and [third-party licenses](THIRD_PARTY_NOTICES.md). [Example output](examples/StudyFuse-example.pdf) uses a synthetic long handwritten-style fixture, not a real teacher's notebook. An openable PDF, source hash, OCR confidence score or geometric coverage check alone is never treated as proof that every original mark was preserved.

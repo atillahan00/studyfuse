@@ -20,7 +20,9 @@ fun ExportPanel(project:Project,sources:List<Source>,model:StudyViewModel,enable
     onPreview:(File)->Unit,onSave:(File)->Unit,onShare:(List<File>)->Unit,onSaveAll:(List<File>)->Unit,modifier:Modifier=Modifier) {
     val settings=remember(project.settings) { SettingsCodec.decode(project.settings) }
     val work by model.work.collectAsStateWithLifecycle()
-    val active=work.firstOrNull { !it.state.isFinished }
+    val examWork by model.examWork.collectAsStateWithLifecycle()
+    val examActive=examWork.firstOrNull{!it.state.isFinished}
+    val active=examActive ?: work.firstOrNull { !it.state.isFinished }
     var reportVisible by remember { mutableStateOf(false) }
     var reportText by remember { mutableStateOf("") }
     var dashboard by remember{mutableStateOf(false)}
@@ -57,7 +59,7 @@ fun ExportPanel(project:Project,sources:List<Source>,model:StudyViewModel,enable
             Column(Modifier.weight(1f)) { Text("Basılı metin OCR",fontWeight=FontWeight.Medium); Text("Almanca · Türkçe · İngilizce",style=MaterialTheme.typography.bodySmall) }
             Switch(settings.ocr,{model.settings(settings.copy(ocr=it))},enabled=enabled)
         }
-        Text("El yazısı ve matematik tanıma desteklenmez. OCR açılırsa doğrulanmamış, aranabilir metin ekleri üretilir; orijinal sayfalar korunur. Kullanılabilir güven puanları JSON raporuna kaydedilir.",style=MaterialTheme.typography.bodySmall)
+        Text("Bu OCR seçeneği basılı metin içindir. El yazısı ve grafikler için Sınav atölyesi'ndeki yerel görsel AI'yı kullan; yorumlarını doğrula. OCR açılırsa doğrulanmamış, aranabilir ekler üretilir. Orijinal sayfalar korunur; kullanılabilir güven puanları rapora kaydedilir.",style=MaterialTheme.typography.bodySmall)
         SettingMenu("Cilt boyutu sınırı",if(settings.volumeLimitMb==0) "Bölme yok" else "${settings.volumeLimitMb} MB",enabled,
             listOf("Bölme yok","20 MB","50 MB","100 MB","200 MB")) {
             model.settings(settings.copy(volumeLimitMb=listOf(0,20,50,100,200)[it]))
@@ -68,12 +70,12 @@ fun ExportPanel(project:Project,sources:List<Source>,model:StudyViewModel,enable
         }
         if(project.status in setOf("RUNNING","QUEUED")) {
             OutlinedCard { Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
-                Text("Belgeler işleniyor",fontWeight=FontWeight.SemiBold)
+                Text(if(examActive!=null)"Yerel AI sınav hazırlığı" else "Belgeler işleniyor",fontWeight=FontWeight.SemiBold)
                 val processed=active?.progress?.getInt("processed",0) ?: 0
                 val total=active?.progress?.getInt("total",sources.size) ?: sources.size
                 LinearProgressIndicator(progress={if(total>0) processed.toFloat()/total else 0f},modifier=Modifier.fillMaxWidth())
                 Text(project.message,style=MaterialTheme.typography.bodySmall)
-                Text("$processed / $total dosya · Süre içerik karmaşıklığına bağlıdır",style=MaterialTheme.typography.bodySmall)
+                Text("$processed / $total ${if(examActive!=null)"bölge" else "dosya"} · Süre içerik karmaşıklığına bağlıdır",style=MaterialTheme.typography.bodySmall)
                 OutlinedButton(onClick={model.cancel()}) {Text("İşlemi iptal et")}
             } }
         } else Button(onClick={model.compile()},enabled=enabled && sources.isNotEmpty(),modifier=Modifier.fillMaxWidth().height(52.dp)) {

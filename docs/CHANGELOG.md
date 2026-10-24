@@ -1,5 +1,15 @@
 # Changes
 
+## 1.2.0
+
+- Added actual local visual-model execution through LiteRT-LM, streamed model import, image-input compatibility testing and isolated native AI service process.
+- Added per-project Documents Only / Enriched Learning policies, explicit reference-source roles, German/Turkish/English output and optional exam context/date.
+- Added whole-page plus overlapping-region visual analysis, source-evidence checks, uncertainty/rejection records, checkpoint recovery and a coverage ledger.
+- Added exam notes, reviewed hidden-answer recall, student corrections, topic interleaving, spaced-review heuristics and an error notebook.
+- Added PDF/Markdown study exports with separate answer keys and an original-source visual appendix; expanded backups to retain exam readings and review history.
+- Upgraded Kotlin/Compose compiler to 2.3.20 and KSP to 2.3.9 for the pinned runtime. Direct download targets ARM64; emulator builds retain x86_64.
+- Local visual interpretation remains an experimental AI draft. Physical MagicPad 2 handwriting/graph/math accuracy has not been certified; Office/OneNote still need PDF export.
+
 ## 1.1.0
 
 - Added per-source, per-original-page manual pagination with bounded cut editing, overlap, automatic coverage checks, adjacent-page preview and source/output comparison.
