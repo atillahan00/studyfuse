@@ -1,5 +1,5 @@
 StudyFuse 1.2 Android runtime validation
-Source commit: 69e29a3fcd9940d01fdb7b29da6e0bee24553750
-Run: https://github.com/atillahan00/studyfuse/actions/runs/40119674178
+Source commit: d7f04a611de932dee50d30cb212f21af6adbcabb
+Run: https://github.com/atillahan00/studyfuse/actions/runs/40120421099
 Result: in progress; not counted as passed yet.
-Expected connected suite: 5 tests. The exam pipeline uses a deterministic test inference adapter, not a neural accuracy benchmark. No physical MagicPad 2 handwriting/model accuracy is claimed.
+Expected connected suite: 5 tests. Deterministic inference is used only to test pipeline behavior, not neural accuracy. No physical MagicPad 2 handwriting/model benchmark is claimed.

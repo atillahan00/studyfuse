@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.engine.UiTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:11:41.835Z" hostname="514a1454fba3" time="8.752">
+<testsuite name="org.studyfuse.engine.UiTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:21:01.725Z" hostname="514a1454fba3" time="10.233">
   <properties/>
-  <testcase name="localExamWorkshopRequiresRealModelAndDefaultsToDocumentsOnly" classname="org.studyfuse.engine.UiTest" time="5.505"/>
-  <testcase name="bulkRemovalCanBeUndoneAndBackupRestoreIsVisible" classname="org.studyfuse.engine.UiTest" time="1.148"/>
-  <testcase name="newProjectAndRenameAreFunctional" classname="org.studyfuse.engine.UiTest" time="1.266"/>
-  <testcase name="homeAndThemeControlsWorkInTurkish" classname="org.studyfuse.engine.UiTest" time="0.833"/>
+  <testcase name="localExamWorkshopRequiresRealModelAndDefaultsToDocumentsOnly" classname="org.studyfuse.engine.UiTest" time="7.017"/>
+  <testcase name="bulkRemovalCanBeUndoneAndBackupRestoreIsVisible" classname="org.studyfuse.engine.UiTest" time="1.413"/>
+  <testcase name="newProjectAndRenameAreFunctional" classname="org.studyfuse.engine.UiTest" time="1.41"/>
+  <testcase name="homeAndThemeControlsWorkInTurkish" classname="org.studyfuse.engine.UiTest" time="0.392"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

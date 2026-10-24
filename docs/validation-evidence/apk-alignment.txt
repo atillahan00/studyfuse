@@ -10,7 +10,6 @@ Verifying alignment of /workspace/studyfuse/app/build/outputs/apk/debug/app-debu
 42050440 classes5.dex (OK)
 42088304 classes6.dex (OK)
 42133936 classes7.dex (OK)
-42192472 classes8.dex (OK)
 42442612 classes9.dex (OK)
 43499520 lib/arm64-v8a/libandroidx.graphics.path.so (OK)
 43515904 lib/arm64-v8a/liblitertlm_jni.so (OK)
@@ -702,4 +701,5 @@ Verifying alignment of /workspace/studyfuse/app/build/outputs/apk/debug/app-debu
 85533562 transport-runtime.properties (OK - compressed)
 85533664 vision-common.properties (OK - compressed)
 85533764 vision-interfaces.properties (OK - compressed)
+85533856 classes8.dex (OK)
 Verification succesful

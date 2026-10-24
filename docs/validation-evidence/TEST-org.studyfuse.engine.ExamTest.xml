@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.engine.ExamTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:11:40.034Z" hostname="514a1454fba3" time="0.899">
+<testsuite name="org.studyfuse.engine.ExamTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:20:59.370Z" hostname="514a1454fba3" time="1.491">
   <properties/>
-  <testcase name="modelAdditionsCannotLeakIntoDocumentsOnly" classname="org.studyfuse.engine.ExamTest" time="0.103"/>
-  <testcase name="checkpointSignatureSeparatesPoliciesAndSurvivesRestoreMetadataChanges" classname="org.studyfuse.engine.ExamTest" time="0.213"/>
-  <testcase name="reviewStateIsAtomicAndPersistsAcrossReopening" classname="org.studyfuse.engine.ExamTest" time="0.088"/>
-  <testcase name="unsupportedQuoteIsRejectedRatherThanPromotedToFact" classname="org.studyfuse.engine.ExamTest" time="0.04"/>
-  <testcase name="handwrittenTranscriptRemainsUnverified" classname="org.studyfuse.engine.ExamTest" time="0.089"/>
-  <testcase name="truncatedModelOutputDoesNotBecomeNotes" classname="org.studyfuse.engine.ExamTest" time="0.068"/>
-  <testcase name="invalidExamDateIsExplicit" classname="org.studyfuse.engine.ExamTest" time="0.024"/>
-  <testcase name="exactPdfEvidenceIsTaggedWithoutClaimingSemanticVerification" classname="org.studyfuse.engine.ExamTest" time="0.019"/>
-  <testcase name="exportHasSeparateAnswersUncertaintyAndSourceReferences" classname="org.studyfuse.engine.ExamTest" time="0.195"/>
-  <testcase name="optionalExamFieldsAreNotRequiredAndDefaultIsDocumentsOnly" classname="org.studyfuse.engine.ExamTest" time="0.053"/>
+  <testcase name="modelAdditionsCannotLeakIntoDocumentsOnly" classname="org.studyfuse.engine.ExamTest" time="0.089"/>
+  <testcase name="checkpointSignatureSeparatesPoliciesAndSurvivesRestoreMetadataChanges" classname="org.studyfuse.engine.ExamTest" time="0.103"/>
+  <testcase name="reviewStateIsAtomicAndPersistsAcrossReopening" classname="org.studyfuse.engine.ExamTest" time="0.087"/>
+  <testcase name="unsupportedQuoteIsRejectedRatherThanPromotedToFact" classname="org.studyfuse.engine.ExamTest" time="0.078"/>
+  <testcase name="malformedCheckpointAndTraversalAreRejected" classname="org.studyfuse.engine.ExamTest" time="0.018"/>
+  <testcase name="handwrittenTranscriptRemainsUnverified" classname="org.studyfuse.engine.ExamTest" time="0.02"/>
+  <testcase name="examPdfAppendsOriginalVectorPageWithoutRasterReplacement" classname="org.studyfuse.engine.ExamTest" time="0.675"/>
+  <testcase name="truncatedModelOutputDoesNotBecomeNotes" classname="org.studyfuse.engine.ExamTest" time="0.045"/>
+  <testcase name="invalidExamDateIsExplicit" classname="org.studyfuse.engine.ExamTest" time="0.076"/>
+  <testcase name="exactPdfEvidenceIsTaggedWithoutClaimingSemanticVerification" classname="org.studyfuse.engine.ExamTest" time="0.075"/>
+  <testcase name="exportHasSeparateAnswersUncertaintyAndSourceReferences" classname="org.studyfuse.engine.ExamTest" time="0.134"/>
+  <testcase name="optionalExamFieldsAreNotRequiredAndDefaultIsDocumentsOnly" classname="org.studyfuse.engine.ExamTest" time="0.089"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
