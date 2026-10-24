@@ -12,7 +12,9 @@ PyMuPDF independently checks the existing mixed export colours, all 200 long-pag
 
 The workflow includes an Android 15 / API 35 x86_64 Pixel Tablet emulator job. It exercises bundled printed-text OCR, Android PDF rendering, long-image region decoding, the five-region exam pipeline with cancellation/cache recovery, and native AI failure reporting through the separate process. The exam-pipeline test uses an explicitly deterministic inference adapter: it verifies pipeline behavior and **does not test neural handwriting accuracy**. The missing-model test must report a failure and must not produce a substitute answer.
 
-Observed CI results are recorded here and in `validation-evidence/android-runtime.txt` after the run completes. A configured job, compiled instrumentation APK, or successful deterministic test is not represented as a successful real-model benchmark. The [1.1 validation run](https://github.com/atillahan00/studyfuse/actions/runs/40111818167) is historical evidence for its own commit only.
+[GitHub run 40120421099](https://github.com/atillahan00/studyfuse/actions/runs/40120421099), for source commit `d7f04a611de932dee50d30cb212f21af6adbcabb`, **completed successfully** on 24 October 2026. Both jobs passed: the build validated **69 JVM/Robolectric tests**, lint and APK assembly; the emulator completed **5 connected tests** and reported `BUILD SUCCESSFUL`. The observed runtime-log excerpt is retained in [android-runtime.txt](validation-evidence/android-runtime.txt). The direct APK is built from this same application source, with ARM64 packaging and the persistent delivery debug key.
+
+A configured job, compiled instrumentation APK, or successful deterministic test is not represented as a successful real-model benchmark. The [1.1 validation run](https://github.com/atillahan00/studyfuse/actions/runs/40111818167) is historical evidence for its own commit only.
 
 ## APK and update identity
 

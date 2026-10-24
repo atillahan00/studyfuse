@@ -1,5 +1,17 @@
-StudyFuse 1.2 Android runtime validation
+StudyFuse 1.2 observed Android runtime validation
 Source commit: d7f04a611de932dee50d30cb212f21af6adbcabb
 Run: https://github.com/atillahan00/studyfuse/actions/runs/40120421099
-Result: in progress; not counted as passed yet.
-Expected connected suite: 5 tests. Deterministic inference is used only to test pipeline behavior, not neural accuracy. No physical MagicPad 2 handwriting/model benchmark is claimed.
+Observed: 2026-10-24 UTC
+Build job: completed / success
+Android runtime job: completed / success
+Emulator: Android 15 / API 35, x86_64 google_apis, Pixel Tablet
+
+Connected-test log excerpt:
+2026-10-24T18:32:11.7174582Z Starting 5 tests on emulator-5554 - 15
+2026-10-24T18:32:18.9167393Z Finished 5 tests on emulator-5554 - 15
+2026-10-24T18:32:19.9130986Z BUILD SUCCESSFUL in 3m 4s
+
+5 connected tests passed. They cover native PDF rendering, long-image region decoding, bundled printed OCR,
+five-region exam generation/cancellation/cache behavior with a deterministic test adapter, and native AI failure reporting.
+The deterministic adapter is not a real-model accuracy test. No physical MagicPad 2, German handwriting, graphs,
+math-solution accuracy, or model inference speed is certified by this workflow.
