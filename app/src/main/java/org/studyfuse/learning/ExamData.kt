@@ -41,16 +41,34 @@ class ExamStore(val project:File) {
         }))
         return digest("exam-v1|${canonical(snapshot)}|${model.digest}|${canonical(config.json())}")
     }
-    fun unit(key:String)=File(root,"units/$key.json")
+    fun unit(key:String):File {require(key.matches(Regex("[0-9a-f]{64}"))){"Geçersiz çalışma kaydı anahtarı"};return File(root,"units/$key.json")}
     fun session():JSONObject?=File(root,"session.json").let{if(it.exists())readJson(it)else null}
     fun saveSession(j:JSONObject)=atomicJson(File(root,"session.json"),j)
     fun review():JSONObject=File(root,"review.json").let{if(it.exists())readJson(it)else JSONObject()}
     @Synchronized fun updateReview(id:String,change:(JSONObject)->Unit){val all=review();val item=all.optJSONObject(id) ?: JSONObject();change(item);all.put(id,item);atomicJson(File(root,"review.json"),all)}
     fun currentUnits(signature:String):List<JSONObject> {
         val session=session() ?: return emptyList();if(session.optString("signature")!=signature)return emptyList()
-        return session.getJSONArray("units").let{a->(0 until a.length()).mapNotNull{index->val f=unit(a.getString(index));if(f.exists())readJson(f)else null}}
+        return session.getJSONArray("units").let{a->(0 until a.length()).mapNotNull{index->val key=a.getString(index);val f=unit(key);if(f.exists())validateUnit(readJson(f),key)else null}}
     }
     companion object {val execution=Mutex()}
+}
+
+fun validateUnit(j:JSONObject,key:String):JSONObject {
+    require(j.getString("key")==key && j.getString("status") in setOf("FAILED","REVIEW")){"Bozuk çalışma kaydı; analizi yeniden başlatın"}
+    require(j.getInt("page")>0 && j.getInt("region") in 0..4)
+    for(field in listOf("sourceId","sourceName","section"))j.getString(field)
+    val bounds=j.getJSONArray("bounds");require(bounds.length()==4)
+    val values=(0..3).map{bounds.getDouble(it)};require(values.all{it.isFinite() && it in 0.0..1.0} && values[0]<values[2] && values[1]<values[3])
+    val items=j.getJSONArray("items")
+    for(item in items.objects()) {
+        require(item.getString("id").matches(Regex("[0-9a-f]{64}")))
+        require(item.getString("origin") in setOf("document","ai_added"))
+        for(field in listOf("kind","question","answer","evidence","basis"))item.getString(field)
+    }
+    if(j.getString("status")=="REVIEW"){
+        j.getString("transcription");j.getString("observations");j.getJSONArray("uncertainties");j.getJSONArray("rejected")
+    }else j.getString("error")
+    return j
 }
 
 object ExamResponse {

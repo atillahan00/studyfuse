@@ -65,7 +65,7 @@ class ExamCompiler(private val context:Context,private val store:ExamStore,priva
                         val key=digest("$signature|$page|$regionIndex");keys.put(key);store.saveSession(manifest)
                         progress(done,total,"${source.getString("fileName")} · PDF $page · bölge ${regionIndex+1}/${regions.size}")
                         val checkpoint=store.unit(key)
-                        val cached=runCatching{readJson(checkpoint)}.getOrNull()
+                        val cached=runCatching{validateUnit(readJson(checkpoint),key)}.getOrNull()
                         if(cached?.optString("key")==key && cached.optString("status")=="REVIEW"){done++;continue}
                         val unit=JSONObject().put("key",key).put("page",page).put("sourceId",source.getString("sourceId"))
                             .put("sourceName",source.getString("fileName")).put("section",source.getString("section"))

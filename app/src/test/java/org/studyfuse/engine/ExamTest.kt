@@ -41,4 +41,20 @@ class ExamTest {
         val md=ExamExport.markdown(store,session,listOf(unit),JSONObject());assertTrue(md.indexOf("## Aktif hatırlama")<md.indexOf("## Ayrı yanıt anahtarı"));assertTrue(md.contains("PDF 7"));assertTrue(md.contains("İNCELENMEMİŞ"));assertTrue(md.contains("Handschrift"))
         val context=ApplicationProvider.getApplicationContext<StudyFuseApp>();val files=ExamExport.write(context,store,session,listOf(unit));assertTrue(files.all{it.length()>0});loadPdf(files.first(),store.root).use{assertTrue(it.numberOfPages>0)}
     }
+    @Test fun malformedCheckpointAndTraversalAreRejected(){val store=ExamStore(root())
+        try{store.unit("../../settings");fail("Traversal accepted")}catch(_:IllegalArgumentException){}
+        try{validateUnit(JSONObject().put("key","a").put("status","REVIEW"),"a");fail("Malformed checkpoint accepted")}catch(_:Exception){}
+    }
+    @Test fun examPdfAppendsOriginalVectorPageWithoutRasterReplacement(){
+        val context=ApplicationProvider.getApplicationContext<StudyFuseApp>();val store=ExamStore(root());val original=File(store.project,"original.pdf")
+        newPdf(store.root).use{doc->val page=com.tom_roush.pdfbox.pdmodel.PDPage(com.tom_roush.pdfbox.pdmodel.common.PDRectangle.A4);doc.addPage(page)
+            com.tom_roush.pdfbox.pdmodel.PDPageContentStream(doc,page).use{cs->PdfText(context,doc).draw(cs,"ORIGINAL_DIAGRAM_123",40f,740f);cs.addRect(40f,650f,120f,60f);cs.stroke()};doc.save(original)}
+        val report=File(store.project,"report.json").apply{writeText(JSONObject().put("outputs",JSONArray().put(JSONObject().put("path",original.path))).toString())}
+        val session=JSONObject().put("config",ExamConfig().json()).put("model","test-double").put("files",JSONArray()).put("total",0)
+        val result=ExamExport.write(context,store,session,emptyList(),report).first()
+        loadPdf(result,store.root).use{doc->assertTrue(doc.numberOfPages>=3)
+            val last=doc.getPage(doc.numberOfPages-1);assertTrue(last.contents.bufferedReader().readText().contains(" re"))
+            assertTrue(com.tom_roush.pdfbox.text.PDFTextStripper().getText(doc).contains("ORIGINAL_DIAGRAM_123"))
+        }
+    }
 }

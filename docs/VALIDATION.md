@@ -4,7 +4,7 @@
 
 The project builds with JDK 21.0.2, Gradle 8.13, Android SDK 36, AGP 8.10.1, Kotlin/Compose compiler 2.3.20 and KSP 2.3.9. The local full validation includes `:core:test`, `:app:testDebugUnitTest`, `:app:lintDebug`, `:app:assembleDebug` and `:app:assembleDebugAndroidTest`.
 
-There are **67 JVM/Robolectric tests**, covering the existing PDF/image/text compiler and its 200-band long-page fixture, backup/restore, migrations and tablet UI, plus new learning scheduling/interleaving, source-policy/evidence rejection, unverified visual transcription, model-output parse failure, optional exam details, signature isolation, atomic review persistence, study export, exam-state backup and the actual workshop UI. These are engineering checks, not a handwriting or exam-solution accuracy benchmark. Detailed observed results are retained under `validation-evidence/` when packaged.
+There are **69 JVM/Robolectric tests**, covering the existing PDF/image/text compiler and its 200-band long-page fixture, backup/restore, migrations and tablet UI, plus new learning scheduling/interleaving, source-policy/evidence rejection, unverified visual transcription, model-output parse failure, optional exam details, signature isolation, atomic review persistence, study export, exam-state backup and the actual workshop UI. These are engineering checks, not a handwriting or exam-solution accuracy benchmark. Detailed observed results are retained under `validation-evidence/` when packaged.
 
 PyMuPDF independently checks the existing mixed export colours, all 200 long-page markers including the final band, 29 output pages against the report, and independently visible JPX content. The JPX source remains marked REVIEW by the app's conservative verifier.
 

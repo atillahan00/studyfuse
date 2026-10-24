@@ -8,10 +8,12 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import java.io.File
+import java.util.concurrent.Executors
 
 /** Native execution is confined to a private process; a native abort cannot kill the UI process. */
 class LocalAiService:Service() {
-    private val scope=CoroutineScope(SupervisorJob()+Dispatchers.Default)
+    private val nativeDispatcher=Executors.newSingleThreadExecutor{task->Thread(task,"StudyFuse-local-AI")}.asCoroutineDispatcher()
+    private val scope=CoroutineScope(SupervisorJob()+nativeDispatcher)
     private val queue=Channel<android.os.Message>(Channel.UNLIMITED)
     private var active:Job?=null
     private var engine:Engine?=null
@@ -53,7 +55,7 @@ class LocalAiService:Service() {
         finally{runCatching{request.replyTo.send(android.os.Message.obtain().apply{what=1;arg1=request.arg1;data=result})}}
     }
     override fun onDestroy(){val job=active;scope.cancel();queue.close()
-        CoroutineScope(Dispatchers.Default).launch{job?.join();runCatching{engine?.close()};engine=null}
+        CoroutineScope(nativeDispatcher).launch{try{job?.join();runCatching{engine?.close()};engine=null}finally{nativeDispatcher.close()}}
         super.onDestroy()
     }
 }
