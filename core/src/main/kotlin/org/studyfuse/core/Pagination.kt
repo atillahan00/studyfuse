@@ -31,7 +31,8 @@ data class Layout(val width: Double, val height: Double, val scale: Double, val 
 
 object Pagination {
     fun plan(width: Double, height: Double, settings: ExportSettings,
-             whitespaceRows: List<Double> = emptyList(), minimumScale:Double=0.0): Layout {
+             whitespaceRows: List<Double> = emptyList(), minimumScale:Double=0.0,
+             manualCuts:List<Double> = emptyList()): Layout {
         require(width.isFinite() && height.isFinite() && width > 0 && height > 0)
         val m = settings.margin
         if (settings.pageSize == PageSize.ORIGINAL) {
@@ -55,11 +56,17 @@ object Pagination {
         // This budget depends on available heap, not the number of imported files.
         val estimatedSlices=ceil(width/(tileW*.5))*ceil(height/(tileH*.5))
         val safeSlices=(Runtime.getRuntime().maxMemory()/4096L).coerceAtMost(1_000_000L)
-        require(estimatedSlices.isFinite() && estimatedSlices<=safeSlices) {
+        require(estimatedSlices.isFinite() && estimatedSlices+manualCuts.size*ceil(width/tileW)*2<=safeSlices) {
             "Tuval, aygıtın güvenli sayfalama belleğini aşıyor. Kaynak uygulamada daha küçük PDF bölümlerine ayırın."
         }
         val xs = intervals(width, tileW, overlap)
-        val ys = intervals(height, tileH, overlap, whitespaceRows)
+        require(manualCuts.all {it.isFinite() && it>0 && it<height}) {"Bölme noktaları sayfa içinde olmalıdır"}
+        val boundaries=listOf(0.0)+manualCuts.distinct().sorted()+height
+        val ys=if(manualCuts.isEmpty()) intervals(height,tileH,overlap,whitespaceRows) else
+            boundaries.zipWithNext().flatMap { (a,b) ->
+                val from=max(0.0,a-overlap);val to=b
+                intervals(to-from,tileH,overlap,whitespaceRows.map{it-from}).map{it.first+from to it.second+from}
+            }
         val slices = ys.flatMap { y -> xs.map { x -> Slice(x.first, y.first, x.second, y.second) } }
         return Layout(pw, ph, scale, slices)
     }

@@ -5,6 +5,17 @@ import org.junit.Test
 import kotlin.random.Random
 
 class PaginationTest {
+    @Test fun manualSplitsKeepAllPixelsAndOverlap() {
+        val p=Pagination.plan(1000.0,18000.0,ExportSettings(),manualCuts=listOf(700.0,1400.0,2100.0))
+        assertEquals(700.0,p.slices.first().bottom,1e-5)
+        assertTrue(Pagination.covers(1000.0,18000.0,p.slices))
+        assertTrue(p.slices[1].top<700)
+        assertThrows(IllegalArgumentException::class.java){Pagination.plan(100.0,200.0,ExportSettings(),manualCuts=listOf(300.0))}
+    }
+    @Test fun naturalSortingDoesNotOverflowAndHandlesUnicode() {
+        assertEquals(listOf("Not 1","Not 2","Not 10"),listOf("Not 10","Not 1","Not 2").sortedWith(NaturalOrder))
+        assertTrue(NaturalOrder.compare("öğrenci 9999999999999999999999999","öğrenci 10000000000000000000000000")<0)
+    }
     @Test fun tallOneNoteHasCompleteCoverage() {
         val p = Pagination.plan(1000.0,18000.0, ExportSettings())
         assertTrue(p.slices.size > 10)

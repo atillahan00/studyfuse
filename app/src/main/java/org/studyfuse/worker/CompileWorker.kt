@@ -27,7 +27,7 @@ class CompileWorker(context:Context,params:WorkerParameters):CoroutineWorker(con
             dao.workStatus(projectId,id.toString(),"RUNNING","Hazırlanıyor")
             var lastUpdate=0L
             val settings=SettingsCodec.decode(project.settings)
-            val result=Compiler(applicationContext,run).compile(dao.snapshot(projectId),settings) { p ->
+            val result=Compiler(applicationContext,run,File(app.repository.directory(projectId),"conversion-cache")).compile(dao.snapshot(projectId),settings) { p ->
                 currentCoroutineContext().ensureActive()
                 val now=System.currentTimeMillis()
                 if(now-lastUpdate>300 || p.processed==p.total) {
@@ -38,9 +38,9 @@ class CompileWorker(context:Context,params:WorkerParameters):CoroutineWorker(con
                     setForeground(notification(message))
                 }
             }
-            val published=dao.publish(projectId,id.toString(),if(result.complete) "DONE" else "INCOMPLETE",
+            val published=dao.publish(projectId,id.toString(),if(result.complete) "DONE" else if(result.allSourcesIncluded) "REVIEW" else "INCOMPLETE",
                 JSONArray(result.outputs.map { it.json() }).toString(),result.report.path,
-                "${result.pages} sayfa · ${if(result.complete) "Hazır" else "Eksik / inceleme gerekli"}")
+                "${result.pages} sayfa · ${if(result.complete) "Hazır" else if(result.allSourcesIncluded) "Görsel inceleme gerekli" else "Eksik kaynak var"}")
             if(!published) return Result.failure()
             successful=true
             // The last published generation remains; obsolete runs and intermediate files are removed.

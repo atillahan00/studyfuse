@@ -21,9 +21,14 @@ import java.io.File
 
 @Composable
 fun SourcesPanel(sources:List<Source>,enabled:Boolean,onImport:()->Unit,onFolder:()->Unit,
-    onReplace:(Source)->Unit,model:StudyViewModel,onPreview:(Source)->Unit,onOpen:(File,String)->Unit,modifier:Modifier=Modifier) {
+    onReplace:(Source)->Unit,model:StudyViewModel,onPreview:(Source)->Unit,onOpen:(File,String)->Unit,modifier:Modifier=Modifier,
+    onEditPagination:(Source)->Unit) {
     var rename by remember { mutableStateOf<Source?>(null) }
     var help by remember { mutableStateOf<Source?>(null) }
+    var selecting by remember{mutableStateOf(false)}
+    var selected by remember{mutableStateOf<Set<String>>(emptySet())}
+    var bulkRename by remember{mutableStateOf(false)}
+    val duplicates=remember(sources){sources.groupBy{it.sha256}.filterValues{it.size>1}.keys}
     val order=remember { mutableStateListOf<Source>() }
     var dragging by remember { mutableStateOf<String?>(null) }
     var distance by remember { mutableFloatStateOf(0f) }
@@ -33,6 +38,16 @@ fun SourcesPanel(sources:List<Source>,enabled:Boolean,onImport:()->Unit,onFolder
         Row(horizontalArrangement=Arrangement.spacedBy(10.dp)) {
             FilledTonalButton(onClick=onImport,enabled=enabled) { Icon(Icons.Default.Add,null); Spacer(Modifier.width(6.dp)); Text("Dosyalar") }
             OutlinedButton(onClick=onFolder,enabled=enabled) { Icon(Icons.Default.CreateNewFolder,null); Spacer(Modifier.width(6.dp)); Text("Klasör") }
+        }
+        FlowRow(horizontalArrangement=Arrangement.spacedBy(4.dp)) {
+            TextButton(onClick={model.naturalSort()},enabled=enabled){Text("Doğal sırala")}
+            TextButton(onClick={selecting=!selecting;selected=emptySet()},enabled=enabled){Text(if(selecting)"Seçimi kapat" else "Toplu seç")}
+            TextButton(onClick={model.undoRemoval()},enabled=enabled){Text("Kaldırmayı geri al")}
+        }
+        if(selecting)FlowRow {
+            TextButton(onClick={selected=sources.map{it.id}.toSet()},enabled=enabled){Text("Tümünü seç (${selected.size})")}
+            TextButton(onClick={bulkRename=true},enabled=enabled && selected.isNotEmpty()){Text("Bölümleri adlandır")}
+            TextButton(onClick={model.bulkRemove(selected);selected=emptySet()},enabled=enabled && selected.isNotEmpty()){Text("Seçilenleri kaldır")}
         }
         Text("Sıralamak için tutup sürükle. Menüdeki oklarla da taşıyabilirsin.",style=MaterialTheme.typography.bodySmall,
             modifier=Modifier.padding(vertical=12.dp),color=MaterialTheme.colorScheme.onSurfaceVariant)
@@ -68,11 +83,14 @@ fun SourcesPanel(sources:List<Source>,enabled:Boolean,onImport:()->Unit,onFolder
                     }.semantics { contentDescription="${order.indexOf(source)+1}. ${source.section}" },
                     colors=CardDefaults.outlinedCardColors(containerColor=if(dragging==source.id) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface)) {
                     Row(Modifier.padding(start=10.dp,top=12.dp,bottom=12.dp,end=4.dp),verticalAlignment=Alignment.CenterVertically) {
+                        if(selecting)Checkbox(source.id in selected,{checked->selected=if(checked)selected+source.id else selected-source.id},enabled=enabled,modifier=Modifier.semantics{contentDescription="Seç: ${source.name}"})
                         Icon(Icons.Default.DragIndicator,"Sürükleyerek sırala",tint=MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(Modifier.width(8.dp))
                         Column(Modifier.weight(1f)) {
                             Text(source.section,fontWeight=FontWeight.SemiBold)
                             Text(source.name,style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
+                            if(source.sha256 in duplicates)Text("Aynı dosyanın başka kopyası var",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.tertiary)
+                            if(source.pagination!="{}")Text("Özel sayfa bölmeleri",style=MaterialTheme.typography.labelSmall)
                             Text("${order.indexOf(source)+1} · ${format.name} · ${sizeLabel(source.bytes)}"+
                                 if(source.replacement) " · PDF kopyası" else "",style=MaterialTheme.typography.labelSmall)
                             if(external) TextButton(onClick={help=source},contentPadding=PaddingValues(0.dp)) {
@@ -84,6 +102,7 @@ fun SourcesPanel(sources:List<Source>,enabled:Boolean,onImport:()->Unit,onFolder
                             IconButton(onClick={expanded=true},enabled=enabled) {Icon(Icons.Default.MoreVert,"Kaynak işlemleri")}
                             DropdownMenu(expanded=expanded,onDismissRequest={expanded=false}) {
                                 DropdownMenuItem(text={Text("Bölüm adını değiştir")},onClick={expanded=false;rename=source})
+                                if(format in setOf(Format.PDF,Format.IMAGE))DropdownMenuItem(text={Text("Sayfa bölmelerini düzenle")},onClick={expanded=false;onEditPagination(source)})
                                 DropdownMenuItem(text={Text("Yukarı taşı")},enabled=order.indexOf(source)>0,onClick={
                                     val i=order.indexOf(source);val copy=order.toMutableList();copy.add(i-1,copy.removeAt(i));model.reorder(copy);expanded=false
                                 })
@@ -101,6 +120,7 @@ fun SourcesPanel(sources:List<Source>,enabled:Boolean,onImport:()->Unit,onFolder
         }
     }
     rename?.let { s -> EditDialog("Bölüm adı",s.section,{rename=null}) {model.renameSource(s,it)} }
+    if(bulkRename)EditDialog("Toplu bölüm adı öneki","Biyoloji",{bulkRename=false}){model.bulkRename(selected,it);selected=emptySet()}
     help?.let { s -> AlertDialog(onDismissRequest={help=null},title={Text("${Format.valueOf(s.format).name} dönüştürme")},
         text={Text(Format.valueOf(s.format).explanation+".\n\n"+
             "Kaynak uygulamada tüm sayfaları / slaytları PDF olarak dışa aktar. Sonra bu kaynağın menüsünden PDF ile değiştir seçeneğini kullan. " +

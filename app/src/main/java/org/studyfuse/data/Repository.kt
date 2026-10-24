@@ -9,6 +9,7 @@ import java.security.MessageDigest
 import java.util.UUID
 import kotlinx.coroutines.*
 import org.studyfuse.core.Format
+import org.studyfuse.core.NaturalOrder
 
 class Repository(val context:Context,val dao:StudyDao) {
     fun directory(id:String)=File(context.filesDir,"projects/$id").apply { mkdirs() }
@@ -65,7 +66,7 @@ class Repository(val context:Context,val dao:StudyDao) {
             val next=queue.removeFirst()
             if(!visited.add(next.uri.toString())) continue
             if(next.isDirectory) {
-                try { queue.addAll(next.listFiles().sortedBy { it.name }) }
+                try { check(next.canRead()) {"Klasör okuma izni yok"};queue.addAll(next.listFiles().sortedWith {a,b->NaturalOrder.compare(a.name ?: "",b.name ?: "")}) }
                 catch(e:Exception) { failures+="${next.name}: ${e.message}" }
             } else if(next.isFile) {
                 onProgress(next.name ?: "Dosya")

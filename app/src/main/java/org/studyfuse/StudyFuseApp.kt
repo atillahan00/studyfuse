@@ -5,8 +5,10 @@ import androidx.room.Room
 import org.studyfuse.data.*
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 
-class StudyFuseApp:Application() {
-    val database by lazy { Room.databaseBuilder(this,StudyDatabase::class.java,"studyfuse.db").build() }
+class StudyFuseApp:Application(),androidx.work.Configuration.Provider {
+    override val workManagerConfiguration:androidx.work.Configuration
+        get()=androidx.work.Configuration.Builder().build()
+    val database by lazy { Room.databaseBuilder(this,StudyDatabase::class.java,"studyfuse.db").addMigrations(StudyDatabase.MIGRATION_1_2).build() }
     val repository by lazy { Repository(this,database.dao()) }
     override fun onCreate() {
         super.onCreate()

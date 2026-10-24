@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.core.PaginationTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-24T14:59:17.655Z" hostname="514a1454fba3" time="0.414">
+<testsuite name="org.studyfuse.core.PaginationTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-24T16:02:44.967Z" hostname="514a1454fba3" time="0.458">
   <properties/>
-  <testcase name="normalPageIsOneSlice" classname="org.studyfuse.core.PaginationTest" time="0.025"/>
-  <testcase name="coverageRejectsMissingStrip" classname="org.studyfuse.core.PaginationTest" time="0.053"/>
+  <testcase name="normalPageIsOneSlice" classname="org.studyfuse.core.PaginationTest" time="0.011"/>
+  <testcase name="naturalSortingDoesNotOverflowAndHandlesUnicode" classname="org.studyfuse.core.PaginationTest" time="0.085"/>
+  <testcase name="coverageRejectsMissingStrip" classname="org.studyfuse.core.PaginationTest" time="0.008"/>
   <testcase name="pathologicalCanvasesFailBeforeUnboundedAllocation" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
-  <testcase name="randomizedCoverageAndBounds" classname="org.studyfuse.core.PaginationTest" time="0.307"/>
-  <testcase name="rejectsInvalidDimensions" classname="org.studyfuse.core.PaginationTest" time="0.0"/>
+  <testcase name="randomizedCoverageAndBounds" classname="org.studyfuse.core.PaginationTest" time="0.292"/>
+  <testcase name="rejectsInvalidDimensions" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
   <testcase name="tallOneNoteHasCompleteCoverage" classname="org.studyfuse.core.PaginationTest" time="0.0"/>
-  <testcase name="knownFormatsAndUnicodeNames" classname="org.studyfuse.core.PaginationTest" time="0.011"/>
+  <testcase name="knownFormatsAndUnicodeNames" classname="org.studyfuse.core.PaginationTest" time="0.007"/>
   <testcase name="originalRetainsDimensionsAndBorder" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
   <testcase name="wideCanvasTilesHorizontally" classname="org.studyfuse.core.PaginationTest" time="0.0"/>
   <testcase name="naturalWhitespaceNeverOverflows" classname="org.studyfuse.core.PaginationTest" time="0.0"/>
-  <testcase name="smallTextSelectsLandscapeBeforeHorizontalTiling" classname="org.studyfuse.core.PaginationTest" time="0.003"/>
+  <testcase name="smallTextSelectsLandscapeBeforeHorizontalTiling" classname="org.studyfuse.core.PaginationTest" time="0.0"/>
   <testcase name="overlapAndOrdering" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
+  <testcase name="manualSplitsKeepAllPixelsAndOverlap" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

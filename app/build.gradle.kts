@@ -11,11 +11,22 @@ android {
         applicationId = "org.studyfuse"
         minSdk = 29
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures { compose = true; buildConfig = true }
+    // Production signing is opt-in and external: private keys/passwords never enter the repository.
+    val signingStore=providers.environmentVariable("STUDYFUSE_SIGNING_STORE").orNull
+    if(!signingStore.isNullOrBlank()) {
+        val production=signingConfigs.create("studyfuseProduction") {
+            storeFile=file(signingStore)
+            storePassword=providers.environmentVariable("STUDYFUSE_STORE_PASSWORD").get()
+            keyAlias=providers.environmentVariable("STUDYFUSE_KEY_ALIAS").get()
+            keyPassword=providers.environmentVariable("STUDYFUSE_KEY_PASSWORD").get()
+        }
+        buildTypes.getByName("release").signingConfig=production
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

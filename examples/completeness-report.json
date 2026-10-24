@@ -2,6 +2,9 @@
   "schemaVersion": 1,
   "complete": true,
   "mode": "ARCHIVE",
+  "allSourcesIncluded": true,
+  "verificationRequired": false,
+  "reusedSources": 0,
   "settings": {
     "mode": "ARCHIVE",
     "pageSize": "AUTO",
@@ -22,7 +25,7 @@
   "verification": "SHA-256, tam geometrik kapsama, çıktı sayfa sayısı ve güvenli / desteklenen sayfaların sınırlı çözünürlükte işlenebilirliği. Kodlayıcı veya bellek nedeniyle raster denetimi atlanan kaynaklar REVIEW olarak raporlanır. Görsel eşdeğerliğin veya kaynak uygulama dışa aktarımının eksiksizliğinin kanıtı değildir.",
   "files": [
     {
-      "sourceId": "8100c7ab-906b-439f-b962-4b073fd13196",
+      "sourceId": "6fece57d-19da-4114-b72a-2d06b83a2de7",
       "fileName": "onenote-long.pdf",
       "section": "onenote-long",
       "status": "OK",
@@ -33,6 +36,9 @@
       "generatedContentPages": 28,
       "startPage": 1,
       "endPage": 28,
+      "visualPages": 28,
+      "contentStart": 1,
+      "cached": false,
       "warnings": [
         "Sayfa 1: 28 örtüşmeli bölüme ayrıldı. Bazı PDF metin çıkarıcıları kırpma sınırları dışındaki vektör metnini tekrarlayabilir; görsel sayfa sınırlarını esas alın."
       ],
@@ -469,9 +475,9 @@
       "startPage": 1,
       "endPage": 29,
       "bytes": 219456,
-      "sha256": "cdf93f1bbcac31f8af7b1df0f24d52825157534983a187df8c6ad48ee52a194c"
+      "sha256": "419fba74acc3c7ad0858b6a2c7d46b254cb42790576cd6bb82ae875d76f0d5b0"
     }
   ],
   "fullPdf": "StudyFuse-example.pdf",
-  "createdUtc": "2026-10-24T15:01:46.836456446Z"
+  "createdUtc": "2026-10-24T16:18:54.699612974Z"
 }

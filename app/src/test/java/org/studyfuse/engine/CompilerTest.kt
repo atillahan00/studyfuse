@@ -27,6 +27,35 @@ import kotlin.math.*
 @Config(sdk=[34],application=StudyFuseApp::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class CompilerTest {
+    @Test fun repeatedExportsReuseVerifiedSourceAndSettingsInvalidateCache()=runBlocking {
+        val s=source(pdf("cache.pdf","CACHE_SOURCE"))
+        compile(listOf(s))
+        val second=Compiler(context,File(root,"second").apply{mkdirs()}).compile(listOf(s),ExportSettings(mode=ExportMode.ARCHIVE))
+        assertEquals(1,report(second).getInt("reusedSources"))
+        assertTrue(text(second.outputs.single().file).contains("CACHE_SOURCE"))
+        val changed=Compiler(context,File(root,"third").apply{mkdirs()}).compile(listOf(s),ExportSettings(mode=ExportMode.ARCHIVE,margin=36.0))
+        assertEquals(0,report(changed).getInt("reusedSources"))
+    }
+    @Test fun damagedCacheIsRebuiltInsteadOfBeingPublished()=runBlocking {
+        val s=source(pdf("cache.pdf","REBUILD"));compile(listOf(s))
+        File(root,"conversion-cache").walkTopDown().filter{it.name=="content.pdf"}.forEach{it.writeText("corrupt")}
+        val next=Compiler(context,File(root,"next").apply{mkdirs()}).compile(listOf(s),ExportSettings(mode=ExportMode.ARCHIVE))
+        assertTrue(next.complete);assertEquals(0,report(next).getInt("reusedSources"))
+    }
+    @Test fun companionFiltersOffPageTextAndDeduplicatesOverlap()=runBlocking {
+        val f=File(root,"long-text.pdf")
+        newPdf(root).use{doc->val page=PDPage(PDRectangle(300f,2000f));doc.addPage(page)
+            val writer=PdfText(context,doc)
+            PDPageContentStream(doc,page).use{cs->writer.draw(cs,"ONLY_TOP",50f,1950f);writer.draw(cs,"OVERLAP_TEXT",50f,1210f);writer.draw(cs,"ONLY_BOTTOM",50f,50f)}
+            doc.save(f)
+        }
+        val c=compile(listOf(source(f)))
+        val notes=File(c.report.parentFile,"StudyFuse-notlar.md").readText()
+        for(value in listOf("ONLY_TOP","ONLY_BOTTOM","OVERLAP_TEXT"))assertEquals("Duplicate $value",1,Regex(value).findAll(notes).count())
+        val index=JSONArray(File(c.report.parentFile,"StudyFuse-index.json").readText())
+        assertTrue(index.length()>1)
+        assertTrue(PageText.matches("IŞIK, İSTANBUL, Straße","ışık"));assertTrue(PageText.matches("Straße","STRASSE"))
+    }
     private lateinit var context:Context
     private lateinit var root:File
     @Before fun setup() {

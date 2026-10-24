@@ -10,30 +10,31 @@
 
    https://goo.gle/TrustAllX509TrustManager
 
-/workspace/studyfuse/app/src/main/AndroidManifest.xml:8: Warning: The attribute android:dataExtractionRules only applies for Android 12 and higher; since minSdkVersion is API 29 you should also set android:fullBackupContent [DataExtractionRules]
-        android:dataExtractionRules="@xml/data_extraction_rules"
-                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/studyfuse/app/src/main/java/org/studyfuse/data/ProjectArchive.kt:65: Warning: Consider also using StorageManager#getAllocatableBytes and allocateBytes which will consider clearable cached data [UsableSpace]
+                    check(info.getLong("bytes")<dir.usableSpace-16*1024*1024) {"Yedek için yeterli boş alan yok"}
+                                                    ~~~~~~~~~~~
 
-   Explanation for issues of type "DataExtractionRules":
-   Before Android 12, the attributes android:allowBackup and
-   android:fullBackupContent were used to configure all forms of backup,
-   including cloud backups, device-to-device transfers and adb backup.
+   Explanation for issues of type "UsableSpace":
+   When you need to allocate disk space for large files, consider using the
+   new allocateBytes(FileDescriptor, long) API, which will automatically clear
+   cached files belonging to other apps (as needed) to meet your request.
 
-   In Android 12 and higher, these attributes have been deprecated and will
-   only apply to cloud backups. You should instead use the attribute
-   android:dataExtractionRules, specifying an @xml resource that configures
-   which files to back up, for cloud backups and for device-to-device
-   transfers, separately. If your minSdkVersion supports older versions,
-   you'll still want to specify an android:fullBackupContent resource if the
-   default behavior is not right for your app.
+   When deciding if the device has enough disk space to hold your new data,
+   call getAllocatableBytes(UUID) instead of using getUsableSpace(), since the
+   former will consider any cached data that the system is willing to clear on
+   your behalf.
 
-   https://developer.android.com/about/versions/12/backup-restore#xml-changes
-   https://goo.gle/DataExtractionRules
+   Note that these methods require API level 26. If your app is running on
+   older devices, you will probably need to use both APIs, conditionally
+   switching on Build.VERSION.SDK_INT. Lint only looks in the same compilation
+   unit to see if you are already using both APIs, so if it warns even though
+   you are already using the new API, consider moving the calls to the same
+   file or suppressing the warning.
 
-/workspace/studyfuse/app/src/main/java/org/studyfuse/ui/PreviewDialog.kt:46: Warning: Use the KTX function createBitmap instead? [UseKtx]
-                            val bitmap=Bitmap.createBitmap(max(1,(p.width*s).roundToInt()),max(1,(p.height*s).roundToInt()),Bitmap.Config.ARGB_8888)
-                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/workspace/studyfuse/app/src/main/java/org/studyfuse/ui/StudyViewModel.kt:34: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
+/workspace/studyfuse/app/src/main/java/org/studyfuse/ui/DocumentView.kt:31: Warning: Use the KTX function createBitmap instead? [UseKtx]
+        val bitmap=Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888)
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/studyfuse/app/src/main/java/org/studyfuse/ui/StudyViewModel.kt:38: Warning: Use the KTX extension function SharedPreferences.edit instead? [UseKtx]
     fun theme(mode:Int) { dark.value=mode; app.getSharedPreferences("ui",0).edit().putInt("theme",mode).apply() }
                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

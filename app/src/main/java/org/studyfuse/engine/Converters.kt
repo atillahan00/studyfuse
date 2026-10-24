@@ -18,6 +18,7 @@ import java.nio.charset.CodingErrorAction
 import kotlinx.coroutines.*
 import org.studyfuse.core.*
 import org.studyfuse.data.Source
+import org.studyfuse.data.PageCuts
 import kotlin.math.*
 
 interface ConversionAdapter {
@@ -88,7 +89,7 @@ class PdfAdapter(private val context:Context,private val scratch:File):Conversio
                     }
                     val textSize=textSizes[index]?.times(unit)
                     val minScale=if(textSize!=null && settings.pageSize!=PageSize.ORIGINAL) (8.0/textSize).coerceAtMost(4.0) else 0.0
-                    val plan=Pagination.plan(w,h,settings,whitespace,minScale)
+                    val plan=Pagination.plan(w,h,settings,whitespace,minScale,PageCuts.read(source.pagination,index+1))
                     if(textSize!=null && plan.scale*textSize<8.0)
                         result.warnings+="Sayfa ${index+1}: küçük metin algılandı (${(textSize*plan.scale).toInt()} pt). Önizlemede yakınlaştırarak denetleyin."
                     if(plan.slices.size>1) result.warnings+="Sayfa ${index+1}: ${plan.slices.size} örtüşmeli bölüme ayrıldı. Bazı PDF metin çıkarıcıları kırpma sınırları dışındaki vektör metnini tekrarlayabilir; görsel sayfa sınırlarını esas alın."
@@ -186,7 +187,7 @@ class ImageAdapter(private val scratch:File):ConversionAdapter {
             val whitespace=runCatching { image.whitespaceRows() }.getOrElse {
                 result.warnings+="Boşluk analizi yapılamadı; örtüşmeli bölme kullanıldı."; emptyList()
             }
-            val plan=Pagination.plan(w,h,settings,whitespace)
+            val plan=Pagination.plan(w,h,settings,whitespace,manualCuts=PageCuts.read(source.pagination,1))
             check(Pagination.covers(w,h,plan.slices))
             newPdf(scratch).use { output ->
                 for((i,slice) in plan.slices.withIndex()) {

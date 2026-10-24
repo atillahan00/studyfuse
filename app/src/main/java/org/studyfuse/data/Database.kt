@@ -1,6 +1,8 @@
 package org.studyfuse.data
 
 import androidx.room.*
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName="projects")
@@ -29,7 +31,9 @@ data class Source(
     val sha256: String,
     val format: String,
     val replacement: Boolean = false,
-    val activeSha256:String = sha256
+    val activeSha256:String = sha256,
+    @ColumnInfo(defaultValue="'{}'") val pagination:String = "{}",
+    @ColumnInfo(defaultValue="0") val removedAt:Long = 0
 )
 
 @Dao
@@ -37,8 +41,9 @@ abstract class StudyDao {
     @Query("SELECT * FROM projects ORDER BY created DESC") abstract fun projects(): Flow<List<Project>>
     @Query("SELECT * FROM projects WHERE id=:id") abstract fun watchProject(id:String): Flow<Project?>
     @Query("SELECT * FROM projects WHERE id=:id") abstract suspend fun project(id:String): Project?
-    @Query("SELECT * FROM sources WHERE projectId=:id ORDER BY position,id") abstract fun sources(id:String): Flow<List<Source>>
-    @Query("SELECT * FROM sources WHERE projectId=:id ORDER BY position,id") abstract suspend fun snapshot(id:String): List<Source>
+    @Query("SELECT * FROM sources WHERE projectId=:id AND removedAt=0 ORDER BY position,id") abstract fun sources(id:String): Flow<List<Source>>
+    @Query("SELECT * FROM sources WHERE projectId=:id AND removedAt=0 ORDER BY position,id") abstract suspend fun snapshot(id:String): List<Source>
+    @Query("SELECT * FROM sources WHERE projectId=:id AND removedAt>0 ORDER BY removedAt DESC") abstract suspend fun trash(id:String): List<Source>
     @Query("SELECT * FROM sources WHERE id=:id") abstract suspend fun source(id:String):Source?
     @Insert abstract suspend fun addProject(project:Project)
     @Update abstract suspend fun updateProject(project:Project)
@@ -46,6 +51,15 @@ abstract class StudyDao {
     @Update abstract suspend fun updateSource(source:Source)
     @Delete abstract suspend fun deleteSource(source:Source)
     @Delete abstract suspend fun deleteProject(project:Project)
+    @Transaction open suspend fun restoreProject(project:Project,sources:List<Source>) {
+        addProject(project);sources.forEach {addSource(it)}
+    }
+    @Transaction open suspend fun editSources(projectId:String,sources:List<Source>) {
+        val p=project(projectId) ?: error("Proje bulunamadı")
+        check(p.status !in setOf("RUNNING","QUEUED")) {"İşlem sürüyor"}
+        sources.forEach {check(it.projectId==projectId);updateSource(it)}
+        updateProject(p.copy(status="READY",output=null,report=null,message="",workId=null))
+    }
     @Transaction open suspend fun commitImport(source:Source,replacing:Boolean) {
         val p=project(source.projectId) ?: error("Proje bulunamadı")
         check(p.status !in setOf("RUNNING","QUEUED")) {"İşlem sırasında kaynaklar değiştirilemez"}
@@ -67,5 +81,15 @@ abstract class StudyDao {
     }
 }
 
-@Database(entities=[Project::class,Source::class],version=1,exportSchema=false)
-abstract class StudyDatabase:RoomDatabase() { abstract fun dao():StudyDao }
+@Database(entities=[Project::class,Source::class],version=2,exportSchema=false)
+abstract class StudyDatabase:RoomDatabase() {
+    abstract fun dao():StudyDao
+    companion object {
+        val MIGRATION_1_2=object:Migration(1,2) {
+            override fun migrate(db:SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE sources ADD COLUMN pagination TEXT NOT NULL DEFAULT '{}'")
+                db.execSQL("ALTER TABLE sources ADD COLUMN removedAt INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+    }
+}

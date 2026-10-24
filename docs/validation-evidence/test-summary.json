@@ -1,19 +1,19 @@
 [
   {
     "name": "org.studyfuse.core.PaginationTest",
-    "tests": "12",
+    "tests": "14",
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "0.414"
+    "time": "0.458"
   },
   {
     "name": "org.studyfuse.engine.UiTest",
-    "tests": "2",
+    "tests": "3",
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "3.374"
+    "time": "4.124"
   },
   {
     "name": "org.studyfuse.engine.RepositoryTest",
@@ -21,14 +21,30 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "2.893"
+    "time": "0.205"
   },
   {
-    "name": "org.studyfuse.engine.CompilerTest",
-    "tests": "15",
+    "name": "org.studyfuse.engine.ArchiveTest",
+    "tests": "6",
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "22.549"
+    "time": "10.353"
+  },
+  {
+    "name": "org.studyfuse.engine.MigrationTest",
+    "tests": "1",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "0.081"
+  },
+  {
+    "name": "org.studyfuse.engine.CompilerTest",
+    "tests": "18",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "19.053"
   }
 ]

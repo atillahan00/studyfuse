@@ -6,3 +6,5 @@ work/
 *.jks
 .idea/
 *.iml
+*.keystore
+*.p12

@@ -26,7 +26,7 @@ class UiTest {
     }
     @Test fun newProjectAndRenameAreFunctional() {
         ui.onNodeWithText("Yeni proje").performClick()
-        ui.waitUntil(15000) {ui.onAllNodesWithText("Yeni çalışma").fetchSemanticsNodes().isNotEmpty()}
+        ui.waitUntil(15000) {ui.onAllNodesWithText("Proje yedeği kaydet").fetchSemanticsNodes().isNotEmpty()}
         ui.onNodeWithText("Dosyalar").assertExists()
         ui.onNodeWithText("Klasör").assertExists()
         ui.onNodeWithText("PDF oluştur").assertIsNotEnabled()
@@ -35,6 +35,26 @@ class UiTest {
         ui.onNodeWithText("Kaydet").performClick()
         ui.waitUntil(10000) {ui.onAllNodesWithText("Biyoloji — Hücre").fetchSemanticsNodes().isNotEmpty()}
         screenshot("tablet-project.png")
+    }
+    @Test fun bulkRemovalCanBeUndoneAndBackupRestoreIsVisible() {
+        ui.onNodeWithText("Yedek geri yükle").assertExists()
+        ui.onNodeWithText("Yeni proje").performClick()
+        ui.waitUntil(15000){ui.onAllNodesWithText("Proje yedeği kaydet").fetchSemanticsNodes().isNotEmpty()}
+        lateinit var model:org.studyfuse.ui.StudyViewModel
+        ui.runOnIdle{model=org.robolectric.util.ReflectionHelpers.callInstanceMethod(ui.activity,"getModel")}
+        val input=File(ui.activity.filesDir,"projects/ui-input/Not 2.txt").apply{parentFile!!.mkdirs();writeText("ğ ü ş ı ö ç")}
+        org.robolectric.util.ReflectionHelpers.getStaticField<MutableMap<String,Any>>(androidx.core.content.FileProvider::class.java,"sCache").clear()
+        val uri=androidx.core.content.FileProvider.getUriForFile(ui.activity,"org.studyfuse.files",input)
+        ui.runOnUiThread{model.importUris(listOf(uri))}
+        ui.waitUntil(15000){ui.onAllNodesWithText("Not 2.txt").fetchSemanticsNodes().isNotEmpty()}
+        ui.onNodeWithText("Toplu seç").performClick()
+        ui.onNodeWithContentDescription("Seç: Not 2.txt").performClick()
+        ui.onNodeWithText("Seçilenleri kaldır").performClick()
+        ui.waitUntil(10000){ui.onAllNodesWithText("Notlarını buraya ekle").fetchSemanticsNodes().isNotEmpty()}
+        ui.onNodeWithText("Kaldırmayı geri al").performClick()
+        ui.waitUntil(10000){ui.onAllNodesWithText("Not 2.txt").fetchSemanticsNodes().isNotEmpty()}
+        ui.onNodeWithText("Notlarını buraya ekle").assertDoesNotExist()
+        ui.onNodeWithText("Proje yedeği kaydet").assertExists()
     }
     private fun screenshot(name:String) {
         ui.waitForIdle()

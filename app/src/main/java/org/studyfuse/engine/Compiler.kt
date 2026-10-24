@@ -17,10 +17,12 @@ import org.studyfuse.data.readPrefix
 import java.io.File
 import kotlin.math.*
 
-data class Compilation(val outputs:List<Artifact>,val report:File,val reportText:File,val complete:Boolean,val pages:Int)
+data class Compilation(val outputs:List<Artifact>,val report:File,val reportText:File,val complete:Boolean,val pages:Int,val allSourcesIncluded:Boolean=complete)
 data class ProcessingProgress(val file:String,val stage:String,val processed:Int,val total:Int)
 
-class Compiler(private val context:Context,private val runDirectory:File) {
+class Compiler(private val context:Context,private val runDirectory:File,
+    cacheDirectory:File=File(runDirectory.parentFile,"conversion-cache")) {
+    private val cache=ConversionCache(cacheDirectory)
     private val scratch=File(runDirectory,"scratch").apply { mkdirs() }
     private val adapters:Map<Format,ConversionAdapter> = Format.entries.associateWith {
         when(it) {
@@ -47,11 +49,16 @@ class Compiler(private val context:Context,private val runDirectory:File) {
                     check(sha256(original)==source.sha256) { "Orijinal dosya özeti değişti; bütünlük denetimi başarısız" }
                     result.activeSha256=sha256(active)
                     check(result.activeSha256==source.activeSha256) { "Kullanılan PDF / görüntü özeti değişti; bütünlük denetimi başarısız" }
-                    if(source.replacement) result.warnings+="Kaynak uygulamadan alınan PDF kullanıldı. PDF'nin orijinalin tüm içeriğini kapsadığı kullanıcı tarafından denetlenmelidir."
                     val format=Format.detect(source.name,active.inputStream().use { it.readPrefix(32) })
+                    val cacheKey=cache.key(source,settings)
+                    if(cache.restore(cacheKey,content,result)) {
+                        progress(ProcessingProgress(source.name,"Doğrulanmış önbellekten devam",i,sources.size))
+                    } else {
+                    if(source.replacement) result.warnings+="Kaynak uygulamadan alınan PDF kullanıldı. PDF'nin orijinalin tüm içeriğini kapsadığı kullanıcı tarafından denetlenmelidir."
                     adapters.getValue(format).convert(source,content,settings,result) { stage ->
                         ensureActive(); progress(ProcessingProgress(source.name,stage,i,sources.size))
                     }
+                    result.visualPages=result.generatedPages
                     val qualityWarnings=verify(content,result.generatedPages)
                     if(qualityWarnings.isNotEmpty()) {result.status="REVIEW";result.warnings+=qualityWarnings}
                     if(settings.ocr) {
@@ -60,9 +67,12 @@ class Compiler(private val context:Context,private val runDirectory:File) {
                         } } catch(e:CancellationException) { throw e }
                         catch(e:Exception) { result.warnings+="OCR eklenemedi: ${e.message}. Orijinal görsel sayfalar korundu." }
                     }
+                    // Cache publication is optional; a full disk must not discard a successful conversion.
+                    runCatching {cache.save(cacheKey,content,result)}.onFailure {result.warnings+="Önbellek kaydedilemedi: ${it.message}"}
+                    }
                 } catch(e:CancellationException) { throw e }
                 catch(e:Exception) {
-                    content.delete(); result.generatedPages=0; result.mappings.clear()
+                    content.delete(); result.generatedPages=0; result.visualPages=0;result.mappings.clear()
                     result.status=if(e is RequiresConversion) "FALLBACK" else "FAILED"
                     result.warnings+=(e.message ?: e.javaClass.simpleName)
                     result.generatedPages=metadataPdf(content,
@@ -86,6 +96,7 @@ class Compiler(private val context:Context,private val runDirectory:File) {
             }
             ensureActive()
             val complete=prepared.all { it.result.status=="OK" }
+            val allIncluded=prepared.none {it.result.status in setOf("FAILED","FALLBACK")}
             val toc=File(scratch,"toc.pdf")
             var tocPages=0
             if(settings.mode==ExportMode.AI_STUDY) {
@@ -94,17 +105,19 @@ class Compiler(private val context:Context,private val runDirectory:File) {
             var next=tocPages+1
             for(p in prepared) {
                 p.result.start=next; p.result.end=next+p.dividerPages+p.result.generatedPages-1
+                p.result.contentStart=next+p.dividerPages
                 p.result.mappings.replaceAll { it.copy(outputPage=it.outputPage+next+p.dividerPages-1) }
                 next=p.result.end+1
             }
             if(tocPages>0) check(metadataPdf(toc,tocText(prepared,true))==tocPages) { "İçindekiler sayfa sayısı kararlı değil" }
+            AiCompanion(context,scratch).write(runDirectory,prepared.map{it.result to it.content},settings.margin,next-1)
             val reportText=File(runDirectory,"StudyFuse-rapor.txt")
             var human=humanReport(prepared.map { it.result },complete,settings)
             val reportPdf=File(scratch,"report.pdf");val reportPages=metadataPdf(reportPdf,human)
             human=human.replace("[OUTPUT_PAGES]",(next-1+reportPages).toString())
             check(metadataPdf(reportPdf,human)==reportPages) {"Rapor sayfa sayısı kararlı değil"}
             reportText.writeText(human)
-            val assembled=File(runDirectory,if(complete) "StudyFuse.pdf" else "StudyFuse-EKSIK.pdf")
+            val assembled=File(runDirectory,if(complete) "StudyFuse.pdf" else if(allIncluded) "StudyFuse-INCELEME.pdf" else "StudyFuse-EKSIK.pdf")
             progress(ProcessingProgress("PDF","Birleştirme ve sayfa numaraları",sources.size,sources.size))
             newPdf(scratch).use { target ->
                 val merger=PDFMergerUtility()
@@ -131,17 +144,21 @@ class Compiler(private val context:Context,private val runDirectory:File) {
                         writer.draw(cs,"${index+1} / ${target.numberOfPages}",24f,8f,8f)
                     }
                 }
-                target.documentInformation.title="StudyFuse · ${if(complete) "Çalışma notları" else "EKSİK DERLEME"}"
+                target.documentInformation.title="StudyFuse · ${if(complete) "Çalışma notları" else if(allIncluded) "Görsel inceleme gerekli" else "EKSİK DERLEME"}"
                 target.documentInformation.creator="StudyFuse"
                 target.save(assembled)
             }
             val expected=next-1+pageCount(reportPdf)
+            // Prompt includes generated dividers, contents and the report in the final page total.
+            File(runDirectory,"StudyFuse-prompt-de.txt").writeText(AiCompanion.prompt(expected,prepared.map{it.result},""))
             verify(assembled,expected)
             progress(ProcessingProgress("PDF","Bütünlük denetimi ve ciltler",sources.size,sources.size))
             val artifacts=if(settings.volumeLimitMb>0 && assembled.length()>settings.volumeLimitMb*1024L*1024L)
                 splitVolumes(assembled,settings.volumeLimitMb*1024L*1024L) else listOf(Artifact(assembled,expected,1,expected))
             ensureActive()
             val json=JSONObject().put("schemaVersion",1).put("complete",complete).put("mode",settings.mode.name)
+                .put("allSourcesIncluded",allIncluded).put("verificationRequired",!complete && allIncluded)
+                .put("reusedSources",prepared.count{it.result.cached})
                 .put("settings",JSONObject(org.studyfuse.data.SettingsCodec.encode(settings)))
                 .put("importedFiles",sources.size).put("successfulFiles",prepared.count { it.result.status=="OK" })
                 .put("failedFiles",prepared.count { it.result.status=="FAILED" })
@@ -153,7 +170,7 @@ class Compiler(private val context:Context,private val runDirectory:File) {
                 .put("files",JSONArray(prepared.map { it.result.json() })).put("outputs",JSONArray(artifacts.map { it.json() }))
                 .put("fullPdf",assembled.path).put("createdUtc",java.time.Instant.now().toString())
             val report=File(runDirectory,"StudyFuse-rapor.json"); report.writeText(json.toString(2))
-            Compilation(artifacts,report,reportText,complete,expected)
+            Compilation(artifacts,report,reportText,complete,expected,allIncluded)
         } finally { scratch.deleteRecursively() }
     }
 
@@ -216,7 +233,7 @@ class Compiler(private val context:Context,private val runDirectory:File) {
         }
     }
     private fun humanReport(items:List<FileResult>,complete:Boolean,s:ExportSettings)=buildString {
-        append("STUDYFUSE — BÜTÜNLÜK RAPORU\n\n${if(complete) "İŞLEME TAMAMLANDI" else "EKSİK / İNCELEME GEREKLİ"}\n")
+        append("STUDYFUSE — BÜTÜNLÜK RAPORU\n\n${if(complete) "İŞLEME TAMAMLANDI" else if(items.none{it.status in setOf("FAILED","FALLBACK")}) "KAYNAKLAR EKLENDİ — GÖRSEL İNCELEME GEREKLİ" else "EKSİK KAYNAK VAR"}\n")
         append("İçe aktarılan: ${items.size}\nBaşarılı: ${items.count { it.status=="OK" }}\n")
         append("Başarısız: ${items.count { it.status=="FAILED" }}\nDış dönüşüm gereken: ${items.count { it.status=="FALLBACK" }}\n")
         append("İnceleme gereken: ${items.count { it.status=="REVIEW" }}\nOrijinal sayfa (bilinen): ${items.sumOf { it.originalPages }}\n")

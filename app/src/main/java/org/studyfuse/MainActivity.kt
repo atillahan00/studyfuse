@@ -23,6 +23,8 @@ class MainActivity:ComponentActivity() {
     private var pendingSave:File?=null
     private var pendingVolumes:List<File> = emptyList()
     private val picker=registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { model.importUris(it) }
+    private val restorePicker=registerForActivityResult(ActivityResultContracts.OpenDocument()){uri->if(uri!=null)model.restore(uri)}
+    private val bulkPdfPicker=registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()){model.prepareReplacements(it)}
     private val replacement=registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         val sourceId=replace; replace=null
         if(uri!=null && sourceId!=null) lifecycleScope.launch {
@@ -37,6 +39,7 @@ class MainActivity:ComponentActivity() {
     private val pdfSaver=registerForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri -> saveTo(uri) }
     private val reportSaver=registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri -> saveTo(uri) }
     private val textSaver=registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri -> saveTo(uri) }
+    private val zipSaver=registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")){uri->saveTo(uri)}
     private val volumeSaver=registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
         val files=pendingVolumes; pendingVolumes=emptyList()
         if(uri!=null) lifecycleScope.launch {
@@ -64,8 +67,10 @@ class MainActivity:ComponentActivity() {
             onReplace={ replace=it.id; replacement.launch(arrayOf("application/pdf")) },
             onOpen={ file,mime -> open(file,mime) },onShare={ share(it) },
             onSave={ file -> pendingSave=file
-                when(file.extension) { "pdf" -> pdfSaver.launch(file.name); "json" -> reportSaver.launch(file.name); else -> textSaver.launch(file.name) }
-            },onSaveAll={ pendingVolumes=it; volumeSaver.launch(null) }) }
+                when(file.extension) { "pdf" -> pdfSaver.launch(file.name); "json" -> reportSaver.launch(file.name); "zip"->zipSaver.launch(file.name);else -> textSaver.launch(file.name) }
+            },onSaveAll={ pendingVolumes=it; volumeSaver.launch(null) },
+            onRestore={restorePicker.launch(arrayOf("application/zip","application/octet-stream"))},
+            onBulkReplace={bulkPdfPicker.launch(arrayOf("application/pdf"))}) }
         if(savedInstanceState==null) handleShare(intent)
     }
     override fun onSaveInstanceState(outState:Bundle) {
@@ -118,11 +123,12 @@ class MainActivity:ComponentActivity() {
         runCatching {
             val uris=ArrayList(files.map(::contentUri))
             val i=Intent(if(uris.size==1) Intent.ACTION_SEND else Intent.ACTION_SEND_MULTIPLE).apply {
-                type="application/pdf"; addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                type=if(files.all{it.extension=="pdf"})"application/pdf" else if(files.size==1)when(files.first().extension){"md"->"text/markdown";"txt"->"text/plain";"json"->"application/json";"zip"->"application/zip";else->"application/octet-stream"} else "*/*"
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 if(uris.size==1) putExtra(Intent.EXTRA_STREAM,uris.first()) else putParcelableArrayListExtra(Intent.EXTRA_STREAM,uris)
                 clipData=ClipData.newRawUri("StudyFuse",uris.first()).also { c -> uris.drop(1).forEach { c.addItem(ClipData.Item(it)) } }
             }
-            startActivity(Intent.createChooser(i,"PDF paylaş · ChatGPT veya diğer uygulamalar"))
+            startActivity(Intent.createChooser(i,"StudyFuse dosyalarını paylaş"))
         }.onFailure { message("Paylaşılamadı: ${it.message}") }
     }
     private fun message(text:String) { Toast.makeText(this,text,Toast.LENGTH_LONG).show() }

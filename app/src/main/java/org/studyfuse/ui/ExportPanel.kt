@@ -23,6 +23,8 @@ fun ExportPanel(project:Project,sources:List<Source>,model:StudyViewModel,enable
     val active=work.firstOrNull { !it.state.isFinished }
     var reportVisible by remember { mutableStateOf(false) }
     var reportText by remember { mutableStateOf("") }
+    var dashboard by remember{mutableStateOf(false)}
+    var prompt by remember{mutableStateOf<File?>(null)}
     val outputs=remember(project.output) { runCatching {
         val json=JSONArray(project.output ?: "[]"); (0 until json.length()).map {json.getJSONObject(it)}
     }.getOrDefault(emptyList()) }
@@ -80,7 +82,7 @@ fun ExportPanel(project:Project,sources:List<Source>,model:StudyViewModel,enable
         if(project.status in setOf("FAILED","CANCELLED")) Text(project.message,color=MaterialTheme.colorScheme.error)
         if(outputs.isNotEmpty()) {
             HorizontalDivider(Modifier.padding(vertical=8.dp))
-            Text(if(project.status=="INCOMPLETE") "Eksik çıktı — raporu incele" else "Çalışma belgen hazır",style=MaterialTheme.typography.titleLarge)
+            Text(if(project.status=="INCOMPLETE") "Eksik çıktı — raporu incele" else if(project.status=="REVIEW") "Kaynaklar eklendi — görsel inceleme gerekli" else "Çalışma belgen hazır",style=MaterialTheme.typography.titleLarge)
             Text(project.message)
             val files=outputs.map {File(it.getString("path"))}
             for(o in outputs) {
@@ -99,8 +101,17 @@ fun ExportPanel(project:Project,sources:List<Source>,model:StudyViewModel,enable
             }
             project.report?.let { path ->
                 val report=File(path); val txt=File(report.parentFile,"StudyFuse-rapor.txt")
+                TextButton(onClick={dashboard=true}){Text("Kaynak / çıktı karşılaştırması")}
                 TextButton(onClick={reportVisible=true}) { Icon(Icons.Default.FactCheck,null);Spacer(Modifier.width(6.dp));Text("Bütünlük raporunu incele") }
                 Row {TextButton(onClick={onSave(report)}){Text("JSON raporu kaydet")};TextButton(onClick={onSave(txt)}){Text("Metin raporu kaydet")}}
+                val notes=File(report.parentFile,"StudyFuse-notlar.md")
+                val request=File(report.parentFile,"StudyFuse-prompt-de.txt")
+                if(notes.exists()) {
+                    Text("AI çalışma dosyaları",style=MaterialTheme.typography.titleMedium)
+                    Text("Eşlikçi metin görünür sayfa sınırlarına göre çıkarılır; örtüşen metin yinelenmeleri azaltılır. Görseller ve el yazısı için PDF asıl kaynaktır.",style=MaterialTheme.typography.bodySmall)
+                    Row{TextButton(onClick={onSave(notes)}){Text("Markdown kaydet")};TextButton(onClick={prompt=request}){Text("Almanca istek hazırla")}}
+                    OutlinedButton(onClick={onShare(files+notes+request)},modifier=Modifier.fillMaxWidth()){Text("PDF ve AI dosyalarını paylaş")}
+                }
                 LaunchedEffect(path) { reportText=kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching {txt.readText()}.getOrDefault("Rapor okunamadı") } }
             }
             Text("ChatGPT'ye paylaştıktan sonra her sayfayı incelemesini iste. Yükleme ve analiz sınırları seçtiğin hizmete bağlıdır.",style=MaterialTheme.typography.bodySmall)
@@ -110,6 +121,8 @@ fun ExportPanel(project:Project,sources:List<Source>,model:StudyViewModel,enable
     if(reportVisible) AlertDialog(onDismissRequest={reportVisible=false},title={Text("Bütünlük raporu")},
         text={Text(reportText,Modifier.heightIn(max=500.dp).verticalScroll(rememberScrollState()),style=MaterialTheme.typography.bodySmall)},
         confirmButton={TextButton(onClick={reportVisible=false}){Text("Kapat")}})
+    if(dashboard)project.report?.let{CompletenessDashboard(File(it),sources,{dashboard=false})}
+    prompt?.let{StudyPromptDialog(it,onSave,{prompt=null})}
 }
 
 @Composable private fun SettingMenu(label:String,value:String,enabled:Boolean,values:List<String>,onSelect:(Int)->Unit) {

@@ -30,7 +30,8 @@ private val Dark=darkColorScheme(primary=Color(0xFF8AD5C5),background=Color(0xFF
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onReplace:(Source)->Unit,
-    onOpen:(File,String)->Unit,onShare:(List<File>)->Unit,onSave:(File)->Unit,onSaveAll:(List<File>)->Unit) {
+    onOpen:(File,String)->Unit,onShare:(List<File>)->Unit,onSave:(File)->Unit,onSaveAll:(List<File>)->Unit,
+    onRestore:()->Unit,onBulkReplace:()->Unit) {
     val mode by model.dark.collectAsStateWithLifecycle()
     val project by model.project.collectAsStateWithLifecycle()
     val selected by model.selected.collectAsStateWithLifecycle()
@@ -42,6 +43,9 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
     var preferences by remember { mutableStateOf(false) }
     var rename by remember { mutableStateOf(false) }
     var preview by remember { mutableStateOf<Pair<File,String>?>(null) }
+    var editor by remember{mutableStateOf<Source?>(null)}
+    var conversions by remember{mutableStateOf(false)}
+    val replacements by model.replacements.collectAsStateWithLifecycle()
     val dark=if(mode==0) isSystemInDarkTheme() else mode==2
     MaterialTheme(colorScheme=if(dark) Dark else Light) {
         val busy=importing || project?.status in setOf("RUNNING","QUEUED")
@@ -55,7 +59,7 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
         }) { padding ->
             BoxWithConstraints(Modifier.fillMaxSize().padding(padding)) {
                 val tablet=maxWidth>=850.dp
-                if(selected==null) Home(projects,importing,{model.create()},onImport,{ model.select(it) },{model.deleteProject(it)})
+                if(selected==null) Home(projects,importing,{model.create()},onImport,{ model.select(it) },{model.deleteProject(it)},onRestore)
                 else if(project==null) Box(Modifier.fillMaxSize(),contentAlignment=Alignment.Center) { CircularProgressIndicator() }
                 else {
                     val p=project!!
@@ -68,6 +72,10 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
                             }
                             IconButton(onClick={rename=true},enabled=!busy) { Icon(Icons.Default.Edit,"Proje adını değiştir") }
                         }
+                        FlowRow {
+                            TextButton(onClick={model.backup(onSave)},enabled=!busy){Text("Proje yedeği kaydet")}
+                            TextButton(onClick={conversions=true},enabled=!busy){Text("Office / OneNote hazırlığı")}
+                        }
                         if(importing) {
                             LinearProgressIndicator(Modifier.fillMaxWidth())
                             Row(verticalAlignment=Alignment.CenterVertically) {
@@ -78,7 +86,7 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
                         if(tablet) Row(Modifier.weight(1f),horizontalArrangement=Arrangement.spacedBy(24.dp)) {
                             SourcesPanel(sources,!busy,onImport,onFolder,onReplace,model,
                                 { s -> val f=Format.valueOf(s.format); if(f==Format.PDF || f==Format.IMAGE) preview=File(s.activePath) to s.name
-                                  else onOpen(File(s.originalPath),mime(s.name)) },onOpen,Modifier.weight(1.25f))
+                                  else onOpen(File(s.originalPath),mime(s.name)) },onOpen,Modifier.weight(1.25f),onEditPagination={editor=it})
                             ExportPanel(p,sources,model,!busy,{ preview=it to it.name },onSave,onShare,onSaveAll,Modifier.weight(1f))
                         } else {
                             var tab by remember { mutableIntStateOf(0) }
@@ -88,7 +96,7 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
                             }
                             if(tab==0) SourcesPanel(sources,!busy,onImport,onFolder,onReplace,model,
                                 { s -> val f=Format.valueOf(s.format); if(f==Format.PDF || f==Format.IMAGE) preview=File(s.activePath) to s.name
-                                  else onOpen(File(s.originalPath),mime(s.name)) },onOpen,Modifier.weight(1f))
+                                  else onOpen(File(s.originalPath),mime(s.name)) },onOpen,Modifier.weight(1f),onEditPagination={editor=it})
                             else ExportPanel(p,sources,model,!busy,{preview=it to it.name},onSave,onShare,onSaveAll,Modifier.weight(1f))
                         }
                     }
@@ -104,17 +112,23 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
                     "Yalnızca Paylaş düğmesine bastığında seçtiğin uygulamaya aktarılır. " +
                     "Projeyi silmek uygulamadaki kopyaları siler. Uygulamayı kaldırmadan önce PDF ve raporlarını kaydet.",
                     style=MaterialTheme.typography.bodySmall)
+                if(project!=null)TextButton(onClick={model.clearCache()},enabled=!busy){Text("Dönüştürme önbelleğini temizle")}
             } },confirmButton={TextButton(onClick={preferences=false}){Text("Tamam")}})
         if(rename && project!=null) EditDialog("Proje adı",project!!.name,{rename=false}) {model.renameProject(it)}
         if(notice!=null) AlertDialog(onDismissRequest={model.notice.value=null},title={Text("İşlem bilgisi")},
             text={Text(notice!!,Modifier.heightIn(max=450.dp).verticalScroll(rememberScrollState()))},
             confirmButton={TextButton(onClick={model.notice.value=null}){Text("Tamam")}})
         preview?.let { (file,name) -> PreviewDialog(file,name,{preview=null}) }
+        editor?.let{s->PaginationEditor(s,SettingsCodec.decode(project?.settings ?: "{}"),{editor=null}){model.pagination(s,it)}}
+        if(conversions)ConversionWizard(sources,onReplace,onBulkReplace,{conversions=false})
+        if(replacements.isNotEmpty())AlertDialog(onDismissRequest={model.replacements.value=emptyList()},title={Text("PDF eşleştirmelerini onayla")},
+            text={Column{Text("PDF'lerin tüm içeriği kapsadığını önizleyerek denetleyin. Orijinaller ve sıraları korunur.");replacements.forEach{Text("${it.source.name} → ${it.name}",style=MaterialTheme.typography.bodySmall)}}},
+            confirmButton={TextButton(onClick={model.applyReplacements()}){Text("PDF'leri yerine koy")}},dismissButton={TextButton(onClick={model.replacements.value=emptyList()}){Text("Vazgeç")}})
     }
 }
 
 @Composable private fun Home(projects:List<Project>,importing:Boolean,onCreate:()->Unit,onImport:()->Unit,
-    onSelect:(String)->Unit,onDelete:(Project)->Unit) {
+    onSelect:(String)->Unit,onDelete:(Project)->Unit,onRestore:()->Unit) {
     var deletion by remember { mutableStateOf<Project?>(null) }
     LazyColumn(Modifier.fillMaxSize().widthIn(max=1100.dp).padding(horizontal=24.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
         item { Spacer(Modifier.height(20.dp)); Text("Dağınık notlar.\nTek bir çalışma kaynağı.",style=MaterialTheme.typography.headlineLarge,fontWeight=FontWeight.Bold) }
@@ -127,6 +141,7 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
                 FlowRow(horizontalArrangement=Arrangement.spacedBy(10.dp)) {
                     Button(onClick=onCreate,enabled=!importing) {Icon(Icons.Default.Add,null); Spacer(Modifier.width(8.dp));Text("Yeni proje")}
                     OutlinedButton(onClick=onImport,enabled=!importing) {Text("Dosya içe aktar")}
+                    OutlinedButton(onClick=onRestore,enabled=!importing){Text("Yedek geri yükle")}
                 }
             }
         } }
@@ -158,6 +173,6 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
 fun mime(name:String):String=MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substringAfterLast('.').lowercase(java.util.Locale.ROOT)) ?: "application/octet-stream"
 fun statusLabel(status:String)=when(status) {
     "READY"->"Düzenlemeye hazır"; "RUNNING"->"İşleniyor"; "QUEUED"->"Sırada"; "DONE"->"PDF hazır"
-    "INCOMPLETE"->"Eksik / inceleme gerekli"; "FAILED"->"İşlem başarısız"; "CANCELLED"->"İptal edildi"; else->status
+    "REVIEW"->"Kaynaklar eklendi · görsel inceleme gerekli"; "INCOMPLETE"->"Eksik kaynak var"; "FAILED"->"İşlem başarısız"; "CANCELLED"->"İptal edildi"; else->status
 }
 fun sizeLabel(bytes:Long)=if(bytes<1024*1024) "%.0f KB".format(bytes/1024.0) else "%.1f MB".format(bytes/1048576.0)

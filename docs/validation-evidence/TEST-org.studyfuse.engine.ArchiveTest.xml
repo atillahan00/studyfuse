@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.studyfuse.engine.ArchiveTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-24T16:27:04.678Z" hostname="514a1454fba3" time="10.353">
+  <properties/>
+  <testcase name="removedSourcesCanBeRestoredWithoutDeletingTheirBytes" classname="org.studyfuse.engine.ArchiveTest" time="9.409"/>
+  <testcase name="zipTraversalAndUndeclaredFilesAreRejectedAtomically" classname="org.studyfuse.engine.ArchiveTest" time="0.19"/>
+  <testcase name="roundTripKeepsOriginalReplacementOrderCutsAndSettings" classname="org.studyfuse.engine.ArchiveTest" time="0.203"/>
+  <testcase name="backupRetainsRemovedSourceBytesAndUndoState" classname="org.studyfuse.engine.ArchiveTest" time="0.164"/>
+  <testcase name="truncatedBackupDoesNotPublishAPartialProject" classname="org.studyfuse.engine.ArchiveTest" time="0.207"/>
+  <testcase name="changedSourceBytesPreventMisleadingBackup" classname="org.studyfuse.engine.ArchiveTest" time="0.175"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

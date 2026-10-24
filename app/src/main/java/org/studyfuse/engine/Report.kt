@@ -12,10 +12,14 @@ data class FileResult(val source:Source,var status:String="OK",var originalPages
     var start:Int=0,var end:Int=0,val warnings:MutableList<String> = mutableListOf(),
     val mappings:MutableList<PageMapping> = mutableListOf(),var activeSha256:String="") {
     val ocr=mutableListOf<JSONObject>()
+    var visualPages=0
+    var contentStart=0
+    var cached=false
     fun json()=JSONObject().put("sourceId",source.id).put("fileName",source.name).put("section",source.section)
         .put("status",status).put("originalSha256",source.sha256).put("activeSha256",activeSha256)
         .put("replacement",source.replacement).put("originalPages",originalPages)
         .put("generatedContentPages",generatedPages).put("startPage",start).put("endPage",end)
+        .put("visualPages",visualPages).put("contentStart",contentStart).put("cached",cached)
         .put("warnings",JSONArray(warnings)).put("ocr",JSONArray(ocr)).put("coverage",JSONArray(mappings.map {
             JSONObject().put("originalPage",it.originalPage).put("outputPage",it.outputPage)
                 .put("sourceBounds",JSONArray(listOf(it.left,it.top,it.right,it.bottom)))

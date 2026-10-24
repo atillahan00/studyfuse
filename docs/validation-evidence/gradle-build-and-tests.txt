@@ -1,5 +1,5 @@
-> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :core:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
 > Task :app:preBuild UP-TO-DATE
 > Task :app:preDebugBuild UP-TO-DATE
 > Task :app:generateDebugBuildConfig UP-TO-DATE
@@ -8,11 +8,6 @@
 > Task :core:processResources NO-SOURCE
 > Task :core:classes UP-TO-DATE
 > Task :core:jar UP-TO-DATE
-> Task :core:compileTestKotlin UP-TO-DATE
-> Task :core:compileTestJava NO-SOURCE
-> Task :core:processTestResources NO-SOURCE
-> Task :core:testClasses UP-TO-DATE
-> Task :core:test UP-TO-DATE
 > Task :app:checkDebugAarMetadata UP-TO-DATE
 > Task :app:generateDebugResValues UP-TO-DATE
 > Task :app:mapDebugSourceSetPaths UP-TO-DATE
@@ -82,15 +77,12 @@
 > Task :app:generateDebugAndroidTestLintModel
 > Task :app:generateDebugUnitTestLintModel
 > Task :app:kspDebugUnitTestKotlin
-> Task :app:lintAnalyzeDebugAndroidTest
 > Task :app:compileDebugUnitTestKotlin
 > Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
 > Task :app:processDebugUnitTestJavaRes UP-TO-DATE
-> Task :app:lintAnalyzeDebugUnitTest
+> Task :app:lintAnalyzeDebugAndroidTest
 > Task :app:lintAnalyzeDebug
 > Task :app:testDebugUnitTest
-> Task :app:lintReportDebug UP-TO-DATE
-> Task :app:lintDebug
 > Task :app:dexBuilderDebug
 > Task :app:mergeDebugGlobalSynthetics UP-TO-DATE
 > Task :app:mergeDebugJavaResource UP-TO-DATE
@@ -109,6 +101,9 @@
 > Task :app:packageDebugAndroidTest UP-TO-DATE
 > Task :app:createDebugAndroidTestApkListingFileRedirect UP-TO-DATE
 > Task :app:assembleDebugAndroidTest UP-TO-DATE
+> Task :app:lintAnalyzeDebugUnitTest
+> Task :app:lintReportDebug UP-TO-DATE
+> Task :app:lintDebug
 
-BUILD SUCCESSFUL in 41s
-89 actionable tasks: 19 executed, 70 up-to-date
+BUILD SUCCESSFUL in 45s
+87 actionable tasks: 19 executed, 68 up-to-date

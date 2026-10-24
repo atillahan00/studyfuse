@@ -55,6 +55,8 @@ class OnDeviceTest {
             val bottom=image.region(Rect(0,17900,1000,18000))
             assertEquals(Color.RED,bottom.getPixel(500,50));bottom.recycle()
         }
+        val viewport=org.studyfuse.ui.DocumentView.render(file,0,600,400,area=Slice(0.0,17900.0,1000.0,18000.0))
+        assertEquals(Color.RED,viewport.getPixel(300,200));assertEquals(Color.WHITE,viewport.getPixel(300,10));viewport.recycle()
         val s=source(file);val out=File(root,"long-out.pdf");val result=FileResult(s)
         ImageAdapter(root).convert(s,out,ExportSettings(),result){}
         assertTrue(result.generatedPages>8)
