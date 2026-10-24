@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.studyfuse.engine.CompilerTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-10-24T15:01:29.682Z" hostname="514a1454fba3" time="22.549">
+  <properties/>
+  <testcase name="sourceDigestDetectsModification" classname="org.studyfuse.engine.CompilerTest" time="9.642"/>
+  <testcase name="tallHandwrittenFixturePreservesEveryBandAndVectorContent" classname="org.studyfuse.engine.CompilerTest" time="10.446"/>
+  <testcase name="textMalformedUtf8IsReportedInsteadOfReplacementCharacters" classname="org.studyfuse.engine.CompilerTest" time="0.157"/>
+  <testcase name="splittingUsesActualSizesAndKeepsAllPageNumbers" classname="org.studyfuse.engine.CompilerTest" time="0.542"/>
+  <testcase name="hundredFileBatchHasNoArtificialLimit" classname="org.studyfuse.engine.CompilerTest" time="0.663"/>
+  <testcase name="unicodeGermanTurkishAndMathAreSearchable" classname="org.studyfuse.engine.CompilerTest" time="0.104"/>
+  <testcase name="unsupportedJpxDecoderIsFlaggedAndEncodedImageRetained" classname="org.studyfuse.engine.CompilerTest" time="0.068"/>
+  <testcase name="rotationsAndNonzeroOriginDoNotStretchOrClip" classname="org.studyfuse.engine.CompilerTest" time="0.045"/>
+  <testcase name="corruptionDoesNotSilentlySkipAndOtherFilesContinue" classname="org.studyfuse.engine.CompilerTest" time="0.109"/>
+  <testcase name="officeFallbackIsExplicitAndOriginalUnchanged" classname="org.studyfuse.engine.CompilerTest" time="0.092"/>
+  <testcase name="cancellationLeavesOriginalsAndCleansScratch" classname="org.studyfuse.engine.CompilerTest" time="0.131"/>
+  <testcase name="standardPdfMergingOrderingAndPageNumbers" classname="org.studyfuse.engine.CompilerTest" time="0.141"/>
+  <testcase name="inkAnnotationIsFlattenedAndStillVisible" classname="org.studyfuse.engine.CompilerTest" time="0.076"/>
+  <testcase name="aiModeTocAndSourceRangesAgree" classname="org.studyfuse.engine.CompilerTest" time="0.204"/>
+  <testcase name="mixedImageAndPdfPreservesPixels" classname="org.studyfuse.engine.CompilerTest" time="0.125"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

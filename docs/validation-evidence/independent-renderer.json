@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "renderer": "PyMuPDF 1.26.6",
+  "checks": [
+    "Mixed image/PDF colours verified with an independent renderer",
+    "All 200 tall-page markers verified, including the final source band",
+    "29 output pages agree with the completeness report",
+    "JPX image retained and independently visible; application flags REVIEW"
+  ]
+}

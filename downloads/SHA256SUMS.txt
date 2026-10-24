@@ -1,0 +1,3 @@
+ed45afc4d47f5e15919efc08c7e4f4f20147da3d8acb90d3fcfef92ec687445e  StudyFuse-Android-Studio.zip
+c0e77af0bdfcef442c3d2a04d9eeac81b40bda15c2ddb814ec9d8d8ce573815e  StudyFuse-debug.apk
+62ed1e5206180a1bd078c69494e3991388f0f78cc1c25339cb9bbbcc4a221948  StudyFuse-device-tests.apk

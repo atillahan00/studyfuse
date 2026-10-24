@@ -1,0 +1,477 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "mode": "ARCHIVE",
+  "settings": {
+    "mode": "ARCHIVE",
+    "pageSize": "AUTO",
+    "margin": 24,
+    "overlap": 18,
+    "compression": "LOSSLESS",
+    "ocr": false,
+    "volumeLimitMb": 0
+  },
+  "importedFiles": 1,
+  "successfulFiles": 1,
+  "failedFiles": 0,
+  "fallbackFiles": 0,
+  "reviewFiles": 0,
+  "originalPages": 1,
+  "generatedPages": 29,
+  "pageCountIncludes": "İçindekiler, bölüm başlıkları, doğrulanmamış OCR ve rapor sayfaları",
+  "verification": "SHA-256, tam geometrik kapsama, çıktı sayfa sayısı ve güvenli / desteklenen sayfaların sınırlı çözünürlükte işlenebilirliği. Kodlayıcı veya bellek nedeniyle raster denetimi atlanan kaynaklar REVIEW olarak raporlanır. Görsel eşdeğerliğin veya kaynak uygulama dışa aktarımının eksiksizliğinin kanıtı değildir.",
+  "files": [
+    {
+      "sourceId": "8100c7ab-906b-439f-b962-4b073fd13196",
+      "fileName": "onenote-long.pdf",
+      "section": "onenote-long",
+      "status": "OK",
+      "originalSha256": "efcc751c5f1a1c9cd11684566a9a130e8d5a215bcc60bdc578f63108606c16c3",
+      "activeSha256": "efcc751c5f1a1c9cd11684566a9a130e8d5a215bcc60bdc578f63108606c16c3",
+      "replacement": false,
+      "originalPages": 1,
+      "generatedContentPages": 28,
+      "startPage": 1,
+      "endPage": 28,
+      "warnings": [
+        "Sayfa 1: 28 örtüşmeli bölüme ayrıldı. Bazı PDF metin çıkarıcıları kırpma sınırları dışındaki vektör metnini tekrarlayabilir; görsel sayfa sınırlarını esas alın."
+      ],
+      "ocr": [],
+      "coverage": [
+        {
+          "originalPage": 1,
+          "outputPage": 1,
+          "sourceBounds": [
+            0,
+            0,
+            1000,
+            675
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 2,
+          "sourceBounds": [
+            0,
+            652.3268279804074,
+            1000,
+            1335
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 3,
+          "sourceBounds": [
+            0,
+            1312.3268279804074,
+            1000,
+            1980
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 4,
+          "sourceBounds": [
+            0,
+            1957.3268279804074,
+            1000,
+            2640
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 5,
+          "sourceBounds": [
+            0,
+            2617.3268279804074,
+            1000,
+            3300
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 6,
+          "sourceBounds": [
+            0,
+            3277.3268279804074,
+            1000,
+            3960
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 7,
+          "sourceBounds": [
+            0,
+            3937.3268279804074,
+            1000,
+            4620
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 8,
+          "sourceBounds": [
+            0,
+            4597.326827980407,
+            1000,
+            5280
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 9,
+          "sourceBounds": [
+            0,
+            5257.326827980407,
+            1000,
+            5940
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 10,
+          "sourceBounds": [
+            0,
+            5917.326827980407,
+            1000,
+            6600
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 11,
+          "sourceBounds": [
+            0,
+            6577.326827980407,
+            1000,
+            7260
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 12,
+          "sourceBounds": [
+            0,
+            7237.326827980407,
+            1000,
+            7920
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 13,
+          "sourceBounds": [
+            0,
+            7897.326827980407,
+            1000,
+            8580
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 14,
+          "sourceBounds": [
+            0,
+            8557.326827980407,
+            1000,
+            9240
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 15,
+          "sourceBounds": [
+            0,
+            9217.326827980407,
+            1000,
+            9900
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 16,
+          "sourceBounds": [
+            0,
+            9877.326827980407,
+            1000,
+            10560
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 17,
+          "sourceBounds": [
+            0,
+            10537.326827980407,
+            1000,
+            11220
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 18,
+          "sourceBounds": [
+            0,
+            11197.326827980407,
+            1000,
+            11880
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 19,
+          "sourceBounds": [
+            0,
+            11857.326827980407,
+            1000,
+            12540
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 20,
+          "sourceBounds": [
+            0,
+            12517.326827980407,
+            1000,
+            13200
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 21,
+          "sourceBounds": [
+            0,
+            13177.326827980407,
+            1000,
+            13860
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 22,
+          "sourceBounds": [
+            0,
+            13837.326827980407,
+            1000,
+            14520
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 23,
+          "sourceBounds": [
+            0,
+            14497.326827980407,
+            1000,
+            15180
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 24,
+          "sourceBounds": [
+            0,
+            15157.326827980407,
+            1000,
+            15840
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 25,
+          "sourceBounds": [
+            0,
+            15817.326827980407,
+            1000,
+            16500
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 26,
+          "sourceBounds": [
+            0,
+            16477.326827980407,
+            1000,
+            17160
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 27,
+          "sourceBounds": [
+            0,
+            17137.326827980407,
+            1000,
+            17820
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        },
+        {
+          "originalPage": 1,
+          "outputPage": 28,
+          "sourceBounds": [
+            0,
+            17797.326827980407,
+            1000,
+            18000
+          ],
+          "sourceSize": [
+            1000,
+            18000
+          ],
+          "scale": 0.7938898000000001
+        }
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "StudyFuse-example.pdf",
+      "name": "StudyFuse-example.pdf",
+      "pages": 29,
+      "startPage": 1,
+      "endPage": 29,
+      "bytes": 219456,
+      "sha256": "cdf93f1bbcac31f8af7b1df0f24d52825157534983a187df8c6ad48ee52a194c"
+    }
+  ],
+  "fullPdf": "StudyFuse-example.pdf",
+  "createdUtc": "2026-10-24T15:01:46.836456446Z"
+}
