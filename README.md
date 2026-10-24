@@ -60,6 +60,8 @@ MuPDF is a **development-only** independent verifier, not an Android application
 
 ## Project map
 
+The [Android build workflow](https://github.com/atillahan00/studyfuse/actions/workflows/android.yml) runs tests, lint and APK builds on source pushes to `main`, pull requests and manual runs. Successful runs provide a debug APK artifact; test/lint reports are retained even when checks fail. Connected-device tests are compiled but require an actual device to execute. The directly downloadable APK above is the locally verified delivery build; future CI debug builds may use a different development signing key.
+
 - `core/`: Android-independent format identification, export settings, coverage verifier, whitespace-aware pagination and randomized geometry tests.
 - `app/.../data/`: Room entities/DAO, streaming SAF ingestion, original and replacement hashes, project persistence.
 - `app/.../engine/`: adapter registry, PDF form transformations, EXIF-aware image decoding, UTF-8 text layout, OCR transcripts, assembly, verification, reports and measured-size volumes.
