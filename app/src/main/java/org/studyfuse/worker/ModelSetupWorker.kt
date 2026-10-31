@@ -35,14 +35,17 @@ class ModelSetupWorker(context:Context,params:WorkerParameters):CoroutineWorker(
             if(!locked){state("WAITING_AI","İndirme tamamlandı; çalışan AI işlemi bekleniyor");return@withContext Result.retry()}
             state("TESTING","Model bütünlüğü ve görüntü girişi sınanıyor")
             val candidate=store.candidate(artifact,part)
-            VisionProbe.run(applicationContext,candidate,gpu)
-            store.activate(candidate,gpu)
-            state("READY","Çevrimdışı AI hazır. El yazısı ve çözümler kaynakla incelenmelidir.")
-            Result.success()
+            val testedGpu=testSetupBackends(gpu,{failure->
+                val file=File(store.directory(),"setup.json");atomicJson(file,readJson(file).put("gpuFailure",failure))
+                state("TESTING_CPU","GPU dil modeli başarısız; indirilen dosya ile CPU dil modeli + GPU görüntü sınanıyor")
+            }){backend->VisionProbe.run(applicationContext,candidate,backend)}
+            store.activate(candidate,testedGpu)
+            state("READY","Çevrimdışı AI hazır (${if(testedGpu)"GPU" else "CPU"} dil modeli + GPU görüntü). El yazısı ve çözümler kaynakla incelenmelidir.")
+            Result.success(workDataOf("gpu" to testedGpu,"modelSha256" to candidate.digest))
         }catch(e:CancellationException){withContext(NonCancellable){state("PAUSED","Kurulum duraklatıldı; tamamlanan baytlar korunuyor")};throw e}
         catch(e:Exception){val retry=e is IOException && !e.message.orEmpty().contains("SHA-256") && runAttemptCount<3
-            state(if(retry)"RETRY" else "FAILED",e.message ?: "Kurulum tamamlanamadı")
-            if(retry)Result.retry()else Result.failure(workDataOf("error" to (e.message ?: "Kurulum hatası")))
+            state(if(retry)"RETRY" else "FAILED",e.message?.take(2400) ?: "Kurulum tamamlanamadı")
+            if(retry)Result.retry()else Result.failure(workDataOf("error" to (e.message?.take(2400) ?: "Kurulum hatası")))
         }finally{if(locked)ExamStore.execution.unlock()}
     }}
     companion object {val transferLock=Mutex()}

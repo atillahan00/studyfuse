@@ -110,5 +110,9 @@ class OnDeviceTest {
         assertFalse("Native failure must be surfaced before the test timeout",error is kotlinx.coroutines.TimeoutCancellationException)
         assertEquals("org.studyfuse",context.packageName)
         assertTrue(context.applicationContext is StudyFuseApp)
+        val diagnostic=AiDiagnostics(context).snapshot()
+        assertTrue(diagnostic.getString("stage") in setOf("CREATING_ENGINE","INITIALIZING_ENGINE","CLOSING_PREVIOUS_ENGINE"))
+        assertTrue("Native startup was attempted in a separate process",diagnostic.getInt("pid")!=android.os.Process.myPid())
+        assertFalse(diagnostic.has("prompt"));assertFalse(diagnostic.has("response"))
     }
 }

@@ -129,7 +129,7 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
         if(conversions)ConversionWizard(sources,onReplace,onBulkReplace,{conversions=false})
         if(workshop && project!=null)ExamWorkshop(project!!,sources,model,onImportModel,onSave,onShare,{workshop=false})
         if(studyHub && project!=null)StudyHub(project!!,model,onSave,{studyHub=false;workshop=true},{studyHub=false})
-        if(automaticSetup)AlertDialog(onDismissRequest={automaticSetup=false},title={Text("Çevrimdışı AI")},text={Column(Modifier.heightIn(max=520.dp).verticalScroll(rememberScrollState())){AutomaticSetup(model,true)}},confirmButton={TextButton(onClick={automaticSetup=false}){Text("Kapat")}})
+        if(automaticSetup)AlertDialog(onDismissRequest={automaticSetup=false},title={Text("Çevrimdışı AI")},text={Column(Modifier.heightIn(max=520.dp).verticalScroll(rememberScrollState())){AutomaticSetup(model)}},confirmButton={TextButton(onClick={automaticSetup=false}){Text("Kapat")}})
         if(replacements.isNotEmpty())AlertDialog(onDismissRequest={model.replacements.value=emptyList()},title={Text("PDF eşleştirmelerini onayla")},
             text={Column{Text("PDF'lerin tüm içeriği kapsadığını önizleyerek denetleyin. Orijinaller ve sıraları korunur.");replacements.forEach{Text("${it.source.name} → ${it.name}",style=MaterialTheme.typography.bodySmall)}}},
             confirmButton={TextButton(onClick={model.applyReplacements()}){Text("PDF'leri yerine koy")}},dismissButton={TextButton(onClick={model.replacements.value=emptyList()}){Text("Vazgeç")}})

@@ -23,6 +23,10 @@ fun visionReady(context:Context,gpu:Boolean):Boolean=runCatching{
 class ModelStore(private val context:Context) {
     private val root=File(context.filesDir,"local-models").apply{mkdirs()}
     fun directory()=root
+    fun testedGpu():Boolean?=runCatching{
+        val model=selected() ?: return null;val test=readJson(File(root,"vision-test.json"))
+        if(test.getString("sha256")==model.digest && test.getString("fingerprint")==android.os.Build.FINGERPRINT)test.getBoolean("gpu")else null
+    }.getOrNull()
     fun candidate(artifact:org.studyfuse.core.ModelArtifact,file:File):LocalModel {
         check(file.length()==artifact.bytes && sha256(file)==artifact.sha256){"İndirilen model doğrulanamadı"}
         val dest=File(root,"${artifact.sha256}.litertlm")

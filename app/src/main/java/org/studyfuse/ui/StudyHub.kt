@@ -37,7 +37,9 @@ private data class HubSnapshot(val config:ExamConfig,val signature:String?,val u
     val workerError=workers.firstOrNull{it.id.toString()==project.workId}?.outputData?.getString("error")
     LaunchedEffect(project.report,workers,revision,refresh){
         try{
-            val state=withContext(Dispatchers.IO){val cfg=store.config();val local=ModelStore(model.repo.context).selected()
+            val state=withContext(Dispatchers.IO){val saved=store.config();val models=ModelStore(model.repo.context);val tested=models.testedGpu()
+                val cfg=if(tested!=null && tested!=saved.gpu)saved.copy(gpu=tested).also{store.saveConfig(it)}else saved
+                val local=models.selected()
                 val sig=if(local!=null && project.report!=null)store.signature(File(project.report),local,cfg)else null
                 val readings=sig?.let{store.currentUnits(it)} ?: emptyList();val reviews=store.review()
                 HubSnapshot(cfg,sig,readings,reviews,sig?.let{tools.cards(it,readings,reviews)} ?: emptyList(),

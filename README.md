@@ -1,10 +1,16 @@
-# StudyFuse 1.3 — Automatic offline AI and a source-based study workspace
+# StudyFuse 1.3.1 — Automatic offline AI and a source-based study workspace
 
 Compile PDFs, handwritten-note screenshots and UTF-8 text into one organized study document, then prepare source-linked exam notes with an automatically installed on-device vision model. Native Kotlin, Jetpack Compose and Material 3, with a Turkish tablet interface. Android 10+; targets Android 16. The direct APK is **ARM64**, suitable for the HONOR MagicPad 2; CI also builds x86_64 support for emulator testing.
 
 [Download APK](https://github.com/atillahan00/studyfuse/raw/refs/heads/main/downloads/StudyFuse-debug.apk) · [Android Studio project ZIP](https://github.com/atillahan00/studyfuse/raw/refs/heads/main/downloads/StudyFuse-Android-Studio.zip) · [Download checksums](downloads/SHA256SUMS.txt) · [Builds and Android tests](https://github.com/atillahan00/studyfuse/actions/workflows/android.yml)
 
 **Office and OneNote files require source-app PDF export/replacement.** Unsupported sources receive explicit warning pages. Bundled ML Kit OCR recognizes printed Latin text. The separately installed visual language model can interpret handwriting, images, graphs and equations, but those interpretations are **unverified AI drafts**, not guaranteed recognition. The app uses Internet for student-initiated public model downloads, with no mandatory paid API or remote inference. Documents and prompts stay on device; study processing works offline after setup.
+
+## 1.3.1: recover model setup without downloading again
+
+If 1.3 reports **Yerel AI işlemi durdu**, install the new APK over the existing installation. Keep app data and the downloaded model. Setup now selects cached catalog data, defaults to **CPU language processing + GPU vision**, and offers **İndirilen modeli yeniden sına** for a completed file. Optional GPU language processing falls back to CPU once on failure; cancellation never launches another attempt. Activation still requires the real image-input test. The successfully tested language backend is applied when opening the exam workshop/learning hub.
+
+Open **AI tanılamasını göster → Tanılamayı kopyala** if startup still fails. Diagnostics include the startup stage, backend, available RAM and Android process-exit reason when available; no documents, prompts, responses or crash dumps are collected. CPU language mode still needs the GPU image encoder. This is a recovery/diagnostics update, not a verified fix for every MagicPad GPU/driver or native-runtime failure. See [troubleshooting](docs/AI_TROUBLESHOOTING.md).
 
 ## New in 1.3
 
@@ -67,7 +73,7 @@ Model storage/download size is several GB; runtime memory is additional. Text ex
 
 ## Install and update
 
-Install `StudyFuse-debug.apk` on an ARM64 Android 10+ device. This is an evaluation/debug APK, not a Play Store production release. Android may request permission to install from the application opening it. The directly downloadable 1.3 APK retains the previous direct download's development signing key; back up important projects before updating.
+Install `StudyFuse-debug.apk` on an ARM64 Android 10+ device. This is an evaluation/debug APK, not a Play Store production release. Android may request permission to install from the application opening it. The directly downloadable 1.3.1 APK retains the previous direct download's development signing key; back up important projects before updating.
 
 CI-generated debug APKs may have a different signing key. Do not uninstall an existing installation to switch keys until its projects have been backed up. Physical-tablet/OEM behavior and arbitrary Office export fidelity are not universally certified.
 
@@ -104,7 +110,7 @@ python3 scripts/verify_pdf_artifacts.py
 
 Gradle 8.13 is pinned with a verified distribution checksum. Build dependencies need network on the first build; document processing does not. MuPDF is a development-only verifier, not linked into the Android app. Test reports are under `core/build/reports/tests/` and `app/build/reports/tests/testDebugUnitTest/`; lint is under `app/build/reports/`.
 
-The [1.3 validation run passed](https://github.com/atillahan00/studyfuse/actions/runs/41199749074): build/tests/lint/APKs, pinned public-model metadata/range checks, and **six native Android 15 / API 35 tablet-emulator tests**. The local full suite passed **97 JVM/Robolectric tests**. Independent MuPDF checks verified all 200 markers of the tall-page fixture, including its final band. The public APK was downloaded again and matched the delivered bytes. See [validation evidence](docs/VALIDATION.md) for the tested commit and exact checks. Deterministic inference adapters validate pipeline behavior, not neural handwriting accuracy; no physical MagicPad 2 or complete vision-model benchmark is claimed.
+The previous [1.3 validation run passed](https://github.com/atillahan00/studyfuse/actions/runs/41199749074): build/tests/lint/APKs, pinned public-model metadata/range checks, and **six native Android 15 / API 35 tablet-emulator tests**. The local full suite passed **97 JVM/Robolectric tests**. Independent MuPDF checks verified all 200 markers of the tall-page fixture, including its final band. The public APK was downloaded again and matched the delivered bytes. See the [1.3 record](docs/VALIDATION-1.3.md) for that run and [current validation evidence](docs/VALIDATION.md) for 1.3.1. Deterministic inference adapters validate pipeline behavior, not neural handwriting accuracy; no physical MagicPad 2 or complete vision-model benchmark is claimed.
 
 For an independently managed production signing key, set `STUDYFUSE_SIGNING_STORE`, `STUDYFUSE_STORE_PASSWORD`, `STUDYFUSE_KEY_ALIAS`, and `STUDYFUSE_KEY_PASSWORD`, then build `:app:assembleRelease`. Keep the same key for updates and keep it private. No signing keys or passwords are committed. CI validation artifacts are not a substitute for a persistent release signing setup.
 

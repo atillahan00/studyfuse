@@ -54,7 +54,14 @@ private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val 
     val active=workers.firstOrNull{!it.state.isFinished}
     val workerError=workers.firstOrNull{it.id.toString()==project.workId}?.outputData?.getString("error")
     val busy=project.status in setOf("QUEUED","RUNNING") || modelBusy || exporting
-    LaunchedEffect(project.id){try{config=withContext(Dispatchers.IO){store.config()};loaded=true}catch(e:Exception){error=e.message}}
+    LaunchedEffect(project.id){try{config=withContext(Dispatchers.IO){val saved=store.config();val tested=ModelStore(context).testedGpu()
+        if(tested!=null && tested!=saved.gpu)saved.copy(gpu=tested).also{store.saveConfig(it)}else saved};loaded=true}catch(e:Exception){error=e.message}}
+    LaunchedEffect(setupWorkers,loaded){
+        if(loaded && setupWorkers.none{!it.state.isFinished} && setupWorkers.any{it.state==androidx.work.WorkInfo.State.SUCCEEDED}){
+            val tested=withContext(Dispatchers.IO){ModelStore(context).testedGpu()}
+            if(tested!=null && tested!=config.gpu){config=config.copy(gpu=tested);withContext(Dispatchers.IO){store.saveConfig(config)}}
+        }
+    }
     LaunchedEffect(loaded,config,revision,workers,setupWorkers,refresh,project.report) {
         if(!loaded)return@LaunchedEffect
         try {
@@ -106,7 +113,7 @@ private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val 
                 0->Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
                     Text("Belgelerin tek başına yeterli. Sınav konusu ve tarihi isteğe bağlıdır. El yazısı/grafik yorumları ve AI çözümleri kontrol edilmeden güvenilir kabul edilmez.")
                     Text("1 · Yerel görüntü modeli",style=MaterialTheme.typography.titleMedium)
-                    AutomaticSetup(model,config.gpu,!busy)
+                    AutomaticSetup(model,enabled=!busy)
                     Text(selectedModel?.let{"${it.name} · ${sizeLabel(it.bytes)} · SHA-256 ${it.digest.take(16)}…"} ?: "Henüz model yok. Model APK'ya dahil değildir.")
                     Text("MagicPad 2 için başlangıç adayı: görüntü destekli Gemma 4 E4B .litertlm; daha hafif seçenek E2B. GGUF/.task dosyaları desteklenmez. Aygıtın GPU sürücüsü ayrıca sınanmalıdır.",style=MaterialTheme.typography.bodySmall)
                     FlowRow {

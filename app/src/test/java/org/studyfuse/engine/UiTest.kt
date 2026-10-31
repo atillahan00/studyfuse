@@ -83,6 +83,19 @@ class UiTest {
         ui.onNodeWithText("Koç").assertExists();ui.onNodeWithText("Deneme").assertExists();ui.onNodeWithText("Plan").assertExists()
         screenshot("tablet-study-hub.png")
     }
+    @Test fun setupReusesCachedChoiceOffersCpuAndCopiesPrivateFreeDiagnostics(){
+        val artifact=org.studyfuse.core.ModelCatalog.get("gemma4-e4b")
+        val part=File(ui.activity.filesDir,"local-models/${artifact.sha256}.part").apply{parentFile!!.mkdirs();writeText("part")}
+        ui.onNodeWithContentDescription("Ayarlar").performClick()
+        ui.onNodeWithText("Otomatik AI kurulumu").clickMock()
+        ui.waitUntil(15000){ui.onAllNodesWithText("Aygıtta",substring=true).fetchSemanticsNodes().isNotEmpty()}
+        ui.onNodeWithContentDescription(artifact.name).assertIsSelected()
+        ui.onNodeWithContentDescription("GPU dil modeli").assertIsOff()
+        ui.onNodeWithText("AI tanılamasını göster").performScrollTo().clickMock()
+        ui.onNodeWithText("Tanılamayı kopyala").performScrollTo().clickMock()
+        ui.onNodeWithText("Tanılama kopyalandı").assertExists()
+        assert(part.readText()=="part")
+    }
     /** Prepared deterministic study fixture: exercises UI/answer persistence, not model quality. */
     @Test fun timedMockHidesAnswersUntilSubmissionAndStoresSelfAssessment(){
         ui.onNodeWithText("Yeni proje").performClick()

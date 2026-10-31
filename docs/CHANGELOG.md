@@ -1,5 +1,12 @@
 # Changes
 
+## 1.3.1
+
+- Added CPU-language/GPU-vision compatibility setup, optional bounded GPU→CPU recovery and cached model selection/retesting without deleting downloaded weights.
+- Added private local startup-stage/RAM metadata, Android 11+ process-exit diagnostics, Android 10 fallback and explicit diagnostic copying.
+- Apply the tested backend when opening study tools; separate compiled runtime caches by model/backend. Retain native-process isolation and elevate bound-service importance.
+- Keep the original signing key and existing private model/project storage. The native runtime remains 0.16.1; this does not claim a confirmed fix for an unknown physical-device crash.
+
 ## 1.3.0
 
 - Added automatic pinned-model setup with HTTPS download, SHA/size verification, pause/resume, network constraints, safe candidate activation and automatic image-input testing.

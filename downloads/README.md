@@ -1,6 +1,6 @@
 # StudyFuse downloads
 
-- [StudyFuse-debug.apk](StudyFuse-debug.apk?raw=true): ARM64 Android 10+ evaluation build (version 1.3.0), suitable for HONOR MagicPad 2. Contains bundled printed-text OCR and the local AI runtime. Use in-app automatic setup to download and test a pinned vision model; manual import remains available. Model data is several GB and is not bundled in the APK.
+- [StudyFuse-debug.apk](StudyFuse-debug.apk?raw=true): ARM64 Android 10+ evaluation build (version 1.3.1), suitable for HONOR MagicPad 2. Contains bundled printed-text OCR and the local AI runtime. Use in-app automatic setup to download and test a pinned vision model; manual import remains available. Model data is several GB and is not bundled in the APK.
 - [StudyFuse-Android-Studio.zip](StudyFuse-Android-Studio.zip?raw=true): complete source project, Gradle wrapper, resources, fixtures, tests and documentation. SDKs, caches and signing keys are excluded.
 - [StudyFuse-device-tests.apk](StudyFuse-device-tests.apk?raw=true): instrumentation tests for a connected Android device; the matching debug app must be installed first.
 - [SHA256SUMS.txt](SHA256SUMS.txt): hashes of these download files.
