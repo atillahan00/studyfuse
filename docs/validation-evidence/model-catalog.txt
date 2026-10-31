@@ -1,18 +1,17 @@
-StudyFuse 1.3 model transport metadata validation
-Run: https://github.com/atillahan00/studyfuse/actions/runs/41199749074
-Job: 124533030418; conclusion: success
-Source: cf07ca8a8241dba441fe7756cc90b1fb394ba825
+StudyFuse 1.3.1 model metadata/transport verification
+Run: https://github.com/atillahan00/studyfuse/actions/runs/41207594062
+Job 124555751468: completed / success
+Source: d3cebfc105010e90759ead46b7ce51586707fb9b
 
-2026-10-31T12:08:20.1417530Z   "verified": true,
-2026-10-31T12:08:20.1418051Z   "models": [
-2026-10-31T12:08:20.1421440Z       "model": "gemma4-e2b",
-2026-10-31T12:08:20.1422076Z       "sha256": "181938105e0eefd105961417e8da75903eacda102c4fce9ce90f50b97139a63c",
-2026-10-31T12:08:20.1422528Z       "bytes": 2588147712,
-2026-10-31T12:08:20.1422817Z       "public_metadata_verified": true,
-2026-10-31T12:08:20.1423130Z       "https_sample_bytes": 64
-2026-10-31T12:08:20.1423768Z       "model": "gemma4-e4b",
-2026-10-31T12:08:20.1424229Z       "sha256": "0b2a8980ce155fd97673d8e820b4d29d9c7d99b8fa6806f425d969b145bd52e0",
-2026-10-31T12:08:20.1424650Z       "bytes": 3659530240,
-2026-10-31T12:08:20.1424911Z       "public_metadata_verified": true,
-2026-10-31T12:08:20.1425204Z       "https_sample_bytes": 64
-2026-10-31T12:08:20.1426049Z   "note": "This is not a full model download, native compatibility test or handwriting benchmark."
+2026-10-31T13:53:39.0092837Z   "verified": true,
+2026-10-31T13:53:39.0093630Z       "model": "gemma4-e2b",
+2026-10-31T13:53:39.0094119Z       "sha256": "181938105e0eefd105961417e8da75903eacda102c4fce9ce90f50b97139a63c",
+2026-10-31T13:53:39.0094630Z       "bytes": 2588147712,
+2026-10-31T13:53:39.0094930Z       "public_metadata_verified": true,
+2026-10-31T13:53:39.0095278Z       "https_sample_bytes": 64
+2026-10-31T13:53:39.0096022Z       "model": "gemma4-e4b",
+2026-10-31T13:53:39.0096579Z       "sha256": "0b2a8980ce155fd97673d8e820b4d29d9c7d99b8fa6806f425d969b145bd52e0",
+2026-10-31T13:53:39.0097069Z       "bytes": 3659530240,
+2026-10-31T13:53:39.0097356Z       "public_metadata_verified": true,
+2026-10-31T13:53:39.0097689Z       "https_sample_bytes": 64
+2026-10-31T13:53:39.0098610Z   "note": "This is not a full model download, native compatibility test or handwriting benchmark."

@@ -12,7 +12,7 @@ Independent PyMuPDF checks passed for mixed source colours, all 200 tall-page ba
 
 ## Hosted Android checks
 
-[Run 41207594062](https://github.com/atillahan00/studyfuse/actions/runs/41207594062) validates the source above. At this intermediate publication the hosted jobs are still running; their results are not inferred from local success. The connected suite also asserts that native-startup diagnostics were recorded in the separate child PID, with no prompt/response fields. This checks failure isolation and reporting, not full-model compatibility on the physical MagicPad 2.
+[Run 41207594062](https://github.com/atillahan00/studyfuse/actions/runs/41207594062) validates the source above. All three hosted jobs **passed**: build/test/lint/APKs, pinned model metadata/range verification, and **six connected Android 15 / API 35 tablet-emulator tests**. Logs show Starting 6 tests, Finished 6 tests and BUILD SUCCESSFUL. See `github-build.txt`, `model-catalog.txt` and `android-runtime.txt` in the evidence directory. The connected suite also asserts that native-startup diagnostics were recorded in the separate child PID, with no prompt/response fields. This checks failure isolation and reporting, not full-model compatibility on the physical MagicPad 2.
 
 ## Delivered APK
 
@@ -22,7 +22,7 @@ Version **1.3.1 / versionCode 5**, package `org.studyfuse`, min API 29, target A
 1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b
 ```
 
-Updating in place preserves private projects and downloaded weights; uninstalling or clearing app storage does not. The native libraries remain identical to 1.3, and no model weights/private key are shipped. Internet/network-state permissions are for explicit model transfer; broad storage permissions remain absent. Public download round-trip verification is recorded when the updated artifact is published.
+Updating in place preserves private projects and downloaded weights; uninstalling or clearing app storage does not. The native libraries remain identical to 1.3, and no model weights/private key are shipped. Internet/network-state permissions are for explicit model transfer; broad storage permissions remain absent. The public APK was downloaded again and matched the delivered size and SHA-256: `41656aec53874805ef08447bbcbb98584d862ea58b2229157fc7eba632979c26`; see `public-apk-download.json`. The source ZIP is separately checksummed in downloads/SHA256SUMS.txt.
 
 ## Limits
 
