@@ -1,5 +1,11 @@
 # Changes
 
+## 1.3.2
+
+- Reproduced the pinned SDK Flow adapter's NoSuchMethodError in its completion callback; switched production generation to the callback overload with app-compiled completion, bounded accumulation and cancellation.
+- Added actual published-SDK ABI regression checks, normal/error/threaded/late/oversize/cancel bridge tests and sanitized uncaught child-error capture. A model-weight or SDK upgrade is not required.
+- Prior startup/failure tests did not exercise successful SDK completion; physical tablet success still needs a retry with the preserved model.
+
 ## 1.3.1
 
 - Added CPU-language/GPU-vision compatibility setup, optional bounded GPU→CPU recovery and cached model selection/retesting without deleting downloaded weights.

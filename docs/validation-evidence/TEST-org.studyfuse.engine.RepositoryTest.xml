@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.engine.RepositoryTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-31T13:52:08.464Z" hostname="1b4ee2135e4b" time="0.597">
+<testsuite name="org.studyfuse.engine.RepositoryTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-31T15:42:10.326Z" hostname="1b4ee2135e4b" time="0.501">
   <properties/>
-  <testcase name="replacementKeepsOriginalAndSectionPosition" classname="org.studyfuse.engine.RepositoryTest" time="0.159"/>
-  <testcase name="staleCancelledWorkerCannotOverwriteNewGeneration" classname="org.studyfuse.engine.RepositoryTest" time="0.102"/>
-  <testcase name="failedProjectUpdateRollsBackSourceAndRemovesImportedCopy" classname="org.studyfuse.engine.RepositoryTest" time="0.107"/>
-  <testcase name="safImportIsDurableAndCanBeReordered" classname="org.studyfuse.engine.RepositoryTest" time="0.12"/>
-  <testcase name="emptyImportDoesNotCreatePhantomSource" classname="org.studyfuse.engine.RepositoryTest" time="0.107"/>
+  <testcase name="replacementKeepsOriginalAndSectionPosition" classname="org.studyfuse.engine.RepositoryTest" time="0.109"/>
+  <testcase name="staleCancelledWorkerCannotOverwriteNewGeneration" classname="org.studyfuse.engine.RepositoryTest" time="0.097"/>
+  <testcase name="failedProjectUpdateRollsBackSourceAndRemovesImportedCopy" classname="org.studyfuse.engine.RepositoryTest" time="0.088"/>
+  <testcase name="safImportIsDurableAndCanBeReordered" classname="org.studyfuse.engine.RepositoryTest" time="0.103"/>
+  <testcase name="emptyImportDoesNotCreatePhantomSource" classname="org.studyfuse.engine.RepositoryTest" time="0.099"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

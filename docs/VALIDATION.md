@@ -1,31 +1,37 @@
-# StudyFuse 1.3.1 validation
+# StudyFuse 1.3.2 validation
 
-Source: `d3cebfc105010e90759ead46b7ce51586707fb9b`. Runtime remains LiteRT-LM 0.16.1. This patch addresses recovery and diagnostics after the reported native-process stop; it does not establish that the user's original device crash is cured.
+Source: `0c41ffd92fc84909bee007fb6f34bf823104f25e`. Runtime remains LiteRT-LM 0.16.1; the production app now avoids its broken Flow completion adapter.
+
+## Reproduced defect and correction
+
+Inspection of the actual published SDK class `Conversation$sendMessageAsync$1$1` shows an interface-static call to `SendChannel.close$default` in `onDone`. The cached 1.10.1/1.10.2 coroutine interfaces lack that method. The regression test instantiates the actual SDK callback with a ProducerScope proxy and observes **NoSuchMethodError**, without model weights, GPU inference or substituted SDK bytecode. The production callback API plus app-compiled deferred completion avoids that SDK Flow class. Bytecode and tests are in `validation-evidence/sdk-completion-bytecode.txt` and `TEST-org.studyfuse.engine.CallbackGenerationTest.xml`.
+
+The user's 1.3.1 screenshot reports CPU language/GPU vision, VISION_GENERATION and Android CRASH, matching this backend-independent completion failure. It does not contain the actual exception, so the physical tablet's precise failure is still an inference. Prior tests covered native startup/failure isolation and controlled inference adapters, but missed successful SDK completion; their passing results were not proof of usable model inference.
+
+The bridge preserves received Unicode chunks within a 90,000-character bound, reports oversize output explicitly, handles threaded completion/errors, propagates registration failures, cancels on timeout/failure and ignores duplicate/late callbacks. Uncaught child errors now retain only the error class and up to 12 filtered class/method/line entries, with no exception messages, source paths, prompts, responses or raw crash dump. Android's existing crash handler still receives the exception.
 
 ## Local checks
 
-The complete core/JVM/Robolectric suite passed **105 tests**, with zero failures, errors or skips (34 core, 71 Android JVM tests). Lint: **0 errors, 8 warnings**. The ARM64 application and connected-test APKs built successfully with JDK 21, Gradle 8.13, SDK 36 and Build Tools 35.0.0. XML and build logs are in `validation-evidence/`.
+The full suite passed **114 JVM/Robolectric tests** (34 core, 80 Android JVM), with zero failures, errors or skips. Lint: **0 errors, 8 warnings**. Both the ARM64 app and connected-test APK built successfully using JDK 21, Gradle 8.13, SDK 36 and Build Tools 35.0.0. An initial new assertion incorrectly required exception object identity across coroutine stack recovery; the corrected check verifies the error type/message and cancellation, and the complete suite passes.
 
-New checks exercise GPU→CPU recovery, CPU failure, both-backend failure, cancellation without a new attempt, unchanged downloaded bytes, privacy-limited startup fields, Android 10's lack of exit-info support, model/device-bound backend selection, and actual cached-choice/CPU-default/diagnostic-copy controls in Compose. Backend recovery uses controlled failure adapters, not full weight loading or a handwriting benchmark. The initial new UI check incorrectly attempted to scroll a nonscrolling settings dialog; the corrected full suite passes.
+Independent PyMuPDF checks passed for all 200 tall-page bands including the last, mixed source colours, 29 report/output pages and retained JPX data. XML/build logs and actual SDK bytecode are delivered under `validation-evidence/`.
 
-Independent PyMuPDF checks passed for mixed source colours, all 200 tall-page bands including the final band, 29 report/output pages and retained JPX data. Existing document preservation and source-linked study behavior remain covered.
+## Hosted checks
 
-## Hosted Android checks
-
-[Run 41207594062](https://github.com/atillahan00/studyfuse/actions/runs/41207594062) validates the source above. All three hosted jobs **passed**: build/test/lint/APKs, pinned model metadata/range verification, and **six connected Android 15 / API 35 tablet-emulator tests**. Logs show Starting 6 tests, Finished 6 tests and BUILD SUCCESSFUL. See `github-build.txt`, `model-catalog.txt` and `android-runtime.txt` in the evidence directory. The connected suite also asserts that native-startup diagnostics were recorded in the separate child PID, with no prompt/response fields. This checks failure isolation and reporting, not full-model compatibility on the physical MagicPad 2.
+[Run 41216232004](https://github.com/atillahan00/studyfuse/actions/runs/41216232004) validates the source above. The build/tests/lint/APK and public-model metadata/range jobs passed. The Android 15 / API 35 x86_64 tablet-emulator job is running at this intermediate publication; no connected result is inferred from local success. The new connected test invokes the published SDK callback to reproduce the missing-method error on Android and then completes through the production app bridge. It does not load neural weights.
 
 ## Delivered APK
 
-Version **1.3.1 / versionCode 5**, package `org.studyfuse`, min API 29, target API 36, ARM64. Size: **86,032,921 bytes** (about 82 MiB). APK signature and 16 KiB ZIP/ELF alignment passed. Certificate SHA-256 is unchanged:
+Version **1.3.2 / versionCode 6**, package `org.studyfuse`, min API 29, target API 36, ARM64. Size: **86,032,921 bytes** (about 82 MiB). Signature and 16 KiB ZIP alignment passed; every packaged native library matches the previously verified SHA/ELF alignment. Certificate SHA-256 is unchanged:
 
 ```
 1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b
 ```
 
-Updating in place preserves private projects and downloaded weights; uninstalling or clearing app storage does not. The native libraries remain identical to 1.3, and no model weights/private key are shipped. Internet/network-state permissions are for explicit model transfer; broad storage permissions remain absent. The public APK was downloaded again and matched the delivered size and SHA-256: `41656aec53874805ef08447bbcbb98584d862ea58b2229157fc7eba632979c26`; see `public-apk-download.json`. The source ZIP is separately checksummed in downloads/SHA256SUMS.txt.
+Install over the existing direct-download app to retain private projects and downloaded models. Native library bytes, catalog weights and source-document conversion remain unchanged. No private key or model weights are included. Public download verification is recorded after the updated file is published.
 
 ## Limits
 
-The user's screenshot establishes that the old separate AI process disconnected; it does not distinguish native crash, memory termination or another exit. No physical MagicPad 2 or complete model is available here. Android process-exit reasons can be delayed/unavailable, and Android 10 has no historical-exit API. CPU language mode still requires GPU vision, and a successful randomized image probe is not proof of handwriting/math correctness or exam accuracy. Source review remains necessary. The patch retains 0.16.1 rather than claiming that an untested SDK upgrade fixes an unidentified failure.
+No physical MagicPad 2 or full vision model is available locally. The actual SDK completion ABI failure is reproduced and the replacement is tested; these facts do not certify every driver, native runtime, handwriting interpretation or educational answer. Re-test the preserved model on the tablet. Failed image probes never mark a model ready, and CPU language mode still requires GPU vision. New fatal diagnostics supplement Android exit records when a different uncaught error occurs. Source review remains necessary.
 
-See [recovery steps](AI_TROUBLESHOOTING.md), [known limitations](KNOWN_LIMITATIONS.md), and the historical [1.3 record](VALIDATION-1.3.md).
+See [troubleshooting](AI_TROUBLESHOOTING.md), [known limitations](KNOWN_LIMITATIONS.md), and the historical [1.3.1 record](VALIDATION-1.3.1.md).

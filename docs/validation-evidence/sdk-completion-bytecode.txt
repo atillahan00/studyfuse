@@ -1,0 +1,78 @@
+StudyFuse 1.3.2 SDK completion ABI evidence
+Pinned SDK: com.google.ai.edge.litertlm:litertlm-android:0.16.1
+Actual published SDK completion bytecode, followed by cached coroutine interface declarations.
+The regression tests additionally invoke this callback against their resolved runtime.
+
+Compiled from "Conversation.kt"
+public final class com.google.ai.edge.litertlm.Conversation$sendMessageAsync$1$1 implements com.google.ai.edge.litertlm.MessageCallback {
+  final kotlinx.coroutines.channels.ProducerScope<com.google.ai.edge.litertlm.Message> $$this$callbackFlow;
+
+  com.google.ai.edge.litertlm.Conversation$sendMessageAsync$1$1(kotlinx.coroutines.channels.ProducerScope<? super com.google.ai.edge.litertlm.Message>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #13                 // Field $$this$callbackFlow:Lkotlinx/coroutines/channels/ProducerScope;
+       5: aload_0
+       6: invokespecial #16                 // Method java/lang/Object."<init>":()V
+       9: return
+
+  public void onMessage(com.google.ai.edge.litertlm.Message);
+    Code:
+       0: aload_1
+       1: ldc           #22                 // String message
+       3: invokestatic  #28                 // Method kotlin/jvm/internal/Intrinsics.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V
+       6: aload_0
+       7: getfield      #13                 // Field $$this$callbackFlow:Lkotlinx/coroutines/channels/ProducerScope;
+      10: aload_1
+      11: invokeinterface #34,  2           // InterfaceMethod kotlinx/coroutines/channels/ProducerScope."trySend-JP2dKIU":(Ljava/lang/Object;)Ljava/lang/Object;
+      16: astore_2
+      17: return
+
+  public void onDone();
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field $$this$callbackFlow:Lkotlinx/coroutines/channels/ProducerScope;
+       4: checkcast     #40                 // class kotlinx/coroutines/channels/SendChannel
+       7: aconst_null
+       8: iconst_1
+       9: aconst_null
+      10: invokestatic  #44                 // InterfaceMethod kotlinx/coroutines/channels/SendChannel.close$default:(Lkotlinx/coroutines/channels/SendChannel;Ljava/lang/Throwable;ILjava/lang/Object;)Z
+      13: pop
+      14: return
+
+  public void onError(java.lang.Throwable);
+    Code:
+       0: aload_1
+       1: ldc           #48                 // String throwable
+       3: invokestatic  #28                 // Method kotlin/jvm/internal/Intrinsics.checkNotNullParameter:(Ljava/lang/Object;Ljava/lang/String;)V
+       6: aload_0
+       7: getfield      #13                 // Field $$this$callbackFlow:Lkotlinx/coroutines/channels/ProducerScope;
+      10: aload_1
+      11: invokeinterface #52,  2           // InterfaceMethod kotlinx/coroutines/channels/ProducerScope.close:(Ljava/lang/Throwable;)Z
+      16: pop
+      17: return
+}
+
+Coroutines 1.10.1 jar SHA256: 069c5988633230e074ec0d39321ec3cdaa4547c49e90ba936c63d8fc91c8c00d
+Compiled from "Channel.kt"
+public interface kotlinx.coroutines.channels.SendChannel<E> {
+  public abstract boolean isClosedForSend();
+  public abstract java.lang.Object send(E, kotlin.coroutines.Continuation<? super kotlin.Unit>);
+  public abstract kotlinx.coroutines.selects.SelectClause2<E, kotlinx.coroutines.channels.SendChannel<E>> getOnSend();
+  public abstract java.lang.Object trySend-JP2dKIU(E);
+  public abstract boolean close(java.lang.Throwable);
+  public abstract void invokeOnClose(kotlin.jvm.functions.Function1<? super java.lang.Throwable, kotlin.Unit>);
+  public abstract boolean offer(E);
+}
+
+Coroutines 1.10.2 jar SHA256: 5ca175b38df331fd64155b35cd8cae1251fa9ee369709b36d42e0a288ccce3fd
+Compiled from "Channel.kt"
+public interface kotlinx.coroutines.channels.SendChannel<E> {
+  public abstract boolean isClosedForSend();
+  public abstract java.lang.Object send(E, kotlin.coroutines.Continuation<? super kotlin.Unit>);
+  public abstract kotlinx.coroutines.selects.SelectClause2<E, kotlinx.coroutines.channels.SendChannel<E>> getOnSend();
+  public abstract java.lang.Object trySend-JP2dKIU(E);
+  public abstract boolean close(java.lang.Throwable);
+  public abstract void invokeOnClose(kotlin.jvm.functions.Function1<? super java.lang.Throwable, kotlin.Unit>);
+  public abstract boolean offer(E);
+}

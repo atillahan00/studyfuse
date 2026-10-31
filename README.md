@@ -1,10 +1,16 @@
-# StudyFuse 1.3.1 — Automatic offline AI and a source-based study workspace
+# StudyFuse 1.3.2 — Automatic offline AI and a source-based study workspace
 
 Compile PDFs, handwritten-note screenshots and UTF-8 text into one organized study document, then prepare source-linked exam notes with an automatically installed on-device vision model. Native Kotlin, Jetpack Compose and Material 3, with a Turkish tablet interface. Android 10+; targets Android 16. The direct APK is **ARM64**, suitable for the HONOR MagicPad 2; CI also builds x86_64 support for emulator testing.
 
 [Download APK](https://github.com/atillahan00/studyfuse/raw/refs/heads/main/downloads/StudyFuse-debug.apk) · [Android Studio project ZIP](https://github.com/atillahan00/studyfuse/raw/refs/heads/main/downloads/StudyFuse-Android-Studio.zip) · [Download checksums](downloads/SHA256SUMS.txt) · [Builds and Android tests](https://github.com/atillahan00/studyfuse/actions/workflows/android.yml)
 
 **Office and OneNote files require source-app PDF export/replacement.** Unsupported sources receive explicit warning pages. Bundled ML Kit OCR recognizes printed Latin text. The separately installed visual language model can interpret handwriting, images, graphs and equations, but those interpretations are **unverified AI drafts**, not guaranteed recognition. The app uses Internet for student-initiated public model downloads, with no mandatory paid API or remote inference. Documents and prompts stay on device; study processing works offline after setup.
+
+## 1.3.2: fix AI response-completion crash
+
+A real compatibility defect in the pinned LiteRT-LM 0.16.1 Flow adapter invokes a missing coroutine method when generation finishes. This affects CPU and GPU and can leave the last diagnostic stage at VISION_GENERATION with Android's CRASH reason. StudyFuse now uses the SDK's callback overload with app-compiled, bounded response accumulation/completion and cancellation. Regression checks invoke the actual SDK completion class to reproduce the failure, then test the production bridge; no model weights are needed for this ABI check. See the [upstream issue](https://github.com/google-ai-edge/LiteRT-LM/issues/3334) and [validation record](docs/VALIDATION.md).
+
+Install the update over the existing app, retain the E2B download, and choose **İndirilen modeli yeniden sına**. The model file/runtime binary are unchanged. Child-process uncaught errors now retain only their class and up to 12 filtered code-frame names/line numbers, without exception messages, prompts, responses or source paths. Physical-device inference/handwriting quality still needs student review and testing.
 
 ## 1.3.1: recover model setup without downloading again
 
@@ -73,7 +79,7 @@ Model storage/download size is several GB; runtime memory is additional. Text ex
 
 ## Install and update
 
-Install `StudyFuse-debug.apk` on an ARM64 Android 10+ device. This is an evaluation/debug APK, not a Play Store production release. Android may request permission to install from the application opening it. The directly downloadable 1.3.1 APK retains the previous direct download's development signing key; back up important projects before updating.
+Install `StudyFuse-debug.apk` on an ARM64 Android 10+ device. This is an evaluation/debug APK, not a Play Store production release. Android may request permission to install from the application opening it. The directly downloadable 1.3.2 APK retains the previous direct download's development signing key; back up important projects before updating.
 
 CI-generated debug APKs may have a different signing key. Do not uninstall an existing installation to switch keys until its projects have been backed up. Physical-tablet/OEM behavior and arbitrary Office export fidelity are not universally certified.
 
@@ -110,7 +116,7 @@ python3 scripts/verify_pdf_artifacts.py
 
 Gradle 8.13 is pinned with a verified distribution checksum. Build dependencies need network on the first build; document processing does not. MuPDF is a development-only verifier, not linked into the Android app. Test reports are under `core/build/reports/tests/` and `app/build/reports/tests/testDebugUnitTest/`; lint is under `app/build/reports/`.
 
-The [1.3.1 validation run passed](https://github.com/atillahan00/studyfuse/actions/runs/41207594062): build/tests/lint/APKs, public-model metadata/range checks and **six native Android 15 / API 35 tablet-emulator tests**. The full local suite passed **105 JVM/Robolectric tests**, including backend recovery, cancellation, diagnostic privacy, Android 10 fallback and cached-setup controls. Independent MuPDF checks verified all 200 tall-page markers. The public APK was downloaded again and matched the delivered bytes. See [current validation evidence](docs/VALIDATION.md) and the historical [1.3 record](docs/VALIDATION-1.3.md). Native startup failure reporting is tested; the reported physical MagicPad 2 failure has not been reproduced or certified fixed here. A complete vision model/handwriting benchmark remains separate.
+The previous [1.3.1 validation run passed](https://github.com/atillahan00/studyfuse/actions/runs/41207594062) its build/transport checks and six native Android tests. Those tests did not exercise successful SDK generation completion and missed its binary-compatibility defect. Version 1.3.2 adds an actual SDK completion reproducer and production-bridge checks. See [current validation](docs/VALIDATION.md) and the historical [1.3.1 record](docs/VALIDATION-1.3.1.md).
 
 For an independently managed production signing key, set `STUDYFUSE_SIGNING_STORE`, `STUDYFUSE_STORE_PASSWORD`, `STUDYFUSE_KEY_ALIAS`, and `STUDYFUSE_KEY_PASSWORD`, then build `:app:assembleRelease`. Keep the same key for updates and keep it private. No signing keys or passwords are committed. CI validation artifacts are not a substitute for a persistent release signing setup.
 

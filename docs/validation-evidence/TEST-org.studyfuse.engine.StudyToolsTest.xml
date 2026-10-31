@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.engine.StudyToolsTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-31T13:52:09.121Z" hostname="1b4ee2135e4b" time="0.82">
+<testsuite name="org.studyfuse.engine.StudyToolsTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-31T15:42:10.857Z" hostname="1b4ee2135e4b" time="1.206">
   <properties/>
-  <testcase name="longVisualReadingsAreIndexedWithoutDroppingTextOrBreakingUnicode" classname="org.studyfuse.engine.StudyToolsTest" time="0.042"/>
-  <testcase name="clozeRequiresAnExactSourceTermAndPreservesProvenance" classname="org.studyfuse.engine.StudyToolsTest" time="0.076"/>
-  <testcase name="enrichedKnowledgeIsSeparatedFromSourceAnswer" classname="org.studyfuse.engine.StudyToolsTest" time="0.038"/>
-  <testcase name="mockMarkingUpdatesReviewOnceAndRejectsDuplicateGrade" classname="org.studyfuse.engine.StudyToolsTest" time="0.07"/>
-  <testcase name="malformedSavedDeckIsRejectedBeforeUiRendering" classname="org.studyfuse.engine.StudyToolsTest" time="0.067"/>
-  <testcase name="mockCannotExportAnswerKeyBeforeSubmission" classname="org.studyfuse.engine.StudyToolsTest" time="0.12"/>
-  <testcase name="unsupportedEvidenceCannotBecomeAnswers" classname="org.studyfuse.engine.StudyToolsTest" time="0.034"/>
-  <testcase name="sourceCitedCoachResultIsAcceptedButStillADraft" classname="org.studyfuse.engine.StudyToolsTest" time="0.065"/>
-  <testcase name="unknownCitationsCannotBecomeAnswers" classname="org.studyfuse.engine.StudyToolsTest" time="0.029"/>
-  <testcase name="translatedSearchKeywordsRetrieveGermanEvidenceWithoutBecomingAnAnswer" classname="org.studyfuse.engine.StudyToolsTest" time="0.075"/>
-  <testcase name="timedMockSurvivesReopeningAndRejectsLateAnswers" classname="org.studyfuse.engine.StudyToolsTest" time="0.03"/>
-  <testcase name="ankiExportEscapesFieldsInsteadOfCreatingExtraColumns" classname="org.studyfuse.engine.StudyToolsTest" time="0.08"/>
-  <testcase name="externalKnowledgeIsRejectedInDocumentsOnly" classname="org.studyfuse.engine.StudyToolsTest" time="0.067"/>
-  <testcase name="generatedCardsAreStoredWithoutAutomaticApproval" classname="org.studyfuse.engine.StudyToolsTest" time="0.027"/>
+  <testcase name="longVisualReadingsAreIndexedWithoutDroppingTextOrBreakingUnicode" classname="org.studyfuse.engine.StudyToolsTest" time="0.066"/>
+  <testcase name="clozeRequiresAnExactSourceTermAndPreservesProvenance" classname="org.studyfuse.engine.StudyToolsTest" time="0.039"/>
+  <testcase name="enrichedKnowledgeIsSeparatedFromSourceAnswer" classname="org.studyfuse.engine.StudyToolsTest" time="0.091"/>
+  <testcase name="mockMarkingUpdatesReviewOnceAndRejectsDuplicateGrade" classname="org.studyfuse.engine.StudyToolsTest" time="0.092"/>
+  <testcase name="malformedSavedDeckIsRejectedBeforeUiRendering" classname="org.studyfuse.engine.StudyToolsTest" time="0.095"/>
+  <testcase name="mockCannotExportAnswerKeyBeforeSubmission" classname="org.studyfuse.engine.StudyToolsTest" time="0.085"/>
+  <testcase name="unsupportedEvidenceCannotBecomeAnswers" classname="org.studyfuse.engine.StudyToolsTest" time="0.069"/>
+  <testcase name="sourceCitedCoachResultIsAcceptedButStillADraft" classname="org.studyfuse.engine.StudyToolsTest" time="0.1"/>
+  <testcase name="unknownCitationsCannotBecomeAnswers" classname="org.studyfuse.engine.StudyToolsTest" time="0.052"/>
+  <testcase name="translatedSearchKeywordsRetrieveGermanEvidenceWithoutBecomingAnAnswer" classname="org.studyfuse.engine.StudyToolsTest" time="0.097"/>
+  <testcase name="timedMockSurvivesReopeningAndRejectsLateAnswers" classname="org.studyfuse.engine.StudyToolsTest" time="0.108"/>
+  <testcase name="ankiExportEscapesFieldsInsteadOfCreatingExtraColumns" classname="org.studyfuse.engine.StudyToolsTest" time="0.094"/>
+  <testcase name="externalKnowledgeIsRejectedInDocumentsOnly" classname="org.studyfuse.engine.StudyToolsTest" time="0.059"/>
+  <testcase name="generatedCardsAreStoredWithoutAutomaticApproval" classname="org.studyfuse.engine.StudyToolsTest" time="0.092"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
