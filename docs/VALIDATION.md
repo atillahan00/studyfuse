@@ -18,7 +18,7 @@ Independent PyMuPDF checks passed for all 200 tall-page bands including the last
 
 ## Hosted checks
 
-[Run 41216232004](https://github.com/atillahan00/studyfuse/actions/runs/41216232004) validates the source above. The build/tests/lint/APK and public-model metadata/range jobs passed. The Android 15 / API 35 x86_64 tablet-emulator job is running at this intermediate publication; no connected result is inferred from local success. The new connected test invokes the published SDK callback to reproduce the missing-method error on Android and then completes through the production app bridge. It does not load neural weights.
+[Run 41216232004](https://github.com/atillahan00/studyfuse/actions/runs/41216232004) validates the source above. The build/tests/lint/APK and public-model metadata/range jobs passed. The Android 15 / API 35 x86_64 tablet-emulator job **passed all seven connected tests**; all three workflow jobs completed successfully. Logs show Starting 7 tests, Finished 7 tests and BUILD SUCCESSFUL. The SDK completion ABI failure and successful app bridge were observed on Android as well as the JVM. The new connected test invokes the published SDK callback to reproduce the missing-method error on Android and then completes through the production app bridge. It does not load neural weights.
 
 ## Delivered APK
 
@@ -28,7 +28,7 @@ Version **1.3.2 / versionCode 6**, package `org.studyfuse`, min API 29, target A
 1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b
 ```
 
-Install over the existing direct-download app to retain private projects and downloaded models. Native library bytes, catalog weights and source-document conversion remain unchanged. No private key or model weights are included. Public download verification is recorded after the updated file is published.
+Install over the existing direct-download app to retain private projects and downloaded models. Native library bytes, catalog weights and source-document conversion remain unchanged. No private key or model weights are included. The public APK was downloaded again and matched the delivered size and SHA-256: `726106464de8ee16459b6ec001b7cf751fef10dbb7f474ea68f999a795adb802`. See `public-apk-download.json`. The complete source ZIP is separately checksummed in downloads/SHA256SUMS.txt.
 
 ## Limits
 
