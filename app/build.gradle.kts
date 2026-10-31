@@ -38,6 +38,7 @@ android {
 kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
 tasks.withType<Test>().configureEach {
     maxHeapSize = "2g"
+    testLogging { showStandardStreams = true }
     listOf("user.home","https.proxyHost","https.proxyPort","http.proxyHost","http.proxyPort","javax.net.ssl.trustStore").forEach { key ->
         System.getProperty(key)?.let { systemProperty(key,it) }
     }

@@ -2,6 +2,7 @@ package org.studyfuse.engine
 
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.test.*
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import org.junit.*
 import org.junit.runner.RunWith
@@ -18,6 +19,9 @@ import org.studyfuse.learning.*
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class UiTest {
     @get:Rule val ui=createAndroidComposeRule<MainActivity>()
+    private var mockDiagnostics:ExamStore?=null
+    private fun SemanticsNodeInteraction.clickMock() = assertIsEnabled().performSemanticsAction(SemanticsActions.OnClick){it()}
+    private fun awaitMock(condition:()->Boolean) { ui.waitUntil(15000){ui.mainClock.advanceTimeByFrame();condition()} }
     @Test fun homeAndThemeControlsWorkInTurkish() {
         ui.onNodeWithText("Yeni proje").assertExists()
         ui.onNodeWithText("Dosya içe aktar").assertExists()
@@ -85,7 +89,7 @@ class UiTest {
         ui.waitUntil(15000){ui.onAllNodesWithText("AI öğrenme merkezi").fetchSemanticsNodes().isNotEmpty()}
         lateinit var model:org.studyfuse.ui.StudyViewModel
         ui.runOnIdle{model=org.robolectric.util.ReflectionHelpers.callInstanceMethod(ui.activity,"getModel")}
-        val id=model.selected.value!!;val dir=model.repo.directory(id);val store=ExamStore(dir)
+        val id=model.selected.value!!;val dir=model.repo.directory(id);val store=ExamStore(dir);mockDiagnostics=store
         val input=File(dir,"Biologie.txt").apply{writeText("Die Zelle enthält DNA.")}
         val source=org.studyfuse.data.Source(java.util.UUID.randomUUID().toString(),id,input.name,"Biologie",0,input.path,input.path,input.length(),sha256(input),"TEXT")
         runBlocking{
@@ -111,24 +115,33 @@ class UiTest {
             val diagnostics="selected=${model.selected.value}; expected=$id; project=${p?.id}; report=${p?.report}; appFiles=${model.repo.context.filesDir}; activityFiles=${ui.activity.filesDir}; model=${local?.digest}; stored=${store.session()?.optString("signature")}; computed=${if(local!=null && p?.report!=null)store.signature(File(p.report),local,store.config())else null}"
             File("build/test-artifacts/mock-ui-tree.txt").writeText(diagnostics+"\n"+ui.onAllNodes(isRoot()).onLast().printToString());screenshot("mock-ui-debug.png");throw t
         }
-        ui.onNodeWithText("Deneme",useUnmergedTree=true).performClick()
-        ui.onNodeWithText("Yeni deneme başlat").performScrollTo().performClick()
-        ui.waitUntil(10000){ui.onAllNodesWithText("Denemeyi teslim et").fetchSemanticsNodes().isNotEmpty()}
+        // Control countdown frames explicitly; exercise accessible button actions
+        // independently of Robolectric touch-dispatch timing and asynchronous saves.
+        ui.mainClock.autoAdvance=false
+        ui.onNodeWithText("Deneme").clickMock()
+        awaitMock{ui.onAllNodesWithText("Yeni deneme başlat").fetchSemanticsNodes().isNotEmpty()}
+        ui.onNodeWithText("Yeni deneme başlat").performScrollTo().clickMock()
+        awaitMock{ui.onAllNodesWithText("Denemeyi teslim et").fetchSemanticsNodes().isNotEmpty()}
         ui.onNodeWithText("Yanıt anahtarı: DNA").assertDoesNotExist()
         ui.onNode(hasSetTextAction() and hasText("Yanıtım")).performScrollTo().performTextInput("DNA")
-        ui.onNodeWithText("Denemeyi teslim et").performScrollTo().performClick()
-        ui.waitUntil(10000){ui.onAllNodesWithText("Yanıt anahtarı: DNA").fetchSemanticsNodes().isNotEmpty()}
+        ui.onNodeWithText("Denemeyi teslim et").performScrollTo().clickMock()
+        awaitMock{ui.onAllNodesWithText("Yanıt anahtarı: DNA").fetchSemanticsNodes().isNotEmpty()}
         // Expiry may reveal the key while asynchronous submission is still saving.
         // Wait for the enabled assessment control, not merely visible answer text.
-        ui.waitUntil(10000){ui.onAllNodes(hasText("0 / 2") and isEnabled()).fetchSemanticsNodes().isNotEmpty()}
-        ui.onNodeWithText("0 / 2").performScrollTo().assertIsEnabled().performClick()
-        ui.waitUntil(10000){StudyTools(store).data("mock.json").getJSONObject("marks").length()==1}
+        awaitMock{ui.onAllNodes(hasText("0 / 2") and isEnabled()).fetchSemanticsNodes().isNotEmpty()}
+        ui.onNodeWithText("0 / 2").performScrollTo().clickMock()
+        awaitMock{StudyTools(store).data("mock.json").getJSONObject("marks").length()==1}
         org.junit.Assert.assertEquals("DNA",StudyTools(store).data("mock.json").getJSONObject("answers").getString(StudyTools(store).data("mock.json").getJSONArray("cards").getJSONObject(0).getString("id")))
         screenshot("tablet-mock-exam.png")
     }
     @After fun captureFailedMockDiagnostics() {
         File("build/test-artifacts").mkdirs()
-        runCatching { File("build/test-artifacts/mock-final-ui-tree.txt").writeText(ui.onAllNodes(isRoot()).onLast().printToString()) }
+        if(mockDiagnostics!=null)runCatching {
+            val diagnostics=ui.onAllNodes(isRoot()).onLast().printToString()+"\n"+mockDiagnostics!!.root.resolve("mock.json").let{if(it.exists())it.readText()else "NO MOCK FILE"}
+            File("build/test-artifacts/mock-final-ui-tree.txt").writeText(diagnostics)
+            println("MOCK_DIAGNOSTICS\n"+diagnostics)
+        }
+        ui.mainClock.autoAdvance=true
     }
     private fun screenshot(name:String) {
         ui.waitForIdle()
