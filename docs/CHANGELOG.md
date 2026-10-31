@@ -1,5 +1,15 @@
 # Changes
 
+## 1.3.0
+
+- Added automatic pinned-model setup with HTTPS download, SHA/size verification, pause/resume, network constraints, safe candidate activation and automatic image-input testing.
+- Added a source-cited local study coach: Q&A, simpler explanations, Socratic-hint prompts, formative feedback, bilingual terminology, source comparison and practice-card generation.
+- Added multilingual search-term rewriting, bounded source retrieval, policy checks and citation matching.
+- Added reviewed/cloze cards, integration with the existing recall queue, Anki TSV export, timed mock exams, saved responses, separate answer keys and student self-marking.
+- Added daily plans based on due reviews and past lapses; expanded project backups for coach/deck/mock state.
+- Added model-download networking permissions and disabled known bundled-OCR DataTransport components. Printed OCR and native failure isolation are tested separately.
+- Automatic setup still needs several GB of model data. Real-device model compatibility/handwriting quality is not guaranteed, and no exam-grade promises are made.
+
 ## 1.2.0
 
 - Added actual local visual-model execution through LiteRT-LM, streamed model import, image-input compatibility testing and isolated native AI service process.

@@ -104,7 +104,7 @@ class ProjectArchive(private val repo:Repository) {
             id
         } catch(e:Exception) {dir.deleteRecursively();throw e}
     }
-    private fun studyEntry(name:String)=name in setOf("settings.json","session.json","review.json") || name.matches(Regex("units/[0-9a-f]{64}\\.json"))
+    private fun studyEntry(name:String)=name in setOf("settings.json","session.json","review.json","coach.json","cards.json","mock.json","plan.json") || name.matches(Regex("units/[0-9a-f]{64}\\.json"))
     private suspend fun copyChecked(input:InputStream,out:OutputStream,limit:Long=Long.MAX_VALUE) {
         val buffer=ByteArray(65536);var total=0L
         while(true) {currentCoroutineContext().ensureActive();val n=input.read(buffer);if(n<0)break

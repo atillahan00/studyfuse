@@ -46,6 +46,8 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
     var editor by remember{mutableStateOf<Source?>(null)}
     var conversions by remember{mutableStateOf(false)}
     var workshop by remember{mutableStateOf(false)}
+    var studyHub by remember{mutableStateOf(false)}
+    var automaticSetup by remember{mutableStateOf(false)}
     val replacements by model.replacements.collectAsStateWithLifecycle()
     val dark=if(mode==0) isSystemInDarkTheme() else mode==2
     MaterialTheme(colorScheme=if(dark) Dark else Light) {
@@ -77,6 +79,7 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
                             TextButton(onClick={model.backup(onSave)},enabled=!busy){Text("Proje yedeği kaydet")}
                             TextButton(onClick={conversions=true},enabled=!busy){Text("Office / OneNote hazırlığı")}
                             TextButton(onClick={workshop=true}){Text("Sınav atölyesi · Yerel AI")}
+                            TextButton(onClick={studyHub=true}){Text("AI öğrenme merkezi")}
                         }
                         if(importing) {
                             LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -110,11 +113,12 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
                 listOf("Sistem","Açık","Koyu").forEachIndexed { i,t -> Row(Modifier.fillMaxWidth().clickable {model.theme(i)},verticalAlignment=Alignment.CenterVertically) {
                     RadioButton(mode==i,{model.theme(i)}); Text(t)
                 } }
-                Text("İnternet ve geniş depolama izni kullanılmaz. Dosyalar uygulamanın özel alanına kopyalanır. " +
-                    "Yalnızca Paylaş düğmesine bastığında seçtiğin uygulamaya aktarılır. " +
+                Text("İnternet yalnızca başlattığın model indirmeleri için kullanılır; belgeler AI sunucusuna gönderilmez. Geniş depolama izni kullanılmaz. Dosyalar uygulamanın özel alanına kopyalanır. " +
+                    "Kaydet/Paylaş ile seçtiğin uygulama veya sağlayıcıya aktarılır. " +
                     "Projeyi silmek uygulamadaki kopyaları siler. Uygulamayı kaldırmadan önce PDF ve raporlarını kaydet.",
                     style=MaterialTheme.typography.bodySmall)
                 if(project!=null)TextButton(onClick={model.clearCache()},enabled=!busy){Text("Dönüştürme önbelleğini temizle")}
+                TextButton(onClick={preferences=false;automaticSetup=true}){Text("Otomatik AI kurulumu")}
             } },confirmButton={TextButton(onClick={preferences=false}){Text("Tamam")}})
         if(rename && project!=null) EditDialog("Proje adı",project!!.name,{rename=false}) {model.renameProject(it)}
         if(notice!=null) AlertDialog(onDismissRequest={model.notice.value=null},title={Text("İşlem bilgisi")},
@@ -124,6 +128,8 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
         editor?.let{s->PaginationEditor(s,SettingsCodec.decode(project?.settings ?: "{}"),{editor=null}){model.pagination(s,it)}}
         if(conversions)ConversionWizard(sources,onReplace,onBulkReplace,{conversions=false})
         if(workshop && project!=null)ExamWorkshop(project!!,sources,model,onImportModel,onSave,onShare,{workshop=false})
+        if(studyHub && project!=null)StudyHub(project!!,model,onSave,{studyHub=false;workshop=true},{studyHub=false})
+        if(automaticSetup)AlertDialog(onDismissRequest={automaticSetup=false},title={Text("Çevrimdışı AI")},text={Column(Modifier.heightIn(max=520.dp).verticalScroll(rememberScrollState())){AutomaticSetup(model,true)}},confirmButton={TextButton(onClick={automaticSetup=false}){Text("Kapat")}})
         if(replacements.isNotEmpty())AlertDialog(onDismissRequest={model.replacements.value=emptyList()},title={Text("PDF eşleştirmelerini onayla")},
             text={Column{Text("PDF'lerin tüm içeriği kapsadığını önizleyerek denetleyin. Orijinaller ve sıraları korunur.");replacements.forEach{Text("${it.source.name} → ${it.name}",style=MaterialTheme.typography.bodySmall)}}},
             confirmButton={TextButton(onClick={model.applyReplacements()}){Text("PDF'leri yerine koy")}},dismissButton={TextButton(onClick={model.replacements.value=emptyList()}){Text("Vazgeç")}})

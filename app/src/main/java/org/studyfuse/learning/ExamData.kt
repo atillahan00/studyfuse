@@ -48,7 +48,10 @@ class ExamStore(val project:File) {
     @Synchronized fun updateReview(id:String,change:(JSONObject)->Unit){val all=review();val item=all.optJSONObject(id) ?: JSONObject();change(item);all.put(id,item);atomicJson(File(root,"review.json"),all)}
     fun currentUnits(signature:String):List<JSONObject> {
         val session=session() ?: return emptyList();if(session.optString("signature")!=signature)return emptyList()
-        return session.getJSONArray("units").let{a->(0 until a.length()).mapNotNull{index->val key=a.getString(index);val f=unit(key);if(f.exists())validateUnit(readJson(f),key)else null}}
+        return session.getJSONArray("units").let{a->(0 until a.length()).mapNotNull{index->val key=a.getString(index);val f=unit(key);if(f.exists()){
+            // Keep full raw responses on disk/backups; do not duplicate them in every UI/search object.
+            validateUnit(readJson(f).apply{remove("raw");if(optString("error").length>2000)put("error",optString("error").take(2000)+"… Ayrıntı çalışma kaydında.")},key)
+        }else null}}
     }
     companion object {val execution=Mutex()}
 }

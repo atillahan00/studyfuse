@@ -1,10 +1,29 @@
-# StudyFuse 1.2 — Local visual AI and exam preparation for Android
+# StudyFuse 1.3 — Automatic offline AI and a source-based study workspace
 
 Compile PDFs, handwritten-note screenshots and UTF-8 text into one organized study document, then prepare source-linked exam notes with an imported on-device vision model. Native Kotlin, Jetpack Compose and Material 3, with a Turkish tablet interface. Android 10+; targets Android 16. The direct APK is **ARM64**, suitable for the HONOR MagicPad 2; CI also builds x86_64 support for emulator testing.
 
 [Download APK](https://github.com/atillahan00/studyfuse/raw/refs/heads/main/downloads/StudyFuse-debug.apk) · [Android Studio project ZIP](https://github.com/atillahan00/studyfuse/raw/refs/heads/main/downloads/StudyFuse-Android-Studio.zip) · [Download checksums](downloads/SHA256SUMS.txt) · [Builds and Android tests](https://github.com/atillahan00/studyfuse/actions/workflows/android.yml)
 
-**Office and OneNote files require source-app PDF export/replacement.** Unsupported sources receive explicit warning pages. Bundled ML Kit OCR recognizes printed Latin text. The new, separately imported visual language model can interpret handwriting, images, graphs and equations, but those interpretations are **unverified AI drafts**, not guaranteed recognition. The app has no Internet permission and no mandatory paid API; initial model acquisition is separate from offline analysis.
+**Office and OneNote files require source-app PDF export/replacement.** Unsupported sources receive explicit warning pages. Bundled ML Kit OCR recognizes printed Latin text. The new, separately imported visual language model can interpret handwriting, images, graphs and equations, but those interpretations are **unverified AI drafts**, not guaranteed recognition. The app uses Internet for student-initiated public model downloads, with no mandatory paid API or remote inference. Documents and prompts stay on device; study processing works offline after setup.
+
+## New in 1.3
+
+- **Automatic offline AI setup:** choose the smaller Gemma 4 E2B (2.59 GB) or E4B (3.66 GB). The app downloads a pinned public revision, supports pause/resume and unmetered-network constraints, checks exact byte size/SHA-256 and runs an image-input test before replacing the previous working model. Weights stay outside the small APK.
+- **Source-cited study coach:** question answering, simpler explanations, Socratic hints, student-answer feedback, German–Turkish terminology and cross-source comparison. Local search-term rewriting helps cross-language questions retrieve German/Turkish/English material. The model receives bounded excerpts, not an assumption that the entire library fits in one prompt.
+- **More practice cards:** generate source-supported questions, review them, create exact-quote cloze cards, use them in the existing spaced practice queue, and optionally export approved cards to Anki TSV.
+- **Timed mock exams:** topic-balanced selection from reviewed cards, stored answers/deadline, a hidden answer key until submission/expiry, student self-marking and an exportable response/answer sheet. These are practice exams, not predictions of a teacher's exam or official grading.
+- **Daily revision planning:** due questions and previous mistakes guide a time-budgeted plan. The planner is a transparent heuristic; there is no fabricated exam-readiness score or guaranteed grade.
+- **Recoverable study state:** source-policy-specific coach history, generated cards, mock responses and reviews are included in project backups. No document uploads, cloud account, subscription or paid API is needed for these workflows.
+
+### Start studying without manual model-file handling
+
+1. Install the APK. Open **Ayarlar → Otomatik AI kurulumu**, or find the same setup card inside **Sınav atölyesi · Yerel AI**.
+2. Choose a model and tap **Otomatik kur / sürdür**. The default network choice is unmetered/Wi-Fi. The app shows the several-GB download explicitly; it does not hide that storage/data requirement. A completed download can resume testing offline. An incompatible model/GPU is reported, rather than marked ready.
+3. Import your class documents, replace unsupported Office/OneNote inputs with source-app PDFs, and build the PDF. Generate the visual study reading in the exam workshop; inspect its coverage and uncertainties.
+4. Open **AI öğrenme merkezi**. Use **Koç** for cited explanations and feedback, **Kartlar** to review/generate cards, **Deneme** for timed practice, and **Plan** for today's study tasks. Exam details remain optional.
+5. Approve cards after checking the source. Reviewed cards from the coach also appear in **Sınav atölyesi → Hatırla** for expanding-interval practice.
+
+Automatic setup downloads only public model data using StudyFuse's own GET client. Known bundled-OCR DataTransport backend/job/receiver components are removed; third-party SDK notices and the limits of that configuration are documented. The local AI itself has no remote-inference endpoint. See [setup, sources and privacy](docs/AUTOMATIC_STUDY.md).
 
 ## New in 1.2: Sınav atölyesi · Yerel AI
 
@@ -20,7 +39,7 @@ Compile PDFs, handwritten-note screenshots and UTF-8 text into one organized stu
 - PDF/Markdown export with separate answer keys and uncertainty labels. The exam PDF appends the original compiled PDFs as a visual reference appendix, retaining source diagrams/vector graphics. Citations refer to the source compilation's printed page numbers.
 - Completed region checkpoints survive cancellation. Project backups now include study settings, readings, corrections and review history; model weights and temporary images are excluded. Version 1 backups remain readable.
 
-### Local model setup on MagicPad 2
+### Manual model import fallback
 
 1. Create/import a project and compile its sources to PDF. Replace unsupported Office/OneNote inputs with source-app PDF exports first.
 2. Open **Sınav atölyesi · Yerel AI**. Obtain a compatible image-capable `.litertlm` model in your browser, then choose **Model içe aktar**. A starting candidate is [Gemma 4 E4B mobile](https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm); E2B is a lighter alternative. GGUF and MediaPipe `.task` files are not supported by this runtime.
@@ -48,7 +67,7 @@ Model storage/download size is several GB; runtime memory is additional. Text ex
 
 ## Install and update
 
-Install `StudyFuse-debug.apk` on an ARM64 Android 10+ device. This is an evaluation/debug APK, not a Play Store production release. Android may request permission to install from the application opening it. The directly downloadable 1.2 APK retains the previous direct download's development signing key; back up important projects before updating.
+Install `StudyFuse-debug.apk` on an ARM64 Android 10+ device. This is an evaluation/debug APK, not a Play Store production release. Android may request permission to install from the application opening it. The directly downloadable 1.3 APK retains the previous direct download's development signing key; back up important projects before updating.
 
 CI-generated debug APKs may have a different signing key. Do not uninstall an existing installation to switch keys until its projects have been backed up. Physical-tablet/OEM behavior and arbitrary Office export fidelity are not universally certified.
 

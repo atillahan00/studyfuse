@@ -22,6 +22,19 @@ fun visionReady(context:Context,gpu:Boolean):Boolean=runCatching{
 }.getOrDefault(false)
 class ModelStore(private val context:Context) {
     private val root=File(context.filesDir,"local-models").apply{mkdirs()}
+    fun directory()=root
+    fun candidate(artifact:org.studyfuse.core.ModelArtifact,file:File):LocalModel {
+        check(file.length()==artifact.bytes && sha256(file)==artifact.sha256){"İndirilen model doğrulanamadı"}
+        val dest=File(root,"${artifact.sha256}.litertlm")
+        if(file!=dest){if(dest.exists())dest.delete();check(file.renameTo(dest)){"Model kurulamadı"}}
+        return LocalModel(artifact.name,dest,artifact.sha256,artifact.bytes)
+    }
+    fun activate(model:LocalModel,gpu:Boolean){
+        check(model.file.canonicalPath==File(root,"${model.digest}.litertlm").canonicalPath && sha256(model.file)==model.digest)
+        atomicJson(File(root,"selected.json"),JSONObject().put("name",model.name).put("sha256",model.digest).put("bytes",model.bytes))
+        atomicJson(File(root,"vision-test.json"),JSONObject().put("sha256",model.digest).put("gpu",gpu).put("fingerprint",android.os.Build.FINGERPRINT))
+        root.listFiles()?.filter{it.extension=="litertlm" && it!=model.file}?.forEach{it.delete()}
+    }
     fun selected():LocalModel? {
         val metadata=File(root,"selected.json");if(!metadata.exists())return null
         val j=JSONObject(AtomicFile(metadata).openRead().bufferedReader().use{it.readText()})

@@ -6,11 +6,14 @@ import androidx.lifecycle.*
 import androidx.work.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.sync.withLock
 import org.studyfuse.StudyFuseApp
 import org.studyfuse.core.*
 import org.studyfuse.data.*
 import org.studyfuse.worker.CompileWorker
 import org.studyfuse.worker.ExamWorker
+import org.studyfuse.worker.ModelSetupWorker
+import org.studyfuse.worker.CoachWorker
 import org.studyfuse.learning.*
 import java.io.File
 
@@ -39,13 +42,48 @@ class StudyViewModel(application:Application):AndroidViewModel(application) {
     val dark=MutableStateFlow(app.getSharedPreferences("ui",0).getInt("theme",0))
     val modelMessage=MutableStateFlow("")
     val modelBusy=MutableStateFlow(false)
+    val setupWork=WorkManager.getInstance(app).getWorkInfosForUniqueWorkFlow("local-model-setup")
+        .stateIn(viewModelScope,SharingStarted.WhileSubscribed(5000),emptyList())
+    fun setupModel(id:String,gpu:Boolean,wifiOnly:Boolean)=viewModelScope.launch {
+        try {ModelCatalog.get(id)
+            val artifact=ModelCatalog.get(id)
+            val downloaded=File(ModelStore(app).directory(),"${artifact.sha256}.litertlm").length()==artifact.bytes
+            val request=OneTimeWorkRequestBuilder<ModelSetupWorker>().setInputData(workDataOf("modelId" to id,"gpu" to gpu))
+                .setConstraints(Constraints.Builder().setRequiredNetworkType(if(downloaded)NetworkType.NOT_REQUIRED else if(wifiOnly)NetworkType.UNMETERED else NetworkType.CONNECTED).build()).build()
+            withContext(Dispatchers.IO){WorkManager.getInstance(app).enqueueUniqueWork("local-model-setup",ExistingWorkPolicy.KEEP,request).result.get()}
+        }catch(e:Exception){notice.value=e.message}
+    }
+    fun pauseSetup(){WorkManager.getInstance(app).cancelUniqueWork("local-model-setup")}
+    fun resetModelDownload(id:String)=viewModelScope.launch {
+        if(setupWork.value.any{!it.state.isFinished})return@launch
+        try {ModelSetupWorker.transferLock.withLock{withContext(Dispatchers.IO){
+            val artifact=ModelCatalog.get(id);val store=ModelStore(app);val selected=store.selected()
+            File(store.directory(),"${artifact.sha256}.part").delete()
+            if(selected?.digest!=artifact.sha256)File(store.directory(),"${artifact.sha256}.litertlm").delete()
+            atomicJson(File(store.directory(),"setup.json"),org.json.JSONObject().put("status","CLEANED").put("message","Seçili kurulumun önbelleği temizlendi; çalışan model ve belgeler korundu."))
+        }};examRevision.value++}catch(e:Exception){notice.value=e.message}
+    }
+    fun askCoach(task:CoachTask,query:String,attempt:String,topic:String,signature:String)=viewModelScope.launch {
+        val id=selected.value ?: return@launch;val p=dao.project(id) ?: return@launch
+        if(p.status in setOf("RUNNING","QUEUED") || modelBusy.value)return@launch
+        try {
+            val request=OneTimeWorkRequestBuilder<CoachWorker>().setInputData(workDataOf("projectId" to id,"previousStatus" to p.status)).addTag("project-$id").build()
+            withContext(Dispatchers.IO){val store=ExamStore(repo.directory(id));val config=store.config()
+                check(query.isNotBlank() && query.length<=1000 && attempt.length<=3000)
+                atomicJson(File(store.root,"requests/${request.id}.json"),org.json.JSONObject().put("config",config.json()).put("task",task.name).put("query",query)
+                    .put("attempt",attempt).put("topic",topic).put("signature",signature))}
+            dao.queueExam(id,p.report ?: error("Önce kaynak PDF oluşturun"),request.id.toString())
+            try{withContext(Dispatchers.IO){WorkManager.getInstance(app).enqueueUniqueWork("exam-$id",ExistingWorkPolicy.REPLACE,request).result.get()}}
+            catch(e:Exception){dao.workStatus(id,request.id.toString(),p.status,"Koç sıraya alınamadı");throw e}
+        }catch(e:Exception){notice.value=e.message}
+    }
     private var modelSetupJob:Job?=null
     fun cancelModelSetup(){modelSetupJob?.cancel()}
     val examRevision=MutableStateFlow(0)
     val examWork=selected.flatMapLatest { id -> if(id==null)flowOf(emptyList())else WorkManager.getInstance(app).getWorkInfosForUniqueWorkFlow("exam-$id") }
         .stateIn(viewModelScope,SharingStarted.WhileSubscribed(5000),emptyList())
     fun importLocalModel(uri:Uri) {
-        if(modelBusy.value)return
+        if(modelBusy.value || setupWork.value.any{!it.state.isFinished})return
         modelBusy.value=true
         modelSetupJob=viewModelScope.launch(Dispatchers.IO){var locked=false
             try {locked=ExamStore.execution.tryLock();check(locked){"Önce yerel AI işlemini bitirin"}
@@ -56,7 +94,7 @@ class StudyViewModel(application:Application):AndroidViewModel(application) {
         }
     }
     fun testLocalModel(gpu:Boolean) {
-        if(modelBusy.value)return;modelBusy.value=true;modelMessage.value="Model ve görüntü girişi sınanıyor; birkaç dakika sürebilir…"
+        if(modelBusy.value || setupWork.value.any{!it.state.isFinished})return;modelBusy.value=true;modelMessage.value="Model ve görüntü girişi sınanıyor; birkaç dakika sürebilir…"
         modelSetupJob=viewModelScope.launch(Dispatchers.IO){var locked=false;val image=File(app.filesDir,"local-models/probe.png")
             try {locked=ExamStore.execution.tryLock();check(locked){"Başka bir AI işlemi sürüyor"}
                 File(app.filesDir,"local-models/vision-test.json").delete()

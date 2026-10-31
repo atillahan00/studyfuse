@@ -1,8 +1,8 @@
-# Local visual AI and exam preparation — version 1.2
+# Local visual AI and exam preparation — versions 1.2–1.3
 
 ## What is implemented
 
-The Android application imports an image-capable `.litertlm` model through SAF, hashes and copies it to private storage, then uses the actual LiteRT-LM Android engine. Weights are separate from the APK. There is no remote inference client, account requirement or Internet permission. Opening the model download link launches an external browser without attaching documents. Additional reference material can be imported as ordinary project documents and marked as references in the exam settings. Live web research is not implemented.
+The Android application imports an image-capable `.litertlm` model through SAF, hashes and copies it to private storage, then uses the actual LiteRT-LM Android engine. Weights are separate from the APK. There is no remote inference client or account requirement. Version 1.3 adds Internet/network-state permission for explicit model downloads; StudyFuse’s network client has no document/prompt upload operation. Opening the model download link launches an external browser without attaching documents. Additional reference material can be imported as ordinary project documents and marked as references in the exam settings. Live web research is not implemented. Automatic setup and the new study tools are described in [AUTOMATIC_STUDY.md](AUTOMATIC_STUDY.md).
 
 LiteRT-LM is pinned to 0.16.1, with Kotlin/Compose compiler 2.3.20 and KSP 2.3.9. The published AAR declares minimum API 24; StudyFuse retains API 29. Engine execution uses a private, non-exported `:local_ai` Android service process and Messenger IPC. A native abort/disconnect is reported to the caller rather than crashing the UI process. Language execution offers CPU or GPU; vision uses GPU. Optional OpenCL native libraries are declared. No NPU driver package or accelerated NPU capability is assumed.
 

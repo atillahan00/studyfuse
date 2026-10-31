@@ -40,6 +40,7 @@ class MainActivity:ComponentActivity() {
     private val pdfSaver=registerForActivityResult(ActivityResultContracts.CreateDocument("application/pdf")) { uri -> saveTo(uri) }
     private val reportSaver=registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri -> saveTo(uri) }
     private val textSaver=registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri -> saveTo(uri) }
+    private val tsvSaver=registerForActivityResult(ActivityResultContracts.CreateDocument("text/tab-separated-values")) { uri -> saveTo(uri) }
     private val zipSaver=registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")){uri->saveTo(uri)}
     private val volumeSaver=registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
         val files=pendingVolumes; pendingVolumes=emptyList()
@@ -68,7 +69,7 @@ class MainActivity:ComponentActivity() {
             onReplace={ replace=it.id; replacement.launch(arrayOf("application/pdf")) },
             onOpen={ file,mime -> open(file,mime) },onShare={ share(it) },
             onSave={ file -> pendingSave=file
-                when(file.extension) { "pdf" -> pdfSaver.launch(file.name); "json" -> reportSaver.launch(file.name); "zip"->zipSaver.launch(file.name);else -> textSaver.launch(file.name) }
+                when(file.extension) { "pdf" -> pdfSaver.launch(file.name); "json" -> reportSaver.launch(file.name); "zip"->zipSaver.launch(file.name);"tsv"->tsvSaver.launch(file.name);else -> textSaver.launch(file.name) }
             },onSaveAll={ pendingVolumes=it; volumeSaver.launch(null) },
             onRestore={restorePicker.launch(arrayOf("application/zip","application/octet-stream"))},
             onBulkReplace={bulkPdfPicker.launch(arrayOf("application/pdf"))},onImportModel={localModelPicker.launch(arrayOf("*/*"))}) }

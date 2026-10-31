@@ -21,6 +21,8 @@ import java.io.File
 import java.time.LocalDate
 
 private data class PracticeItem(val item:JSONObject,val unit:JSONObject)
+private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val signature:String?,val session:JSONObject?,
+    val units:List<JSONObject>,val review:JSONObject,val cards:List<JSONObject>)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun ExamWorkshop(project:Project,sources:List<Source>,model:StudyViewModel,onImportModel:()->Unit,
@@ -35,6 +37,7 @@ private data class PracticeItem(val item:JSONObject,val unit:JSONObject)
     var session by remember{mutableStateOf<JSONObject?>(null)}
     var units by remember{mutableStateOf<List<JSONObject>>(emptyList())}
     var review by remember{mutableStateOf(JSONObject())}
+    var practiceCards by remember{mutableStateOf<List<JSONObject>>(emptyList())}
     var ready by remember{mutableStateOf(false)}
     var refresh by remember{mutableIntStateOf(0)}
     var signature by remember{mutableStateOf<String?>(null)}
@@ -44,22 +47,25 @@ private data class PracticeItem(val item:JSONObject,val unit:JSONObject)
     var edited by remember{mutableStateOf<JSONObject?>(null)}
     val revision by model.examRevision.collectAsStateWithLifecycle()
     val workers by model.examWork.collectAsStateWithLifecycle()
+    val setupWorkers by model.setupWork.collectAsStateWithLifecycle()
+    val settingUp=setupWorkers.any{!it.state.isFinished}
     val modelBusy by model.modelBusy.collectAsStateWithLifecycle()
     val modelMessage by model.modelMessage.collectAsStateWithLifecycle()
     val active=workers.firstOrNull{!it.state.isFinished}
     val workerError=workers.firstOrNull{it.id.toString()==project.workId}?.outputData?.getString("error")
     val busy=project.status in setOf("QUEUED","RUNNING") || modelBusy || exporting
     LaunchedEffect(project.id){try{config=withContext(Dispatchers.IO){store.config()};loaded=true}catch(e:Exception){error=e.message}}
-    LaunchedEffect(loaded,config,revision,workers,refresh,project.report) {
+    LaunchedEffect(loaded,config,revision,workers,setupWorkers,refresh,project.report) {
         if(!loaded)return@LaunchedEffect
         try {
-            withContext(Dispatchers.IO){
-                selectedModel=ModelStore(context).selected();ready=visionReady(context,config.gpu)
-                signature=project.report?.let{path->selectedModel?.let{local->store.signature(File(path),local,config)}}
-                session=store.session()?.takeIf{it.optString("signature")==signature}
-                units=signature?.let{store.currentUnits(it)} ?: emptyList();review=store.review()
+            val state=withContext(Dispatchers.IO){
+                val local=ModelStore(context).selected();val sig=project.report?.let{path->local?.let{store.signature(File(path),it,config)}}
+                val readings=sig?.let{store.currentUnits(it)} ?: emptyList();val reviews=store.review()
+                WorkshopSnapshot(local,visionReady(context,config.gpu),sig,store.session()?.takeIf{it.optString("signature")==sig},readings,reviews,
+                    sig?.let{StudyTools(store).cards(it,readings,reviews)} ?: emptyList())
             }
-        }catch(e:Exception){error=e.message;session=null;units=emptyList()}
+            selectedModel=state.model;ready=state.ready;signature=state.signature;session=state.session;units=state.units;review=state.review;practiceCards=state.cards
+        }catch(e:CancellationException){throw e}catch(e:Exception){error=e.message;session=null;units=emptyList()}
     }
     fun sourcePreview(unit:JSONObject){
         scope.launch {try {
@@ -100,15 +106,16 @@ private data class PracticeItem(val item:JSONObject,val unit:JSONObject)
                 0->Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
                     Text("Belgelerin tek başına yeterli. Sınav konusu ve tarihi isteğe bağlıdır. El yazısı/grafik yorumları ve AI çözümleri kontrol edilmeden güvenilir kabul edilmez.")
                     Text("1 · Yerel görüntü modeli",style=MaterialTheme.typography.titleMedium)
+                    AutomaticSetup(model,config.gpu,!busy)
                     Text(selectedModel?.let{"${it.name} · ${sizeLabel(it.bytes)} · SHA-256 ${it.digest.take(16)}…"} ?: "Henüz model yok. Model APK'ya dahil değildir.")
                     Text("MagicPad 2 için başlangıç adayı: görüntü destekli Gemma 4 E4B .litertlm; daha hafif seçenek E2B. GGUF/.task dosyaları desteklenmez. Aygıtın GPU sürücüsü ayrıca sınanmalıdır.",style=MaterialTheme.typography.bodySmall)
                     FlowRow {
-                        OutlinedButton(onClick=onImportModel,enabled=!busy){Text("Model içe aktar")}
+                        OutlinedButton(onClick=onImportModel,enabled=!busy && !settingUp){Text("Model içe aktar")}
                         TextButton(onClick={runCatching{context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse("https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm")))}.onFailure{error="Tarayıcı açılamadı"}}){Text("Model indirme sayfası")}
                     }
                     Row(verticalAlignment=Alignment.CenterVertically){Switch(config.gpu,{config=config.copy(gpu=it)},enabled=!busy);Text("Dil modeli GPU hızlandırması")}
                     Text("Kapalıyken dil modeli CPU'da çalışır; görüntü kodlayıcı GPU gerektirir. NPU hızlandırması vaat edilmez. İlk indirme/kopyalama sonrası tüm analiz çevrimdışıdır.",style=MaterialTheme.typography.bodySmall)
-                    OutlinedButton(onClick={model.testLocalModel(config.gpu)},enabled=selectedModel!=null && !busy){Text("Görüntü girişini sına")}
+                    OutlinedButton(onClick={model.testLocalModel(config.gpu)},enabled=selectedModel!=null && !busy && !settingUp){Text("Görüntü girişini sına")}
                     if(modelMessage.isNotBlank())Text(modelMessage,style=MaterialTheme.typography.bodySmall)
                     if(modelBusy)TextButton(onClick={model.cancelModelSetup()}){Text("Model işlemini iptal et")}
                     Text(if(ready)"Görüntü testi geçti; gerçek el yazısı doğruluğu ayrıca incelenmeli." else "Analizden önce seçili model/aygıt görüntü testini geçmeli.",style=MaterialTheme.typography.bodySmall)
@@ -168,7 +175,7 @@ private data class PracticeItem(val item:JSONObject,val unit:JSONObject)
                 2->{
                     var includeExtras by remember{mutableStateOf(false)}
                     val today=LocalDate.now()
-                    val all=units.flatMap{unit->unit.optJSONArray("items")?.objects().orEmpty().map{PracticeItem(effective(it),unit)}}
+                    val all=practiceCards.map{PracticeItem(it,it)}
                         .filter{it.item.getString("kind")!="note" && review.optJSONObject(it.item.getString("id"))?.optBoolean("approved")==true}
                         .distinctBy{it.unit.getString("sourceName")+it.unit.getInt("page")+EvidenceRules.normalize(it.item.getString("question"))+EvidenceRules.normalize(it.item.getString("answer"))}
                     val due=RecallSchedule.interleave(all.filter{(includeExtras || (it.item.getString("origin")=="document" && !it.unit.optBoolean("reference"))) &&

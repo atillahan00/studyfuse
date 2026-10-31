@@ -1,33 +1,31 @@
-# StudyFuse 1.2 validation — 24 October 2026
+# StudyFuse 1.3 validation
 
-## Local results
+## Scope and local build
 
-The project builds with JDK 21.0.2, Gradle 8.13, Android SDK 36, AGP 8.10.1, Kotlin/Compose compiler 2.3.20 and KSP 2.3.9. The local full validation includes `:core:test`, `:app:testDebugUnitTest`, `:app:lintDebug`, `:app:assembleDebug` and `:app:assembleDebugAndroidTest`.
+The project uses JDK 21.0.2, Gradle 8.13, Android SDK 36, AGP 8.10.1, Kotlin/Compose compiler 2.3.20, KSP 2.3.9 and LiteRT-LM 0.16.1. Validation runs core tests, Android JVM/Robolectric tests, lint and both application/instrumentation APK builds. Observed final counts and CI source commit are recorded below when complete; XML/log evidence is packaged under `validation-evidence/`.
 
-There are **69 JVM/Robolectric tests**, covering the existing PDF/image/text compiler and its 200-band long-page fixture, backup/restore, migrations and tablet UI, plus new learning scheduling/interleaving, source-policy/evidence rejection, unverified visual transcription, model-output parse failure, optional exam details, signature isolation, atomic review persistence, study export, exam-state backup and the actual workshop UI. These are engineering checks, not a handwriting or exam-solution accuracy benchmark. Detailed observed results are retained under `validation-evidence/` when packaged.
+New tests cover interrupted/ranged model transfer, ignored Range, corrupt SHA, bad ranges, cancellation, cached-file verification without networking, cleartext rejection, catalog pinning, Unicode retrieval/context bounds, source diversity, daily planning, local keyword rewriting, source-policy/citation rejection, generated-card approval boundaries, timed-mock recovery/expiry, answer-key protection, one-time self-assessment, cloze provenance, TSV escaping, state backup and actual workshop/hub UI interactions. The prepared mock-exam UI fixture is deterministic test data, not output of a neural handwriting benchmark.
 
-PyMuPDF independently checks the existing mixed export colours, all 200 long-page markers including the final band, 29 output pages against the report, and independently visible JPX content. The JPX source remains marked REVIEW by the app's conservative verifier.
+Independent PyMuPDF verification checks mixed source colours, all 200 bands of the tall-page fixture including its final band, 29 output pages against the report and retained JPX content. Source-vector retention in exam exports is checked separately by actual PDF text/graphics operators.
 
-## Connected Android checks
+## Hosted checks
 
-The workflow includes an Android 15 / API 35 x86_64 Pixel Tablet emulator job. It exercises bundled printed-text OCR, Android PDF rendering, long-image region decoding, the five-region exam pipeline with cancellation/cache recovery, and native AI failure reporting through the separate process. The exam-pipeline test uses an explicitly deterministic inference adapter: it verifies pipeline behavior and **does not test neural handwriting accuracy**. The missing-model test must report a failure and must not produce a substitute answer.
+The Android workflow runs build/tests/lint, an Android 15 / API 35 x86_64 tablet emulator suite, and a public model-catalog check. The catalog script verifies pinned publisher pointer SHA/size and a 64-byte HTTPS ranged response, without downloading multi-GB weights. This execution environment blocks direct model-host access; that is not represented as a successful full download.
 
-[GitHub run 40120421099](https://github.com/atillahan00/studyfuse/actions/runs/40120421099), for source commit `d7f04a611de932dee50d30cb212f21af6adbcabb`, **completed successfully** on 24 October 2026. Both jobs passed: the build validated **69 JVM/Robolectric tests**, lint and APK assembly; the emulator completed **5 connected tests** and reported `BUILD SUCCESSFUL`. The observed runtime-log excerpt is retained in [android-runtime.txt](validation-evidence/android-runtime.txt). The direct APK is built from this same application source, with ARM64 packaging and the persistent delivery debug key.
+The connected suite exercises native PDF rendering, long-image decoding, bundled printed OCR, region-level exam cancellation/recovery with a deterministic inference adapter, native AI failure isolation and absence of the known removed OCR diagnostics transport services. It does not establish real-model handwriting/math accuracy or MagicPad 2 inference performance.
 
-A configured job, compiled instrumentation APK, or successful deterministic test is not represented as a successful real-model benchmark. The [1.1 validation run](https://github.com/atillahan00/studyfuse/actions/runs/40111818167) is historical evidence for its own commit only.
+## APK
 
-## APK and update identity
-
-The direct download is an **ARM64 debug APK**, package `org.studyfuse`, version **1.2.0 / versionCode 3**, minimum API 29, target API 36. CI also compiles x86_64 support for emulator checks. The delivered APK must retain the previous direct download's certificate SHA-256:
+The direct download is an ARM64 debug/evaluation APK for `org.studyfuse`, **1.3.0 / versionCode 4**, minimum API 29, target API 36. It retains the direct download's certificate SHA-256:
 
 ```
 1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b
 ```
 
-Signature verification, APK 16 KiB alignment and 64-bit ELF LOAD alignment are checked from the final packaged APK and recorded in the evidence. The app's merged manifest is inspected for absence of Internet/broad storage permissions. No keystore or private key is included in the source ZIP. CI debug keys can differ from the persistent direct-download key.
+Final APK signature, 16 KiB ZIP alignment, native ELF alignment, manifest and public-download checks are recorded from the delivered file. Internet/network-state permission is now intentional for model downloads; broad storage permissions are absent. Known OCR DataTransport components are removed; this is not a universal vendor/OS packet audit. CI debug keys may differ. No private signing key or weight file is committed.
 
-## Material limits
+## Limits
 
-No physical HONOR MagicPad 2 or compatible multi-GB vision model is available in this build environment. Actual model loading/image-code testing, handwriting/graph/formula interpretation, German/Turkish quality, device speed, memory pressure and thermal/OEM behavior need the on-device acceptance exercise. The application implements real local inference, but the build/test results do not establish its accuracy on a teacher's notebook. Generated items begin unapproved. Evidence matching and self-reported uncertainty cannot guarantee correctness or complete understanding.
+No physical MagicPad 2 or complete vision model is loaded in the local build environment. Public metadata/range verification and deterministic engine adapters must not be described as a full model download, on-device model compatibility test or educational accuracy evaluation. Setup uses the real native engine to test the model on the student's own device before activation. OCR/transcriptions, answers and solutions require source review. The app cannot guarantee grades or know undisclosed teacher exam scope.
 
-Office/OneNote still require source-app PDF export/replacement. Enriched Learning supports imported reference documents and labelled local-model knowledge, without live web retrieval. See [local AI design/limits](LOCAL_AI.md) and [known limitations](KNOWN_LIMITATIONS.md). The [1.1 validation record](VALIDATION-1.1.md) is retained as history.
+See [automatic study workflow](AUTOMATIC_STUDY.md), [known limitations](KNOWN_LIMITATIONS.md), and the historical [1.2 record](VALIDATION-1.2.md).

@@ -22,6 +22,13 @@ class OnDeviceTest {
     private val context:Context=ApplicationProvider.getApplicationContext()
     private val root=File(context.cacheDir,"device-tests").apply {mkdirs()}
     private fun source(f:File)=Source(UUID.randomUUID().toString(),"device",f.name,f.name,0,f.path,f.path,f.length(),sha256(f),"IMAGE")
+    @Test fun modelNetworkingIsGrantedAndOcrTelemetryJobsAreAbsent(){
+        assertEquals(android.content.pm.PackageManager.PERMISSION_GRANTED,context.checkSelfPermission(android.Manifest.permission.INTERNET))
+        for(name in listOf("com.google.android.datatransport.runtime.backends.TransportBackendDiscovery","com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService")){
+            try{context.packageManager.getServiceInfo(android.content.ComponentName(context,name),0);fail("OCR telemetry component still registered")}
+            catch(_:android.content.pm.PackageManager.NameNotFoundException){}
+        }
+    }
     @Test fun bundledPrintedTextOcrWorksOffline()=runBlocking {
         val bitmap=Bitmap.createBitmap(1200,300,Bitmap.Config.ARGB_8888).apply {eraseColor(Color.WHITE)}
         val paint=Paint(Paint.ANTI_ALIAS_FLAG).apply {

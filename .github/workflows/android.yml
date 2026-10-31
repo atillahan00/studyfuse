@@ -20,6 +20,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  model-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify public model revisions, hashes and ranged downloads
+        run: python3 scripts/verify_model_catalog.py | tee model-catalog-validation.json
+        shell: bash
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: StudyFuse-model-catalog
+          path: model-catalog-validation.json
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 35
