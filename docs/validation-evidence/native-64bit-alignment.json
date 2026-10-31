@@ -1,6 +1,7 @@
 [
   {
     "library": "lib/arm64-v8a/libandroidx.graphics.path.so",
+    "sha256": "41e9a793c43a0f4fddb19e33f346bace464f30f888ba7b9eaf96294ea115bfb6",
     "loadAlignment": [
       16384,
       16384,
@@ -9,6 +10,7 @@
   },
   {
     "library": "lib/arm64-v8a/liblitertlm_jni.so",
+    "sha256": "371cdedd8a3b24cfb81a21c0a760b89bc3e3d22e03e7402c518e4d8fe1d1402e",
     "loadAlignment": [
       16384,
       16384,
@@ -17,6 +19,7 @@
   },
   {
     "library": "lib/arm64-v8a/libmlkit_google_ocr_pipeline.so",
+    "sha256": "fa41d509a661e8aa8b3e3ac1a28541f8823f308414fcad733fe26d61feea2646",
     "loadAlignment": [
       16384,
       16384,

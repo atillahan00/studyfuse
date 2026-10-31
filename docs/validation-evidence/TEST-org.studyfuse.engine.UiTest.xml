@@ -1,10 +1,185 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.engine.UiTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-24T18:21:01.725Z" hostname="514a1454fba3" time="10.233">
+<testsuite name="org.studyfuse.engine.UiTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-31T12:08:54.815Z" hostname="1b4ee2135e4b" time="6.14">
   <properties/>
-  <testcase name="localExamWorkshopRequiresRealModelAndDefaultsToDocumentsOnly" classname="org.studyfuse.engine.UiTest" time="7.017"/>
-  <testcase name="bulkRemovalCanBeUndoneAndBackupRestoreIsVisible" classname="org.studyfuse.engine.UiTest" time="1.413"/>
-  <testcase name="newProjectAndRenameAreFunctional" classname="org.studyfuse.engine.UiTest" time="1.41"/>
-  <testcase name="homeAndThemeControlsWorkInTurkish" classname="org.studyfuse.engine.UiTest" time="0.392"/>
-  <system-out><![CDATA[]]></system-out>
+  <testcase name="localExamWorkshopRequiresRealModelAndDefaultsToDocumentsOnly" classname="org.studyfuse.engine.UiTest" time="3.028"/>
+  <testcase name="bulkRemovalCanBeUndoneAndBackupRestoreIsVisible" classname="org.studyfuse.engine.UiTest" time="0.731"/>
+  <testcase name="learningHubGuidesStudentsToRealSourcesInsteadOfFakeAnswers" classname="org.studyfuse.engine.UiTest" time="0.54"/>
+  <testcase name="newProjectAndRenameAreFunctional" classname="org.studyfuse.engine.UiTest" time="0.568"/>
+  <testcase name="homeAndThemeControlsWorkInTurkish" classname="org.studyfuse.engine.UiTest" time="0.325"/>
+  <testcase name="timedMockHidesAnswersUntilSubmissionAndStoresSelfAssessment" classname="org.studyfuse.engine.UiTest" time="0.94"/>
+  <system-out><![CDATA[MOCK_DIAGNOSTICS
+Printing with useUnmergedTree = 'false'
+Node #1385 at (l=13.0, t=0.0, r=1267.0, b=776.0)px
+ |-Node #1386 at (l=13.0, t=0.0, r=1267.0, b=776.0)px
+   [IsDialog]
+    |-Node #1387 at (l=13.0, t=0.0, r=1267.0, b=776.0)px
+      IsContainer = 'true'
+       |-Node #1390 at (l=25.0, t=22.0, r=1086.0, b=50.0)px
+       | Text = '[AI öğrenme merkezi]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #1545 at (l=1086.0, t=24.0, r=1191.0, b=48.0)px
+       | Text = '[Kaydediliyor…]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #1391 at (l=1191.0, t=16.0, r=1255.0, b=56.0)px
+       | Role = 'Button'
+       | Text = '[Kapat]'
+       | [Disabled]
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, SetTextSubstitution, ShowTextSubstitution]
+       | MergeDescendants = 'true'
+       |-Node #1394 at (l=29.0, t=72.0, r=442.0, b=88.0)px
+       | Text = '[Yalnızca belgelerim · Deutsch · AI taslakları kaynakla kontrol edilmelidir]'
+       | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+       |-Node #1395 at (l=13.0, t=88.0, r=1267.0, b=136.0)px
+       | IsContainer = 'true'
+       | [SelectableGroup]
+       |  |-Node #1398 at (l=13.0, t=88.0, r=326.0, b=136.0)px
+       |  | Focused = 'false'
+       |  | Role = 'Tab'
+       |  | Selected = 'false'
+       |  | Text = '[Koç]'
+       |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |  | MergeDescendants = 'true'
+       |  |-Node #1402 at (l=326.0, t=88.0, r=639.0, b=136.0)px
+       |  | Focused = 'false'
+       |  | Role = 'Tab'
+       |  | Selected = 'false'
+       |  | Text = '[Kartlar]'
+       |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |  | MergeDescendants = 'true'
+       |  |-Node #1406 at (l=639.0, t=88.0, r=952.0, b=136.0)px
+       |  | Focused = 'false'
+       |  | Role = 'Tab'
+       |  | Selected = 'true'
+       |  | Text = '[Deneme]'
+       |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |  | MergeDescendants = 'true'
+       |  |-Node #1410 at (l=952.0, t=88.0, r=1265.0, b=136.0)px
+       |    Focused = 'false'
+       |    Role = 'Tab'
+       |    Selected = 'false'
+       |    Text = '[Plan]'
+       |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |    MergeDescendants = 'true'
+       |-Node #1418 at (l=25.0, t=136.0, r=232.0, b=184.0)px
+       | CollectionInfo = 'androidx.compose.ui.semantics.CollectionInfo@1775d5a9'
+       | HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+       | IsTraversalGroup = 'true'
+       | Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+       |  |-Node #1421 at (l=25.0, t=144.0, r=139.0, b=176.0)px
+       |  | Focused = 'false'
+       |  | Role = 'Checkbox'
+       |  | Selected = 'true'
+       |  | Text = '[Tüm konular]'
+       |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |  | MergeDescendants = 'true'
+       |  |-Node #1426 at (l=145.0, t=144.0, r=232.0, b=176.0)px
+       |    Focused = 'false'
+       |    Role = 'Checkbox'
+       |    Selected = 'false'
+       |    Text = '[Biologie]'
+       |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+       |    MergeDescendants = 'true'
+       |-Node #1476 at (l=29.0, t=200.0, r=1251.0, b=760.0)px
+         CollectionInfo = 'androidx.compose.ui.semantics.CollectionInfo@4ab4e7eb'
+         IsTraversalGroup = 'true'
+         VerticalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=100.0, reverseScrolling=false)'
+         Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+          |-Node #1478 at (l=29.0, t=200.0, r=203.0, b=224.0)px
+          | Text = '[Kaynaklı süreli deneme]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |-Node #1479 at (l=29.0, t=224.0, r=891.0, b=240.0)px
+          | Text = '[Sorular incelenmiş AI çalışma kartlarından seçilir. Gerçek öğretmen sınavı tahmini değildir. Yanıt anahtarı teslimden veya süre bitiminden sonra açılır.]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |-Node #1481 at (l=29.0, t=240.0, r=640.0, b=304.0)px
+          | ContentDataType = 'AndroidContentDataType(androidAutofillType=1)'
+          | EditableText = '1'
+          | Focused = 'false'
+          | ImeAction = 'Default'
+          | InputText = '1'
+          | IsEditable = 'true'
+          | Text = '[Soru sayısı / 1]'
+          | TextSelectionRange = 'TextRange(0, 0)'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, InsertTextAtCursor, OnAutofillText, OnClick, OnLongClick, PasteText, PerformImeAction, RequestFocus, SetSelection, SetText, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #1491 at (l=640.0, t=240.0, r=1251.0, b=304.0)px
+          | ContentDataType = 'AndroidContentDataType(androidAutofillType=1)'
+          | EditableText = '20'
+          | Focused = 'false'
+          | ImeAction = 'Default'
+          | InputText = '20'
+          | IsEditable = 'true'
+          | Text = '[Dakika]'
+          | TextSelectionRange = 'TextRange(0, 0)'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, InsertTextAtCursor, OnAutofillText, OnClick, OnLongClick, PasteText, PerformImeAction, RequestFocus, SetSelection, SetText, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #1501 at (l=29.0, t=308.0, r=207.0, b=348.0)px
+          | Focused = 'false'
+          | Role = 'Button'
+          | Text = '[Yeni deneme başlat]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          | MergeDescendants = 'true'
+          |-Node #1505 at (l=29.0, t=352.0, r=481.0, b=376.0)px
+          | Text = '[Deneme tamamlandı · kendi yanıtlarını kaynakla değerlendir]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |-Node #1510 at (l=29.0, t=388.0, r=1251.0, b=708.0)px
+          | IsContainer = 'true'
+          |  |-Node #1513 at (l=41.0, t=400.0, r=205.0, b=424.0)px
+          |  | Text = '[Was enthält die Zelle?]'
+          |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |  |-Node #1514 at (l=41.0, t=432.0, r=1239.0, b=496.0)px
+          |  | ContentDataType = 'AndroidContentDataType(androidAutofillType=1)'
+          |  | EditableText = 'DNA'
+          |  | ImeAction = 'Default'
+          |  | InputText = 'DNA'
+          |  | IsEditable = 'false'
+          |  | Text = '[Yanıtım]'
+          |  | TextSelectionRange = 'TextRange(3, 3)'
+          |  | [Disabled]
+          |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnAutofillText, OnClick, OnLongClick, PerformImeAction, SetSelection, SetTextSubstitution, ShowTextSubstitution]
+          |  | MergeDescendants = 'true'
+          |  |-Node #1524 at (l=41.0, t=504.0, r=192.0, b=528.0)px
+          |  | Text = '[Yanıt anahtarı: DNA]'
+          |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |  |-Node #1525 at (l=41.0, t=536.0, r=256.0, b=560.0)px
+          |  | Text = '[Kanıt: Die Zelle enthält DNA.]'
+          |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |  |-Node #1526 at (l=41.0, t=572.0, r=185.0, b=612.0)px
+          |  | Focused = 'false'
+          |  | Role = 'Button'
+          |  | Text = '[Kaynağı aç · PDF 3]'
+          |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          |  | MergeDescendants = 'true'
+          |  |-Node #1529 at (l=41.0, t=624.0, r=409.0, b=640.0)px
+          |  | Text = '[Öz değerlendirme: 0 eksik, 1 kısmi, 2 tamam. Resmi not değildir.]'
+          |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |  |-Node #1531 at (l=41.0, t=652.0, r=99.0, b=692.0)px
+          |  | Focused = 'false'
+          |  | Role = 'Button'
+          |  | Text = '[0 / 2]'
+          |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          |  | MergeDescendants = 'true'
+          |  |-Node #1534 at (l=99.0, t=652.0, r=157.0, b=692.0)px
+          |  | Focused = 'false'
+          |  | Role = 'Button'
+          |  | Text = '[1 / 2]'
+          |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          |  | MergeDescendants = 'true'
+          |  |-Node #1537 at (l=157.0, t=652.0, r=215.0, b=692.0)px
+          |    Focused = 'false'
+          |    Role = 'Button'
+          |    Text = '[2 / 2]'
+          |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+          |    MergeDescendants = 'true'
+          |-Node #1541 at (l=29.0, t=720.0, r=710.0, b=744.0)px
+          | Text = '[Öz puan toplamı: 0 / 2. İşaretlenmemiş sorular olabilir; bu bir sınav başarı tahmini değildir.]'
+          | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+          |-Node #1542 at (l=29.0, t=748.0, r=246.0, b=788.0)px
+            Focused = 'false'
+            Role = 'Button'
+            Text = '[Deneme ve yanıtlarımı kaydet]'
+            Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+            MergeDescendants = 'true'
+{"signature":"0e52efa340d8c9af4ce7caa6e6c51a6fb4c42227412e40fa7c3bdc2160e16fad","id":"f9c4cfe2-2f8f-44bc-ad81-f87c33c5e0cf","deadline":1793449740637,"submitted":true,"cards":[{"kind":"recall","question":"Was enthält die Zelle?","answer":"DNA","evidence":"Die Zelle enthält DNA.","origin":"document","id":"19b84e0977f174efd836a0dd386c965a263cc46b0830ad8e9483e6edb73c9bd0","basis":"pdf_text","page":3,"sourceName":"Biologie.txt","section":"Biologie","reference":false}],"answers":{"19b84e0977f174efd836a0dd386c965a263cc46b0830ad8e9483e6edb73c9bd0":"DNA"},"marks":{"19b84e0977f174efd836a0dd386c965a263cc46b0830ad8e9483e6edb73c9bd0":0}}
+]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

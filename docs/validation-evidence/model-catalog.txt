@@ -1,0 +1,169 @@
+﻿2026-10-31T12:00:01.5745716Z Current runner version: '2.338.2'
+2026-10-31T12:00:01.5761771Z ##[group]Runner Image Provisioner
+2026-10-31T12:00:01.5762282Z Hosted Compute Agent
+2026-10-31T12:00:01.5762672Z Version: 20261021.618
+2026-10-31T12:00:01.5763082Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-31T12:00:01.5763526Z Build Date: 2026-10-21T00:45:21Z
+2026-10-31T12:00:01.5763971Z Worker ID: {0727706d-a644-4516-a16b-d2d62e5f436c}
+2026-10-31T12:00:01.5764380Z Region: westus3
+2026-10-31T12:00:01.5764728Z Cloud: Azure
+2026-10-31T12:00:01.5765065Z ##[endgroup]
+2026-10-31T12:00:01.5765811Z ##[group]Operating System
+2026-10-31T12:00:01.5766206Z Ubuntu
+2026-10-31T12:00:01.5766519Z 24.04.5
+2026-10-31T12:00:01.5766817Z LTS
+2026-10-31T12:00:01.5767178Z ##[endgroup]
+2026-10-31T12:00:01.5767812Z ##[group]Runner Image
+2026-10-31T12:00:01.5768212Z Image: ubuntu-24.04
+2026-10-31T12:00:01.5768549Z Version: 20261025.353.1
+2026-10-31T12:00:01.5769312Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261025.353/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-31T12:00:01.5770199Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261025.353
+2026-10-31T12:00:01.5770775Z ##[endgroup]
+2026-10-31T12:00:01.5771397Z ##[group]GITHUB_TOKEN Permissions
+2026-10-31T12:00:01.5772777Z Contents: read
+2026-10-31T12:00:01.5773152Z Metadata: read
+2026-10-31T12:00:01.5773651Z ##[endgroup]
+2026-10-31T12:00:01.5774941Z Secret source: Actions
+2026-10-31T12:00:01.5775475Z Cache mode: write
+2026-10-31T12:00:01.5775977Z Prepare workflow directory
+2026-10-31T12:00:01.5966865Z Prepare all required actions
+2026-10-31T12:00:01.5995980Z Getting action download info
+2026-10-31T12:00:01.8930930Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-31T12:00:01.9804156Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-31T12:00:02.1750513Z Complete job name: model-catalog
+2026-10-31T12:00:02.2219774Z ##[group]Run actions/checkout@v4
+2026-10-31T12:00:02.2220179Z with:
+2026-10-31T12:00:02.2220420Z   repository: atillahan00/studyfuse
+2026-10-31T12:00:02.2222348Z   token: ***
+2026-10-31T12:00:02.2222583Z   ssh-strict: true
+2026-10-31T12:00:02.2222819Z   ssh-user: git
+2026-10-31T12:00:02.2223061Z   persist-credentials: true
+2026-10-31T12:00:02.2223322Z   clean: true
+2026-10-31T12:00:02.2223561Z   sparse-checkout-cone-mode: true
+2026-10-31T12:00:02.2223838Z   fetch-depth: 1
+2026-10-31T12:00:02.2224073Z   fetch-tags: false
+2026-10-31T12:00:02.2224313Z   show-progress: true
+2026-10-31T12:00:02.2224553Z   lfs: false
+2026-10-31T12:00:02.2224776Z   submodules: false
+2026-10-31T12:00:02.2225020Z   set-safe-directory: true
+2026-10-31T12:00:02.2225292Z   allow-unsafe-pr-checkout: false
+2026-10-31T12:00:02.2225630Z ##[endgroup]
+2026-10-31T12:00:02.3865314Z Syncing repository: atillahan00/studyfuse
+2026-10-31T12:00:02.3866856Z ##[group]Getting Git version info
+2026-10-31T12:00:02.3867656Z Working directory is '/home/runner/work/studyfuse/studyfuse'
+2026-10-31T12:00:02.3868520Z [command]/usr/bin/git version
+2026-10-31T12:00:02.3919654Z git version 2.56.0
+2026-10-31T12:00:02.3937306Z ##[endgroup]
+2026-10-31T12:00:02.3942018Z Temporarily overriding HOME='/home/runner/work/_temp/01129e97-6e28-45a1-8a34-7db4f066d79d' before making global git config changes
+2026-10-31T12:00:02.3943175Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-31T12:00:02.3946675Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/studyfuse/studyfuse
+2026-10-31T12:00:02.3988268Z Deleting the contents of '/home/runner/work/studyfuse/studyfuse'
+2026-10-31T12:00:02.3991300Z ##[group]Initializing the repository
+2026-10-31T12:00:02.3994374Z [command]/usr/bin/git init /home/runner/work/studyfuse/studyfuse
+2026-10-31T12:00:02.4068090Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-31T12:00:02.4068959Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-31T12:00:02.4069711Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-31T12:00:02.4070091Z hint: call:
+2026-10-31T12:00:02.4070300Z hint:
+2026-10-31T12:00:02.4070575Z hint: 	git config --global init.defaultBranch <name>
+2026-10-31T12:00:02.4070892Z hint:
+2026-10-31T12:00:02.4071190Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-31T12:00:02.4071663Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-31T12:00:02.4072037Z hint:
+2026-10-31T12:00:02.4072253Z hint: 	git branch -m <name>
+2026-10-31T12:00:02.4072498Z hint:
+2026-10-31T12:00:02.4072821Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-31T12:00:02.4079761Z Initialized empty Git repository in /home/runner/work/studyfuse/studyfuse/.git/
+2026-10-31T12:00:02.4087545Z [command]/usr/bin/git remote add origin https://github.com/atillahan00/studyfuse
+2026-10-31T12:00:02.4170529Z ##[endgroup]
+2026-10-31T12:00:02.4171182Z ##[group]Disabling automatic garbage collection
+2026-10-31T12:00:02.4174028Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-31T12:00:02.4202644Z ##[endgroup]
+2026-10-31T12:00:02.4203367Z ##[group]Setting up auth
+2026-10-31T12:00:02.4208101Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-31T12:00:02.4248133Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-31T12:00:02.4521456Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-31T12:00:02.4555239Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-31T12:00:02.4734479Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-31T12:00:02.4767709Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-31T12:00:02.4944316Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-31T12:00:02.4982321Z ##[endgroup]
+2026-10-31T12:00:02.4982949Z ##[group]Fetching the repository
+2026-10-31T12:00:02.4990071Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +66e79ed21948d6ec02533f44ccbcce60a3eff297:refs/remotes/origin/main
+2026-10-31T12:00:07.9970928Z From https://github.com/atillahan00/studyfuse
+2026-10-31T12:00:07.9972001Z  * [new ref]         66e79ed21948d6ec02533f44ccbcce60a3eff297 -> origin/main
+2026-10-31T12:00:07.9974122Z ##[endgroup]
+2026-10-31T12:00:07.9974789Z ##[group]Determining the checkout info
+2026-10-31T12:00:07.9976661Z ##[endgroup]
+2026-10-31T12:00:07.9981738Z [command]/usr/bin/git sparse-checkout disable
+2026-10-31T12:00:08.0029594Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-31T12:00:08.0063537Z ##[group]Checking out the ref
+2026-10-31T12:00:08.0073866Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-10-31T12:00:08.3138859Z Switched to a new branch 'main'
+2026-10-31T12:00:08.3152140Z branch 'main' set up to track 'origin/main'.
+2026-10-31T12:00:08.3155688Z ##[endgroup]
+2026-10-31T12:00:08.3199780Z [command]/usr/bin/git log -1 --format=%H
+2026-10-31T12:00:08.3228016Z 66e79ed21948d6ec02533f44ccbcce60a3eff297
+2026-10-31T12:00:08.3396404Z ##[group]Run python3 scripts/verify_model_catalog.py | tee model-catalog-validation.json
+2026-10-31T12:00:08.3396867Z [36;1mpython3 scripts/verify_model_catalog.py | tee model-catalog-validation.json[0m
+2026-10-31T12:00:08.3415132Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-31T12:00:08.3415350Z ##[endgroup]
+2026-10-31T12:00:09.1507230Z {
+2026-10-31T12:00:09.1507808Z   "verified": true,
+2026-10-31T12:00:09.1507938Z   "models": [
+2026-10-31T12:00:09.1508047Z     {
+2026-10-31T12:00:09.1508166Z       "model": "gemma4-e2b",
+2026-10-31T12:00:09.1508378Z       "sha256": "181938105e0eefd105961417e8da75903eacda102c4fce9ce90f50b97139a63c",
+2026-10-31T12:00:09.1508598Z       "bytes": 2588147712,
+2026-10-31T12:00:09.1508738Z       "public_metadata_verified": true,
+2026-10-31T12:00:09.1508919Z       "https_sample_bytes": 64
+2026-10-31T12:00:09.1509051Z     },
+2026-10-31T12:00:09.1509149Z     {
+2026-10-31T12:00:09.1509269Z       "model": "gemma4-e4b",
+2026-10-31T12:00:09.1509517Z       "sha256": "0b2a8980ce155fd97673d8e820b4d29d9c7d99b8fa6806f425d969b145bd52e0",
+2026-10-31T12:00:09.1509727Z       "bytes": 3659530240,
+2026-10-31T12:00:09.1509859Z       "public_metadata_verified": true,
+2026-10-31T12:00:09.1510007Z       "https_sample_bytes": 64
+2026-10-31T12:00:09.1510127Z     }
+2026-10-31T12:00:09.1510240Z   ],
+2026-10-31T12:00:09.1510439Z   "note": "This is not a full model download, native compatibility test or handwriting benchmark."
+2026-10-31T12:00:09.1510671Z }
+2026-10-31T12:00:09.1616909Z ##[group]Run actions/upload-artifact@v4
+2026-10-31T12:00:09.1617076Z with:
+2026-10-31T12:00:09.1617194Z   name: StudyFuse-model-catalog
+2026-10-31T12:00:09.1617345Z   path: model-catalog-validation.json
+2026-10-31T12:00:09.1617749Z   if-no-files-found: warn
+2026-10-31T12:00:09.1617876Z   compression-level: 6
+2026-10-31T12:00:09.1617994Z   overwrite: false
+2026-10-31T12:00:09.1618111Z   include-hidden-files: false
+2026-10-31T12:00:09.1618245Z ##[endgroup]
+2026-10-31T12:00:09.2647118Z (node:2090) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-31T12:00:09.2647720Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-31T12:00:09.2675269Z With the provided path, there will be 1 file uploaded
+2026-10-31T12:00:09.2692704Z Artifact name is valid!
+2026-10-31T12:00:09.2698116Z Root directory input is valid!
+2026-10-31T12:00:09.5873976Z Beginning upload of artifact content to blob storage
+2026-10-31T12:00:09.6002713Z (node:2090) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-31T12:00:09.7997203Z Uploaded bytes 477
+2026-10-31T12:00:09.8541337Z Finished uploading artifact content to blob storage!
+2026-10-31T12:00:09.8542050Z SHA256 digest of uploaded artifact zip is a476c07158be74bc2f015eebeac2d97367b0f72b093806231de6d5e22ca94ee4
+2026-10-31T12:00:09.8542874Z Finalizing artifact upload
+2026-10-31T12:00:10.3061876Z Artifact StudyFuse-model-catalog.zip successfully finalized. Artifact ID 13041832423
+2026-10-31T12:00:10.3062271Z Artifact StudyFuse-model-catalog has been successfully uploaded! Final size is 477 bytes. Artifact ID is 13041832423
+2026-10-31T12:00:10.3065176Z Artifact download URL: https://github.com/atillahan00/studyfuse/actions/runs/41199140658/artifacts/13041832423
+2026-10-31T12:00:10.3228530Z Post job cleanup.
+2026-10-31T12:00:10.3800382Z [command]/usr/bin/git version
+2026-10-31T12:00:10.3830324Z git version 2.56.0
+2026-10-31T12:00:10.3853188Z Temporarily overriding HOME='/home/runner/work/_temp/ebba1907-2a64-474c-8bb4-e09d4c8f5898' before making global git config changes
+2026-10-31T12:00:10.3853910Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-31T12:00:10.3856082Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/studyfuse/studyfuse
+2026-10-31T12:00:10.3887313Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-31T12:00:10.3913506Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-31T12:00:10.4101335Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-31T12:00:10.4126615Z http.https://github.com/.extraheader
+2026-10-31T12:00:10.4134260Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-10-31T12:00:10.4164178Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-31T12:00:10.4359230Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-31T12:00:10.4399852Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-31T12:00:10.4696284Z Cleaning up orphan processes
+2026-10-31T12:00:10.4943046Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

@@ -28,30 +28,230 @@ Daemon will be stopped at the end of the build
 > Task :app:processDebugManifest UP-TO-DATE
 > Task :app:processDebugManifestForPackage UP-TO-DATE
 > Task :app:processDebugResources UP-TO-DATE
+> Task :app:kspDebugKotlin UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
 > Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :app:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :app:kspDebugUnitTestKotlin UP-TO-DATE
+> Task :app:compileDebugUnitTestKotlin UP-TO-DATE
 > Task :app:preDebugUnitTestBuild UP-TO-DATE
 > Task :app:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
 > Task :app:mergeDebugShaders UP-TO-DATE
 > Task :app:compileDebugShaders NO-SOURCE
 > Task :app:generateDebugAssets UP-TO-DATE
 > Task :app:mergeDebugAssets UP-TO-DATE
 > Task :app:packageDebugUnitTestForUnitTest UP-TO-DATE
 > Task :app:generateDebugUnitTestConfig UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
+
+> Task :app:testDebugUnitTest
+
+UiTest > timedMockHidesAnswersUntilSubmissionAndStoresSelfAssessment STANDARD_OUT
+    MOCK_DIAGNOSTICS
+    Printing with useUnmergedTree = 'false'
+    Node #1385 at (l=13.0, t=0.0, r=1267.0, b=776.0)px
+     |-Node #1386 at (l=13.0, t=0.0, r=1267.0, b=776.0)px
+       [IsDialog]
+        |-Node #1387 at (l=13.0, t=0.0, r=1267.0, b=776.0)px
+          IsContainer = 'true'
+           |-Node #1390 at (l=25.0, t=22.0, r=1086.0, b=50.0)px
+           | Text = '[AI öğrenme merkezi]'
+           | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+           |-Node #1545 at (l=1086.0, t=24.0, r=1191.0, b=48.0)px
+           | Text = '[Kaydediliyor…]'
+           | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+           |-Node #1391 at (l=1191.0, t=16.0, r=1255.0, b=56.0)px
+           | Role = 'Button'
+           | Text = '[Kapat]'
+           | [Disabled]
+           | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, SetTextSubstitution, ShowTextSubstitution]
+           | MergeDescendants = 'true'
+           |-Node #1394 at (l=29.0, t=72.0, r=442.0, b=88.0)px
+           | Text = '[Yalnızca belgelerim · Deutsch · AI taslakları kaynakla kontrol edilmelidir]'
+           | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+           |-Node #1395 at (l=13.0, t=88.0, r=1267.0, b=136.0)px
+           | IsContainer = 'true'
+           | [SelectableGroup]
+           |  |-Node #1398 at (l=13.0, t=88.0, r=326.0, b=136.0)px
+           |  | Focused = 'false'
+           |  | Role = 'Tab'
+           |  | Selected = 'false'
+           |  | Text = '[Koç]'
+           |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+           |  | MergeDescendants = 'true'
+           |  |-Node #1402 at (l=326.0, t=88.0, r=639.0, b=136.0)px
+           |  | Focused = 'false'
+           |  | Role = 'Tab'
+           |  | Selected = 'false'
+           |  | Text = '[Kartlar]'
+           |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+           |  | MergeDescendants = 'true'
+           |  |-Node #1406 at (l=639.0, t=88.0, r=952.0, b=136.0)px
+           |  | Focused = 'false'
+           |  | Role = 'Tab'
+           |  | Selected = 'true'
+           |  | Text = '[Deneme]'
+           |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+           |  | MergeDescendants = 'true'
+           |  |-Node #1410 at (l=952.0, t=88.0, r=1265.0, b=136.0)px
+           |    Focused = 'false'
+           |    Role = 'Tab'
+           |    Selected = 'false'
+           |    Text = '[Plan]'
+           |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+           |    MergeDescendants = 'true'
+           |-Node #1418 at (l=25.0, t=136.0, r=232.0, b=184.0)px
+           | CollectionInfo = 'androidx.compose.ui.semantics.CollectionInfo@1775d5a9'
+           | HorizontalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=0.0, reverseScrolling=false)'
+           | IsTraversalGroup = 'true'
+           | Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+           |  |-Node #1421 at (l=25.0, t=144.0, r=139.0, b=176.0)px
+           |  | Focused = 'false'
+           |  | Role = 'Checkbox'
+           |  | Selected = 'true'
+           |  | Text = '[Tüm konular]'
+           |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+           |  | MergeDescendants = 'true'
+           |  |-Node #1426 at (l=145.0, t=144.0, r=232.0, b=176.0)px
+           |    Focused = 'false'
+           |    Role = 'Checkbox'
+           |    Selected = 'false'
+           |    Text = '[Biologie]'
+           |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+           |    MergeDescendants = 'true'
+           |-Node #1476 at (l=29.0, t=200.0, r=1251.0, b=760.0)px
+             CollectionInfo = 'androidx.compose.ui.semantics.CollectionInfo@4ab4e7eb'
+             IsTraversalGroup = 'true'
+             VerticalScrollAxisRange = 'ScrollAxisRange(value=0.0, maxValue=100.0, reverseScrolling=false)'
+             Actions = [GetScrollViewportLength, IndexForKey, ScrollBy, ScrollByOffset, ScrollToIndex]
+              |-Node #1478 at (l=29.0, t=200.0, r=203.0, b=224.0)px
+              | Text = '[Kaynaklı süreli deneme]'
+              | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+              |-Node #1479 at (l=29.0, t=224.0, r=891.0, b=240.0)px
+              | Text = '[Sorular incelenmiş AI çalışma kartlarından seçilir. Gerçek öğretmen sınavı tahmini değildir. Yanıt anahtarı teslimden veya süre bitiminden sonra açılır.]'
+              | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+              |-Node #1481 at (l=29.0, t=240.0, r=640.0, b=304.0)px
+              | ContentDataType = 'AndroidContentDataType(androidAutofillType=1)'
+              | EditableText = '1'
+              | Focused = 'false'
+              | ImeAction = 'Default'
+              | InputText = '1'
+              | IsEditable = 'true'
+              | Text = '[Soru sayısı / 1]'
+              | TextSelectionRange = 'TextRange(0, 0)'
+              | Actions = [ClearTextSubstitution, GetTextLayoutResult, InsertTextAtCursor, OnAutofillText, OnClick, OnLongClick, PasteText, PerformImeAction, RequestFocus, SetSelection, SetText, SetTextSubstitution, ShowTextSubstitution]
+              | MergeDescendants = 'true'
+              |-Node #1491 at (l=640.0, t=240.0, r=1251.0, b=304.0)px
+              | ContentDataType = 'AndroidContentDataType(androidAutofillType=1)'
+              | EditableText = '20'
+              | Focused = 'false'
+              | ImeAction = 'Default'
+              | InputText = '20'
+              | IsEditable = 'true'
+              | Text = '[Dakika]'
+              | TextSelectionRange = 'TextRange(0, 0)'
+              | Actions = [ClearTextSubstitution, GetTextLayoutResult, InsertTextAtCursor, OnAutofillText, OnClick, OnLongClick, PasteText, PerformImeAction, RequestFocus, SetSelection, SetText, SetTextSubstitution, ShowTextSubstitution]
+              | MergeDescendants = 'true'
+              |-Node #1501 at (l=29.0, t=308.0, r=207.0, b=348.0)px
+              | Focused = 'false'
+              | Role = 'Button'
+              | Text = '[Yeni deneme başlat]'
+              | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+              | MergeDescendants = 'true'
+              |-Node #1505 at (l=29.0, t=352.0, r=481.0, b=376.0)px
+              | Text = '[Deneme tamamlandı · kendi yanıtlarını kaynakla değerlendir]'
+              | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+              |-Node #1510 at (l=29.0, t=388.0, r=1251.0, b=708.0)px
+              | IsContainer = 'true'
+              |  |-Node #1513 at (l=41.0, t=400.0, r=205.0, b=424.0)px
+              |  | Text = '[Was enthält die Zelle?]'
+              |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+              |  |-Node #1514 at (l=41.0, t=432.0, r=1239.0, b=496.0)px
+              |  | ContentDataType = 'AndroidContentDataType(androidAutofillType=1)'
+              |  | EditableText = 'DNA'
+              |  | ImeAction = 'Default'
+              |  | InputText = 'DNA'
+              |  | IsEditable = 'false'
+              |  | Text = '[Yanıtım]'
+              |  | TextSelectionRange = 'TextRange(3, 3)'
+              |  | [Disabled]
+              |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnAutofillText, OnClick, OnLongClick, PerformImeAction, SetSelection, SetTextSubstitution, ShowTextSubstitution]
+              |  | MergeDescendants = 'true'
+              |  |-Node #1524 at (l=41.0, t=504.0, r=192.0, b=528.0)px
+              |  | Text = '[Yanıt anahtarı: DNA]'
+              |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+              |  |-Node #1525 at (l=41.0, t=536.0, r=256.0, b=560.0)px
+              |  | Text = '[Kanıt: Die Zelle enthält DNA.]'
+              |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+              |  |-Node #1526 at (l=41.0, t=572.0, r=185.0, b=612.0)px
+              |  | Focused = 'false'
+              |  | Role = 'Button'
+              |  | Text = '[Kaynağı aç · PDF 3]'
+              |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+              |  | MergeDescendants = 'true'
+              |  |-Node #1529 at (l=41.0, t=624.0, r=409.0, b=640.0)px
+              |  | Text = '[Öz değerlendirme: 0 eksik, 1 kısmi, 2 tamam. Resmi not değildir.]'
+              |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+              |  |-Node #1531 at (l=41.0, t=652.0, r=99.0, b=692.0)px
+              |  | Focused = 'false'
+              |  | Role = 'Button'
+              |  | Text = '[0 / 2]'
+              |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+              |  | MergeDescendants = 'true'
+              |  |-Node #1534 at (l=99.0, t=652.0, r=157.0, b=692.0)px
+              |  | Focused = 'false'
+              |  | Role = 'Button'
+              |  | Text = '[1 / 2]'
+              |  | Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+              |  | MergeDescendants = 'true'
+              |  |-Node #1537 at (l=157.0, t=652.0, r=215.0, b=692.0)px
+              |    Focused = 'false'
+              |    Role = 'Button'
+              |    Text = '[2 / 2]'
+              |    Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+              |    MergeDescendants = 'true'
+              |-Node #1541 at (l=29.0, t=720.0, r=710.0, b=744.0)px
+              | Text = '[Öz puan toplamı: 0 / 2. İşaretlenmemiş sorular olabilir; bu bir sınav başarı tahmini değildir.]'
+              | Actions = [ClearTextSubstitution, GetTextLayoutResult, SetTextSubstitution, ShowTextSubstitution]
+              |-Node #1542 at (l=29.0, t=748.0, r=246.0, b=788.0)px
+                Focused = 'false'
+                Role = 'Button'
+                Text = '[Deneme ve yanıtlarımı kaydet]'
+                Actions = [ClearTextSubstitution, GetTextLayoutResult, OnClick, RequestFocus, SetTextSubstitution, ShowTextSubstitution]
+                MergeDescendants = 'true'
+    {"signature":"0e52efa340d8c9af4ce7caa6e6c51a6fb4c42227412e40fa7c3bdc2160e16fad","id":"f9c4cfe2-2f8f-44bc-ad81-f87c33c5e0cf","deadline":1793449740637,"submitted":true,"cards":[{"kind":"recall","question":"Was enthält die Zelle?","answer":"DNA","evidence":"Die Zelle enthält DNA.","origin":"document","id":"19b84e0977f174efd836a0dd386c965a263cc46b0830ad8e9483e6edb73c9bd0","basis":"pdf_text","page":3,"sourceName":"Biologie.txt","section":"Biologie","reference":false}],"answers":{"19b84e0977f174efd836a0dd386c965a263cc46b0830ad8e9483e6edb73c9bd0":"DNA"},"marks":{"19b84e0977f174efd836a0dd386c965a263cc46b0830ad8e9483e6edb73c9bd0":0}}
+
 > Task :app:preDebugAndroidTestBuild SKIPPED
 > Task :app:generateDebugAndroidTestResValues UP-TO-DATE
+> Task :app:generateDebugAndroidTestLintModel
 > Task :app:extractProguardFiles UP-TO-DATE
+> Task :app:generateDebugLintReportModel
+> Task :app:generateDebugUnitTestLintModel
+> Task :app:lintAnalyzeDebugAndroidTest
+> Task :app:lintAnalyzeDebugUnitTest
 > Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
 > Task :app:compressDebugAssets UP-TO-DATE
 > Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:dexBuilderDebug UP-TO-DATE
+> Task :app:mergeDebugGlobalSynthetics UP-TO-DATE
+> Task :app:mergeDebugJavaResource UP-TO-DATE
 > Task :app:checkDebugDuplicateClasses UP-TO-DATE
 > Task :app:mergeExtDexDebug UP-TO-DATE
 > Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:mergeProjectDexDebug UP-TO-DATE
 > Task :app:mergeDebugJniLibFolders UP-TO-DATE
 > Task :app:mergeDebugNativeLibs UP-TO-DATE
 > Task :app:stripDebugDebugSymbols UP-TO-DATE
 > Task :app:validateSigningDebug UP-TO-DATE
 > Task :app:writeDebugAppMetadata UP-TO-DATE
 > Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:packageDebug UP-TO-DATE
+> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleDebug UP-TO-DATE
 > Task :app:processDebugAndroidTestManifest UP-TO-DATE
 > Task :app:generateDebugAndroidTestBuildConfig UP-TO-DATE
 > Task :app:checkDebugAndroidTestAarMetadata UP-TO-DATE
@@ -59,58 +259,38 @@ Daemon will be stopped at the end of the build
 > Task :app:generateDebugAndroidTestResources UP-TO-DATE
 > Task :app:mergeDebugAndroidTestResources UP-TO-DATE
 > Task :app:processDebugAndroidTestResources UP-TO-DATE
+> Task :app:kspDebugAndroidTestKotlin UP-TO-DATE
+> Task :app:compileDebugAndroidTestKotlin UP-TO-DATE
 > Task :app:javaPreCompileDebugAndroidTest UP-TO-DATE
+> Task :app:compileDebugAndroidTestJavaWithJavac UP-TO-DATE
 > Task :app:mergeDebugAndroidTestShaders UP-TO-DATE
 > Task :app:compileDebugAndroidTestShaders NO-SOURCE
 > Task :app:generateDebugAndroidTestAssets UP-TO-DATE
 > Task :app:mergeDebugAndroidTestAssets UP-TO-DATE
 > Task :app:compressDebugAndroidTestAssets UP-TO-DATE
 > Task :app:desugarDebugAndroidTestFileDependencies UP-TO-DATE
+> Task :app:dexBuilderDebugAndroidTest UP-TO-DATE
+> Task :app:mergeDebugAndroidTestGlobalSynthetics UP-TO-DATE
+> Task :app:processDebugAndroidTestJavaRes UP-TO-DATE
+> Task :app:mergeDebugAndroidTestJavaResource UP-TO-DATE
 > Task :app:checkDebugAndroidTestDuplicateClasses UP-TO-DATE
 > Task :app:mergeExtDexDebugAndroidTest UP-TO-DATE
 > Task :app:mergeLibDexDebugAndroidTest UP-TO-DATE
+> Task :app:mergeProjectDexDebugAndroidTest UP-TO-DATE
 > Task :app:mergeDebugAndroidTestJniLibFolders UP-TO-DATE
 > Task :app:mergeDebugAndroidTestNativeLibs NO-SOURCE
 > Task :app:stripDebugAndroidTestDebugSymbols NO-SOURCE
 > Task :app:validateSigningDebugAndroidTest UP-TO-DATE
 > Task :app:writeDebugAndroidTestSigningConfigVersions UP-TO-DATE
-> Task :app:kspDebugKotlin
-> Task :app:compileDebugKotlin
-> Task :app:compileDebugJavaWithJavac UP-TO-DATE
-> Task :app:bundleDebugClassesToCompileJar
-> Task :app:bundleDebugClassesToRuntimeJar
-> Task :app:processDebugJavaRes UP-TO-DATE
-> Task :app:generateDebugAndroidTestLintModel
-> Task :app:generateDebugLintReportModel
-> Task :app:generateDebugUnitTestLintModel
-> Task :app:kspDebugUnitTestKotlin
-> Task :app:compileDebugUnitTestKotlin
-> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
-> Task :app:processDebugUnitTestJavaRes UP-TO-DATE
-> Task :app:lintAnalyzeDebug
-> Task :app:testDebugUnitTest
-> Task :app:lintAnalyzeDebugAndroidTest
-> Task :app:lintAnalyzeDebugUnitTest
-> Task :app:dexBuilderDebug
-> Task :app:lintReportDebug UP-TO-DATE
-> Task :app:lintDebug
-> Task :app:mergeDebugGlobalSynthetics UP-TO-DATE
-> Task :app:mergeDebugJavaResource UP-TO-DATE
-> Task :app:mergeProjectDexDebug
-> Task :app:kspDebugAndroidTestKotlin
-> Task :app:compileDebugAndroidTestKotlin
-> Task :app:packageDebug
-> Task :app:createDebugApkListingFileRedirect UP-TO-DATE
-> Task :app:assembleDebug
-> Task :app:compileDebugAndroidTestJavaWithJavac UP-TO-DATE
-> Task :app:dexBuilderDebugAndroidTest UP-TO-DATE
-> Task :app:mergeDebugAndroidTestGlobalSynthetics UP-TO-DATE
-> Task :app:processDebugAndroidTestJavaRes UP-TO-DATE
-> Task :app:mergeDebugAndroidTestJavaResource UP-TO-DATE
-> Task :app:mergeProjectDexDebugAndroidTest UP-TO-DATE
 > Task :app:packageDebugAndroidTest UP-TO-DATE
 > Task :app:createDebugAndroidTestApkListingFileRedirect UP-TO-DATE
 > Task :app:assembleDebugAndroidTest UP-TO-DATE
+> Task :app:lintAnalyzeDebug
+
+> Task :app:lintReportDebug
+Wrote HTML report to file:///workspace/studyfuse/app/build/reports/lint-results-debug.html
+
+> Task :app:lintDebug
 
 [Incubating] Problems report is available at: file:///workspace/studyfuse/build/reports/problems/problems-report.html
 
@@ -120,5 +300,5 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 1m 47s
-89 actionable tasks: 19 executed, 70 up-to-date
+BUILD SUCCESSFUL in 1m 36s
+89 actionable tasks: 9 executed, 80 up-to-date
