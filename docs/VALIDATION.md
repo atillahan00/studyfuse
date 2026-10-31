@@ -12,7 +12,7 @@ Independent PyMuPDF verification checks mixed source colours, all 200 bands of t
 
 ## Hosted checks
 
-Run [41199749074](https://github.com/atillahan00/studyfuse/actions/runs/41199749074), source `cf07ca8a8241dba441fe7756cc90b1fb394ba825`: build/test/lint/APK job **passed**; pinned public-model check **passed**. The connected Android job is still running at this intermediate publication; no result is inferred from an uncompleted job. See `github-build.txt` and `model-catalog.txt` for observed evidence.
+Run [41199749074](https://github.com/atillahan00/studyfuse/actions/runs/41199749074), source `cf07ca8a8241dba441fe7756cc90b1fb394ba825`: build/test/lint/APK job **passed**; pinned public-model check **passed**. The Android 15 / API 35 x86_64 Pixel Tablet job **passed all six connected tests**. Observed logs show Starting 6 tests, Finished 6 tests and BUILD SUCCESSFUL. All three workflow jobs completed successfully. See `github-build.txt`, `model-catalog.txt` and `android-runtime.txt` for observed evidence.
 
 The Android workflow runs build/tests/lint, an Android 15 / API 35 x86_64 tablet emulator suite, and a public model-catalog check. The catalog script verifies pinned publisher pointer SHA/size and a 64-byte HTTPS ranged response, without downloading multi-GB weights. This execution environment blocks direct model-host access; that is not represented as a successful full download.
 
@@ -26,7 +26,7 @@ The direct download is an ARM64 debug/evaluation APK for `org.studyfuse`, **1.3.
 1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b
 ```
 
-The delivered APK is **85,983,769 bytes** (about 82 MiB). Its original development signature, 16 KiB ZIP alignment and every packaged ARM64 ELF LOAD alignment were verified. Manifest evidence confirms version 1.3.0 / 4, ARM64 only, min API 29 and target API 36. Verification files are under `validation-evidence/`. Internet/network-state permission is now intentional for model downloads; broad storage permissions are absent. Known OCR DataTransport components are removed; this is not a universal vendor/OS packet audit. CI debug keys may differ. No private signing key or weight file is committed.
+The delivered APK is **85,983,769 bytes** (about 82 MiB). Its original development signature, 16 KiB ZIP alignment and every packaged ARM64 ELF LOAD alignment were verified. Manifest evidence confirms version 1.3.0 / 4, ARM64 only, min API 29 and target API 36. Verification files are under `validation-evidence/`. Internet/network-state permission is now intentional for model downloads; broad storage permissions are absent. Known OCR DataTransport components are removed; this is not a universal vendor/OS packet audit. The public GitHub APK was downloaded again and its SHA-256/size matched the delivered file: `8607fc88665bd5957cecf9165af103135a357a6596e123734956fd7faf2e50f2`. See `public-apk-download.json`. CI debug keys may differ. No private signing key or weight file is committed.
 
 ## Limits
 
