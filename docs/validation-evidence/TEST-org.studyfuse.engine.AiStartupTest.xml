@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.studyfuse.engine.AiStartupTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-31T13:51:31.058Z" hostname="1b4ee2135e4b" time="4.373">
+  <properties/>
+  <testcase name="twoFailedBackendsReportFailureWithoutUnboundedRetries" classname="org.studyfuse.engine.AiStartupTest" time="2.078"/>
+  <testcase name="successfulBackendIsBoundToModelAndDevice" classname="org.studyfuse.engine.AiStartupTest" time="0.033"/>
+  <testcase name="gpuFailureRetriesCpuExactlyOnceAndKeepsDownloadedBytes" classname="org.studyfuse.engine.AiStartupTest" time="0.059"/>
+  <testcase name="diagnosticsContainOnlyStartupMetadataNotErrorText" classname="org.studyfuse.engine.AiStartupTest" time="0.122"/>
+  <testcase name="cancellationNeverStartsAnotherNativeAttempt" classname="org.studyfuse.engine.AiStartupTest" time="0.082"/>
+  <testcase name="cpuCompatibilityFailureIsNotDeclaredReady" classname="org.studyfuse.engine.AiStartupTest" time="0.087"/>
+  <testcase name="androidTenDiagnosticsDoNotRequireExitInfoApi" classname="org.studyfuse.engine.AiStartupTest" time="1.897"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

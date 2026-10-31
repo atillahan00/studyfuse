@@ -1,0 +1,15 @@
+StudyFuse 1.3 observed Android runtime validation
+Source commit: cf07ca8a8241dba441fe7756cc90b1fb394ba825
+Run: https://github.com/atillahan00/studyfuse/actions/runs/41199749074
+Job: 124533916709; completed / success
+Emulator: Android 15 / API 35, x86_64 google_apis, Pixel Tablet
+
+Connected-test log excerpt:
+2026-10-31T12:16:02.0128251Z Starting 6 tests on emulator-5554 - 15
+2026-10-31T12:16:08.1176504Z Finished 6 tests on emulator-5554 - 15
+2026-10-31T12:16:09.0146379Z BUILD SUCCESSFUL in 1m 50s
+2026-10-31T12:16:35.4347056Z BUILD SUCCESSFUL in 7s
+Six connected tests passed: native PDF rendering, long-image region decoding, bundled printed OCR,
+five-region exam cancellation/resume with a deterministic adapter, native AI failure reporting,
+and Internet permission / absent known OCR DataTransport services.
+No full model download, physical MagicPad 2 or neural handwriting/math benchmark is implied.

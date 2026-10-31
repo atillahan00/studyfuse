@@ -13,7 +13,7 @@
 /workspace/studyfuse/app/src/main/java/org/studyfuse/ui/DocumentView.kt:31: Warning: Use the KTX function createBitmap instead? [UseKtx]
         val bitmap=Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888)
                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/workspace/studyfuse/app/src/main/java/org/studyfuse/ui/ExamWorkshop.kt:114: Warning: Use the KTX extension function String.toUri instead? [UseKtx]
+/workspace/studyfuse/app/src/main/java/org/studyfuse/ui/ExamWorkshop.kt:121: Warning: Use the KTX extension function String.toUri instead? [UseKtx]
                         TextButton(onClick={runCatching{context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse("https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm")))}.onFailure{error="Tarayıcı açılamadı"}}){Text("Model indirme sayfası")}
                                                                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /workspace/studyfuse/app/src/main/java/org/studyfuse/ui/StudyViewModel.kt:104: Warning: Use the KTX function createBitmap instead? [UseKtx]
