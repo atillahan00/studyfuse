@@ -118,10 +118,17 @@ class UiTest {
         ui.onNode(hasSetTextAction() and hasText("Yanıtım")).performScrollTo().performTextInput("DNA")
         ui.onNodeWithText("Denemeyi teslim et").performScrollTo().performClick()
         ui.waitUntil(10000){ui.onAllNodesWithText("Yanıt anahtarı: DNA").fetchSemanticsNodes().isNotEmpty()}
-        ui.onNodeWithText("0 / 2").performScrollTo().performClick()
+        // Expiry may reveal the key while asynchronous submission is still saving.
+        // Wait for the enabled assessment control, not merely visible answer text.
+        ui.waitUntil(10000){ui.onAllNodes(hasText("0 / 2") and isEnabled()).fetchSemanticsNodes().isNotEmpty()}
+        ui.onNodeWithText("0 / 2").performScrollTo().assertIsEnabled().performClick()
         ui.waitUntil(10000){StudyTools(store).data("mock.json").getJSONObject("marks").length()==1}
         org.junit.Assert.assertEquals("DNA",StudyTools(store).data("mock.json").getJSONObject("answers").getString(StudyTools(store).data("mock.json").getJSONArray("cards").getJSONObject(0).getString("id")))
         screenshot("tablet-mock-exam.png")
+    }
+    @After fun captureFailedMockDiagnostics() {
+        File("build/test-artifacts").mkdirs()
+        runCatching { File("build/test-artifacts/mock-final-ui-tree.txt").writeText(ui.onAllNodes(isRoot()).onLast().printToString()) }
     }
     private fun screenshot(name:String) {
         ui.waitForIdle()

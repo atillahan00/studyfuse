@@ -84,6 +84,7 @@ jobs:
             core/build/test-results/
             app/build/reports/
             app/build/test-results/
+            app/build/test-artifacts/
           if-no-files-found: warn
           retention-days: 30
 
