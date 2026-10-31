@@ -6,7 +6,6 @@ import android.os.*
 import com.google.ai.edge.litertlm.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
 import java.io.File
 import java.util.concurrent.Executors
 
@@ -47,12 +46,9 @@ class LocalAiService:Service() {
                     val parts=mutableListOf<Content>()
                     data.getString("image")?.let{image->require(File(image).canonicalPath.startsWith(filesDir.canonicalPath+"/"));parts+=Content.ImageFile(image)}
                     parts+=Content.Text(data.getString("prompt") ?: "")
-                    val output=StringBuilder()
                     stage(if(imageInput)"VISION_GENERATION" else "TEXT_GENERATION")
-                    try {conversation.sendMessageAsync(Contents.of(parts)).collect{message->
-                        output.append(message.toString());check(output.length<=90_000){"Model yanıtı güvenli boyutu aştı"}
-                    }}finally{if(!currentCoroutineContext().isActive)conversation.cancelProcess()}
-                    output.toString()
+                    CallbackGeneration.run(start={callback->conversation.sendMessageAsync(Contents.of(parts),callback)},
+                        cancel={conversation.cancelProcess()})
                 }
             }
             stage("COMPLETED")

@@ -19,6 +19,15 @@ class AiDiagnostics(private val context:Context) {
             .put("gpu",gpu).put("image",image).put("availableBytes",memory.availMem).put("lowMemory",memory.lowMemory))
     }
     fun javaFailure(error:Throwable){runCatching{atomicJson(file,snapshot().put("errorClass",error.javaClass.simpleName))}}
+    fun fatal(error:Throwable){runCatching{
+        val state=snapshot().put("pid",Process.myPid()).put("fatalClass",error.javaClass.name)
+        if(!state.has("at"))state.put("at",System.currentTimeMillis())
+        val frames=error.stackTrace.asSequence().filter{frame->
+            listOf("org.studyfuse.","com.google.ai.edge.litertlm.","kotlinx.coroutines.","kotlin.","java.","android.").any{frame.className.startsWith(it)} &&
+                frame.className.matches(Regex("[A-Za-z0-9_.$]+")) && frame.methodName.matches(Regex("[A-Za-z0-9_$<>-]+"))
+        }.take(12).map{"${it.className.take(180)}.${it.methodName.take(100)}:${it.lineNumber}"}.toList()
+        state.put("fatalFrames",org.json.JSONArray(frames));atomicJson(file,state)
+    }}
     fun summary():String {
         val state=snapshot();val exit=if(Build.VERSION.SDK_INT>=30 && state.optInt("pid",0)>0)runCatching{
             context.getSystemService(ActivityManager::class.java).getHistoricalProcessExitReasons(context.packageName,state.getInt("pid"),4)
@@ -30,6 +39,8 @@ class AiDiagnostics(private val context:Context) {
             appendLine("Aşama: ${state.optString("stage","Henüz yerel AI kaydı yok")}")
             if(state.has("gpu"))appendLine("Dil: ${if(state.getBoolean("gpu"))"GPU" else "CPU"} · Görüntü: ${if(state.optBoolean("image"))"GPU" else "yok"}")
             if(state.has("availableBytes"))appendLine("Son aşamada boş RAM: ${state.getLong("availableBytes")/(1024*1024)} MiB · düşük bellek: ${state.optBoolean("lowMemory")}")
+            if(state.has("fatalClass")){appendLine("Yakalanmamış hata sınıfı: ${state.getString("fatalClass")}")
+                val frames=state.optJSONArray("fatalFrames");if(frames!=null)for(i in 0 until frames.length())appendLine(frames.getString(i))}
             if(state.has("errorClass"))appendLine("Java hatası: ${state.getString("errorClass")}")
             if(exit!=null && Build.VERSION.SDK_INT>=30)appendLine("Android çıkış nedeni: ${exitReason(exit.reason)} · durum/sinyal: ${exit.status} · PSS: ${exit.pss} KiB")
             else appendLine(if(Build.VERSION.SDK_INT<30)"Android 10 süreç çıkış kaydı sağlamaz." else "Android henüz eşleşen süreç çıkış nedeni sağlamadı.")

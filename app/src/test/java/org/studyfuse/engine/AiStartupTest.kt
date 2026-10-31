@@ -51,6 +51,17 @@ class AiStartupTest {
         assertTrue(AiDiagnostics.exitReason(ApplicationExitInfo.REASON_LOW_MEMORY).contains("LOW_MEMORY"))
         assertTrue(AiDiagnostics.exitReason(ApplicationExitInfo.REASON_CRASH_NATIVE).contains("CRASH_NATIVE"))
     }
+    @Test fun uncaughtFailureKeepsOnlyBoundedCodeFrames() {
+        val d=AiDiagnostics(context);d.stage("VISION_GENERATION",false,true)
+        val failure=NoSuchMethodError("PRIVATE NOTE CONTENT").apply{stackTrace=arrayOf(
+            StackTraceElement("com.google.ai.edge.litertlm.Conversation", "onDone", "PRIVATE DOCUMENT PATH", 452),
+            StackTraceElement("private.teacher.notes", "secret", "PRIVATE DOCUMENT PATH", 1),
+            *Array(20){StackTraceElement("org.studyfuse.learning.LocalAiService","respond","PRIVATE DOCUMENT PATH",42)})}
+        d.fatal(failure)
+        val raw=d.snapshot().toString();assertFalse(raw.contains("PRIVATE"));assertFalse(raw.contains("private.teacher"))
+        assertEquals(12,d.snapshot().getJSONArray("fatalFrames").length())
+        assertTrue(d.summary().contains("java.lang.NoSuchMethodError"));assertTrue(d.summary().contains("Conversation.onDone:452"))
+    }
     @Test @Config(sdk=[29]) fun androidTenDiagnosticsDoNotRequireExitInfoApi() {
         val d=AiDiagnostics(context);d.stage("CREATING_ENGINE",false,true)
         assertTrue(d.summary().contains("Android 10 süreç çıkış kaydı sağlamaz"))

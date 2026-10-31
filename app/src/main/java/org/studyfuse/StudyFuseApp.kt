@@ -12,6 +12,13 @@ class StudyFuseApp:Application(),androidx.work.Configuration.Provider {
     val repository by lazy { Repository(this,database.dao()) }
     override fun onCreate() {
         super.onCreate()
+        if(Application.getProcessName()==packageName+":local_ai"){
+            val previous=Thread.getDefaultUncaughtExceptionHandler()
+            Thread.setDefaultUncaughtExceptionHandler{thread,error->
+                runCatching{org.studyfuse.learning.AiDiagnostics(this).fatal(error)}
+                if(previous!=null)previous.uncaughtException(thread,error)else android.os.Process.killProcess(android.os.Process.myPid())
+            }
+        }
         PDFBoxResourceLoader.init(this)
         // Only abandoned partial imports are removed here. WorkManager owns processing scratch space.
         filesDir.resolve("projects").walkTopDown().filter { it.isFile && it.extension=="part" &&

@@ -100,6 +100,20 @@ class OnDeviceTest {
             assertEquals(0,cachedCalls)
         }finally{project.deleteRecursively()}
     }
+    /** Actual pinned SDK completion bytecode, followed by the production bridge; no neural weights. */
+    @Test fun sdkCompletionAbiCrashIsReproducedAndAppBridgeCompletes()=runBlocking {
+        val scope=java.lang.reflect.Proxy.newProxyInstance(kotlinx.coroutines.channels.ProducerScope::class.java.classLoader,
+            arrayOf(kotlinx.coroutines.channels.ProducerScope::class.java)){_,_,_->null}
+        val type=Class.forName("com.google.ai.edge.litertlm.Conversation\$sendMessageAsync\$1\$1")
+        val old=type.declaredConstructors.single().apply{isAccessible=true}.newInstance(scope) as com.google.ai.edge.litertlm.MessageCallback
+        var reproduced=false
+        try{old.onDone()}catch(e:NoSuchMethodError){reproduced=e.message.orEmpty().contains("close")}
+        assertTrue("The pinned SDK Flow completion must expose the ABI mismatch",reproduced)
+        val result=CallbackGeneration.run(start={callback->
+            Thread{callback.onMessage(com.google.ai.edge.litertlm.Message.model(com.google.ai.edge.litertlm.Contents.of("äöüß ğışç ∑x²")));callback.onDone()}.start()
+        },cancel={fail("Successful completion must not cancel")})
+        assertEquals("äöüß ğışç ∑x²",result)
+    }
     @Test fun nativeAiFailureIsReportedWithoutKillingUiProcess()=runBlocking {
         val missing=File(context.filesDir,"local-models/does-not-exist.litertlm")
         var error:Throwable?=null
