@@ -21,7 +21,7 @@ import org.studyfuse.learning.AiDiagnostics
             else->"Yerel AI hazırlanıyor"
         }
         val start=snapshot.optLong("generationStartedElapsed",snapshot.optLong("phaseStartedElapsed",now))
-        val elapsed=((now-start).coerceAtLeast(0)/1000)
+        val elapsed=if(snapshot.optString("stage")=="COMPLETED")snapshot.optJSONObject("timing")?.optLong("generationMs",0)?.div(1000) ?:0 else ((now-start).coerceAtLeast(0)/1000)
         Text("$stage · ${if(snapshot.optBoolean("gpu"))"GPU" else "CPU"} · $elapsed sn · ${snapshot.optInt("characters",snapshot.optJSONObject("timing")?.optInt("characters") ?:0)} karakter",style=MaterialTheme.typography.bodySmall)
         Text("Süre ve karakter sayısı ölçümdür; karakterler token veya doğruluk puanı değildir.",style=MaterialTheme.typography.bodySmall)
     }
