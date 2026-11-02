@@ -11,8 +11,8 @@ android {
         applicationId = "org.studyfuse"
         minSdk = 29
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.3.3"
+        versionCode = 8
+        versionName = "1.3.4"
         ndk { abiFilters += (providers.gradleProperty("studyfuseAbi").orNull?.let { listOf(it) } ?: listOf("arm64-v8a","x86_64")) }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

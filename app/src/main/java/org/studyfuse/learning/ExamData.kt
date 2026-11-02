@@ -11,15 +11,15 @@ import java.time.LocalDate
 
 data class ExamConfig(val mode:KnowledgeMode=KnowledgeMode.DOCUMENTS_ONLY,val language:String="Deutsch",val focus:String="",
     val examDate:String="",val detailed:Boolean=false,val gpu:Boolean=true,val references:Set<String> = emptySet(),
-    val detailPages:String="",val readingOnly:Boolean=false,val visualTokens:Int?=null) {
+    val detailPages:String="",val readingOnly:Boolean=false,val visualTokens:Int?=null,val nativeTextFirst:Boolean=true) {
     fun json()=JSONObject().put("mode",mode.name).put("language",language).put("focus",focus).put("examDate",examDate)
         .put("detailed",detailed).put("gpu",gpu).put("references",JSONArray(references.sorted())).apply{
-            if(detailPages.isNotBlank())put("detailPages",detailPages);if(readingOnly)put("readingOnly",true);if(visualTokens!=null)put("visualTokens",visualTokens)}
+            if(!nativeTextFirst)put("nativeTextFirst",false);if(detailPages.isNotBlank())put("detailPages",detailPages);if(readingOnly)put("readingOnly",true);if(visualTokens!=null)put("visualTokens",visualTokens)}
     fun validate(){StudyPageSelection.parse(detailPages);GenerationOptions(visualTokens).validate();require(language in listOf("Deutsch","Türkçe","English"));require(focus.length<=2000){"Sınav bağlamı en fazla 2000 karakter olmalı"};require(references.all{it.matches(Regex("[0-9a-f]{64}"))});if(examDate.isNotBlank())LocalDate.parse(examDate)}
     companion object {fun decode(j:JSONObject)=ExamConfig(KnowledgeMode.valueOf(j.optString("mode","DOCUMENTS_ONLY")),j.optString("language","Deutsch"),
         j.optString("focus"),j.optString("examDate"),j.optBoolean("detailed",false),j.optBoolean("gpu",true),
         j.optJSONArray("references")?.let{a->(0 until a.length()).map{a.getString(it)}.toSet()} ?: emptySet(),j.optString("detailPages"),j.optBoolean("readingOnly",false),
-        if(j.has("visualTokens"))j.getInt("visualTokens")else null).also{it.validate()}}
+        if(j.has("visualTokens"))j.getInt("visualTokens")else null,j.optBoolean("nativeTextFirst",true)).also{it.validate()}}
 }
 fun digest(text:String)=MessageDigest.getInstance("SHA-256").digest(text.toByteArray()).joinToString(""){"%02x".format(it)}
 fun readJson(file:File):JSONObject=JSONObject(AtomicFile(file).openRead().bufferedReader().use{it.readText()})

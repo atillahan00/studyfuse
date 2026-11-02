@@ -120,7 +120,7 @@ class OnDeviceTest {
                     return JSONObject().put("transcription","").put("observations","deterministic diagram fixture").put("uncertainties",JSONArray()).put("items",JSONArray()).toString()
                 }
             }
-            val fast=ExamConfig(readingOnly=true,visualTokens=280)
+            val fast=ExamConfig(readingOnly=true,visualTokens=280,nativeTextFirst=false)
             val overview=ExamCompiler(context,store,engine).compile(compilation.report,model,fast){_,_,_->}
             assertEquals(3,calls);assertEquals(3,overview.getInt("total"))
             val overviewKeys=overview.getJSONArray("units").let{a->(0 until a.length()).map{a.getString(it)}}
@@ -133,6 +133,36 @@ class OnDeviceTest {
             assertEquals(8,calls);assertEquals(15,all.getInt("total"));assertEquals(7,all.getInt("reusedRegions"))
             calls=0;val otherBackend=ExamCompiler(context,store,engine).compile(compilation.report,model,detailed.copy(gpu=false)){_,_,_->}
             assertEquals(0,calls);assertEquals(15,otherBackend.getInt("reusedRegions"));assertEquals(before,sha256(file))
+        }finally{project.deleteRecursively()}
+    }
+    /** Native Android PDF parser/classifier: synthetic text bypasses inference; drawn ink does not. */
+    @Test fun textFirstSkipsOnlyPlainPagesAndFullVisualOverrideStillWorks()=runBlocking {
+        com.tom_roush.pdfbox.android.PDFBoxResourceLoader.init(context)
+        val project=File(context.filesDir,"projects/native-${UUID.randomUUID()}").apply{mkdirs()}
+        try {
+            val input=File(project,"mixed.pdf")
+            newPdf(project).use{doc->repeat(2){index->
+                val p=com.tom_roush.pdfbox.pdmodel.PDPage(com.tom_roush.pdfbox.pdmodel.common.PDRectangle.A4);doc.addPage(p)
+                com.tom_roush.pdfbox.pdmodel.PDPageContentStream(doc,p).use{cs->
+                    PdfText(context,doc).draw(cs,"Die Zelle enthält DNA. äöüß ğışç",40f,740f)
+                    if(index==1){cs.moveTo(30f,30f);cs.lineTo(80f,50f);cs.stroke()}
+                }
+            };doc.save(input)}
+            val before=sha256(input)
+            val s=Source("native-source","device",input.name,"Biologie",0,input.path,input.path,input.length(),before,"PDF")
+            val out=org.studyfuse.engine.Compiler(context,File(project,"exports").apply{mkdirs()}).compile(listOf(s),ExportSettings())
+            val weights=File(project,"model").apply{writeText("deterministic fixture, no neural weights")}
+            val m=LocalModel("fixture",weights,sha256(weights),weights.length());val store=ExamStore(project);var calls=0
+            val engine=ExamInference{_,_,_,_,image->assertTrue(image!!.length()>0);calls++;"""{"transcription":"","observations":"fixture","uncertainties":[],"items":[]}"""}
+            val config=ExamConfig(readingOnly=true)
+            val result=ExamCompiler(context,store,engine).compile(out.report,m,config){_,_,_->}
+            assertEquals(1,calls);assertEquals(1,result.getInt("nativeTextRegions"));assertEquals(1,result.getInt("inferenceCalls"))
+            val units=store.currentUnits(store.signature(out.report,m,config))
+            assertEquals(listOf("native_pdf","visual_ai"),units.map{it.getString("readingMethod")})
+            assertTrue(units.first().getString("transcription").contains("äöüß ğışç"))
+            calls=0
+            ExamCompiler(context,store,engine).compile(out.report,m,config.copy(nativeTextFirst=false)){_,_,_->}
+            assertEquals(2,calls);assertEquals(before,sha256(input))
         }finally{project.deleteRecursively()}
     }
     /** Actual pinned SDK completion bytecode, followed by the production bridge; no neural weights. */

@@ -1,4 +1,4 @@
-# StudyFuse 1.3.3 — Automatic offline AI and a source-based study workspace
+# StudyFuse 1.3.4 — Automatic offline AI and a source-based study workspace
 
 Compile PDFs, handwritten-note screenshots and UTF-8 text into one organized study document, then prepare source-linked exam notes with an automatically installed on-device vision model. Native Kotlin, Jetpack Compose and Material 3, with a Turkish tablet interface. Android 10+; targets Android 16. The direct APK is **ARM64**, suitable for the HONOR MagicPad 2; CI also builds x86_64 support for emulator testing.
 
@@ -6,13 +6,15 @@ Compile PDFs, handwritten-note screenshots and UTF-8 text into one organized stu
 
 **Office and OneNote files require source-app PDF export/replacement.** Unsupported sources receive explicit warning pages. Bundled ML Kit OCR recognizes printed Latin text. The separately installed visual language model can interpret handwriting, images, graphs and equations, but those interpretations are **unverified AI drafts**, not guaranteed recognition. The app uses Internet for student-initiated public model downloads, with no mandatory paid API or remote inference. Documents and prompts stay on device; study processing works offline after setup.
 
-## 1.3.3: reduce work per AI page
+## 1.3.4: read text PDFs without a visual-model request on every page
 
-If one region is still slow **with GPU language acceleration on**, turning off close-ups is insufficient. Use **Sınav atölyesi → Hızlı kaynak okuma**: one image request per source page, reading/transcription first, with a 280-token Gemma 4 visual budget. Generate practice later from the reading corpus through the learning hub. **Dengeli çalışma** uses one pass, practice items and a 560-token budget; **Tam görsel ayrıntı** requests all five views at 1120 tokens. You can also keep full visual detail while enabling reading-first independently. Lower visual budgets can miss small handwriting/diagram labels; original PDF bytes are unchanged and close-ups remain available.
+Choose **Sınav atölyesi → Hızlı kaynak okuma**. With **Uygun sayfalarda PDF metnini doğrudan oku** enabled, readable text pages without detected graphics use direct PDF extraction: no image rendering, model initialization or inference for that page. Text is retained verbatim, labelled **AI kullanılmadı**, and available to the source-cited coach and card tools. This pass reads sources; generate explanations and practice separately through **AI öğrenme merkezi → Koç**.
 
-The model is no longer asked to retype text already extracted from a PDF: that text is retained verbatim alongside extra visual/handwritten observations. Completed overviews are reused when close-ups are added; selected compiled-PDF page ranges such as **3,5-7** limit close-up work. Equivalent cached readings can survive a CPU/GPU switch while keeping reviewed card IDs. Different visual budgets/reading modes retain separate caches. Only one PDFBox/native output-volume parser stays open during a batch, and cache hits skip rendering. Numeric live/request timings distinguish loading, waiting for the first response chunk and output generation. UI progress does not reload every study JSON checkpoint on each update.
+The paint inspection traverses nested PDF forms and detects images, painted vector paths (even underlines), annotations, shading, unusual text, soft masks and unknown/failed operations. Those pages still receive visual analysis. Scans and handwriting remain model work; selectable text beside an image is not enough to bypass vision. Full detail and selected close-up pages always use visual analysis; disable the direct-text switch to request visual reading everywhere. Text extraction may have ordering, font-mapping or formatting limitations, and every source PDF remains available for comparison.
 
-This reduces avoidable work; it is **not a measured MagicPad speed multiplier or an instant full-book promise**. A fast reading pass does not generate a complete practice pack, and lower visual budgets trade fine-detail recognition for less work. See [performance workflow](docs/AI_PERFORMANCE.md) and [validation](docs/VALIDATION.md).
+Private verification with two student-supplied PDFs found **36 original pages → 37 compiled study pages: 34 direct-text pages and 3 visual requests**, versus the previous 37 planned image requests. The direct text was checked verbatim on all 34 pages. This is a request-routing check using the Android-compatible parser on the build host, controlled raster/inference adapters and synthetic native-device tests; **it is not a MagicPad neural-speed or handwriting-accuracy benchmark**. Student documents and their extracted text are excluded from this repository.
+
+Reading-first's prompt now consistently demonstrates an empty practice array. The last completed numeric inference timing persists while the next page runs, making copied diagnostics useful during a batch. Keep the existing model download and update in place. See [performance workflow](docs/AI_PERFORMANCE.md), [validation](docs/VALIDATION.md) and [limitations](docs/KNOWN_LIMITATIONS.md).
 
 ## 1.3.2: fix AI response-completion crash
 
@@ -87,7 +89,7 @@ Model storage/download size is several GB; runtime memory is additional. Text ex
 
 ## Install and update
 
-Install `StudyFuse-debug.apk` on an ARM64 Android 10+ device. This is an evaluation/debug APK, not a Play Store production release. Android may request permission to install from the application opening it. The directly downloadable 1.3.3 APK retains the previous direct download's development signing key; back up important projects before updating.
+Install `StudyFuse-debug.apk` on an ARM64 Android 10+ device. This is an evaluation/debug APK, not a Play Store production release. Android may request permission to install from the application opening it. The directly downloadable 1.3.4 APK retains the previous direct download's development signing key; back up important projects before updating.
 
 CI-generated debug APKs may have a different signing key. Do not uninstall an existing installation to switch keys until its projects have been backed up. Physical-tablet/OEM behavior and arbitrary Office export fidelity are not universally certified.
 
@@ -124,7 +126,7 @@ python3 scripts/verify_pdf_artifacts.py
 
 Gradle 8.13 is pinned with a verified distribution checksum. Build dependencies need network on the first build; document processing does not. MuPDF is a development-only verifier, not linked into the Android app. Test reports are under `core/build/reports/tests/` and `app/build/reports/tests/testDebugUnitTest/`; lint is under `app/build/reports/`.
 
-The [1.3.3 processing validation run passed](https://github.com/atillahan00/studyfuse/actions/runs/41415165062): build/tests/lint/APKs, public-model metadata/range checks and **eight native Android 15 / API 35 tablet-emulator tests**. The final local build passed **124 JVM/Robolectric tests**. Native PDF/cache checks verify 3 overview requests, then only 4 new targeted requests, 8 additional remaining close-ups and zero new requests after switching backend with equivalent cached content. Original bytes and reviewed IDs are retained. These are deterministic work-count checks, not a measured neural speedup. See [current evidence](docs/VALIDATION.md) for exact source scopes, the final UI-duration correction and practical limits; the [1.3.2 record](docs/VALIDATION-1.3.2.md) remains available.
+The 1.3.4 local build passed **133 JVM/Robolectric tests** and lint (0 errors, 8 warnings); ARM64 application/instrumentation APKs built successfully. Independent MuPDF checks retain every tall-page marker and original JPX imagery. Synthetic routing tests cover Unicode, mixed graphics, explicit visual overrides, cache reuse and cancellation. Native Android 15 tablet-emulator checks are being run on the updated processing source; see [current evidence](docs/VALIDATION.md) for status and exact source scope. No physical HONOR model-speed or handwriting-accuracy benchmark is claimed. The [1.3.3 validation record](docs/VALIDATION-1.3.3.md) remains available.
 
 For an independently managed production signing key, set `STUDYFUSE_SIGNING_STORE`, `STUDYFUSE_STORE_PASSWORD`, `STUDYFUSE_KEY_ALIAS`, and `STUDYFUSE_KEY_PASSWORD`, then build `:app:assembleRelease`. Keep the same key for updates and keep it private. No signing keys or passwords are committed. CI validation artifacts are not a substitute for a persistent release signing setup.
 

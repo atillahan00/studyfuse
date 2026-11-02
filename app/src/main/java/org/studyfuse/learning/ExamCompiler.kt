@@ -54,7 +54,7 @@ class ExamCompiler(private val context:Context,private val store:ExamStore,priva
             .put("files",JSONArray(selected.map{row->JSONObject().apply{
                 for(field in listOf("sourceId","fileName","section","status","originalSha256","activeSha256","visualPages","contentStart"))put(field,row.get(field))
             }})).put("units",JSONArray()).put("total",total).put("status","RUNNING")
-        val keys=manifest.getJSONArray("units");var done=0;var reused=0;val started=android.os.SystemClock.elapsedRealtime();store.saveSession(manifest)
+        val keys=manifest.getJSONArray("units");var done=0;var reused=0;var nativeReadings=0;var inferenceCalls=0;val started=android.os.SystemClock.elapsedRealtime();store.saveSession(manifest)
         val scratch=File(store.root,"scratch").apply{mkdirs()}
         val reader=StudyPdfReader(scratch)
         try {
@@ -64,17 +64,18 @@ class ExamCompiler(private val context:Context,private val store:ExamStore,priva
                 val output=outputs.firstOrNull{page in it.getInt("startPage")..it.getInt("endPage")} ?: error("PDF sayfası ciltlerde yok: $page")
                 val pdf=File(output.getString("path"));val localPage=page-output.getInt("startPage")
                 val regions=VisionRegions.plan(config.detailed || page in selectedDetails)
+                val nativeEligible=config.readingOnly && config.nativeTextFirst && !config.detailed && page !in selectedDetails
                 run {
                     for((regionIndex,r) in regions.withIndex()) {
                         currentCoroutineContext().ensureActive()
                         val candidates=compatibleSignatures.map{digest("$it|$page|$regionIndex")}
                         val cached=candidates.firstNotNullOfOrNull{candidate->runCatching{validateUnit(readJson(store.unit(candidate)),candidate)}.getOrNull()?.takeIf{
-                            it.optString("status")=="REVIEW" && it.getInt("page")==page && it.getInt("region")==regionIndex &&
+                            it.optString("status")=="REVIEW" && (nativeEligible || it.optString("readingMethod")!="native_pdf") && it.getInt("page")==page && it.getInt("region")==regionIndex &&
                                 it.getString("sourceName")==source.getString("fileName") && it.getString("section")==source.getString("section")}}
                         val key=cached?.getString("key") ?: candidates.first();keys.put(key);store.saveSession(manifest)
                         progress(done,total,"${source.getString("fileName")} · PDF $page · bölge ${regionIndex+1}/${regions.size}${if(cached!=null)" · önbellek" else ""}")
                         val checkpoint=store.unit(key)
-                        if(cached!=null){if(cached.optString("sourceId")!=source.getString("sourceId"))atomicJson(checkpoint,cached.put("sourceId",source.getString("sourceId")));done++;reused++;continue}
+                        if(cached!=null){if(cached.optString("sourceId")!=source.getString("sourceId"))atomicJson(checkpoint,cached.put("sourceId",source.getString("sourceId")));if(cached.optString("readingMethod")=="native_pdf")nativeReadings++;done++;reused++;continue}
                         val unit=JSONObject().put("key",key).put("page",page).put("sourceId",source.getString("sourceId"))
                             .put("sourceName",source.getString("fileName")).put("section",source.getString("section"))
                             .put("region",regionIndex).put("bounds",JSONArray(listOf(r.left,r.top,r.right,r.bottom)))
@@ -85,20 +86,35 @@ class ExamCompiler(private val context:Context,private val store:ExamStore,priva
                             val document=reader.open(pdf);val box=document.getPage(localPage).cropBox
                             val area=Slice(box.width*r.left,box.height*r.top,box.width*r.right,box.height*r.bottom)
                             val nativeText=PageText.extract(document,localPage,area)
-                            // Reject oversized context explicitly rather than silently truncate source evidence.
-                            check(nativeText.length<=24_000){"Bu bölgenin metni model bağlamına sığmıyor; PDF sayfalamasını büyütün/bölün"}
+                            val assessment=if(nativeEligible)NativePageReading.inspect(document.getPage(localPage))else null
                             val textMs=android.os.SystemClock.elapsedRealtime()-beforeText
-                            val beforeRender=android.os.SystemClock.elapsedRealtime()
-                            val bitmap=reader.render(localPage,area)
-                            try {image.outputStream().use{check(bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG,100,it))}}finally{bitmap.recycle()}
-                            val renderMs=android.os.SystemClock.elapsedRealtime()-beforeRender
-                            val beforeGeneration=android.os.SystemClock.elapsedRealtime()
-                            val response=client.generate(model,config.gpu,ExamPrompts.system(config),ExamPrompts.request(config,source.getString("fileName"),page,regionIndex,nativeText,unit.getBoolean("reference")),image,GenerationOptions(config.visualTokens))
-                            val timings=JSONObject().put("textMs",textMs).put("renderMs",renderMs).put("inferenceMs",android.os.SystemClock.elapsedRealtime()-beforeGeneration)
-                            client.lastTiming()?.let{timings.put("native",it.json())};unit.put("timings",timings)
-                            unit.put("raw",response)
-                            val parsed=ExamResponse.parse(response,config.mode,nativeText,key)
-                            parsed.keys().forEach{field->unit.put(field,parsed.get(field))}
+                            if(assessment?.canReadDirectly(nativeText)==true) {
+                                // No render, model initialization, translation, paraphrase or token limit here.
+                                unit.put("status","REVIEW").put("readingMethod","native_pdf").put("transcription",nativeText)
+                                    .put("observations","PDF metni doğrudan alındı; AI yorumu veya çeviri yapılmadı. Görsel işlem denetiminde çizim/görüntü saptanmadı.")
+                                    .put("uncertainties",JSONArray().put("Metin sırasını, formülleri ve PDF yazı tipi eşlemesini kaynak sayfayla kontrol edin; bu işlem anlamsal doğrulama değildir."))
+                                    .put("items",JSONArray()).put("rejected",JSONArray())
+                                    .put("timings",JSONObject().put("textMs",textMs).put("renderMs",0).put("inferenceMs",0))
+                                nativeReadings++
+                                progress(done,total,"${source.getString("fileName")} · PDF $page · doğrudan PDF metni · AI isteği yok")
+                            } else {
+                                unit.put("readingMethod","visual_ai")
+                                assessment?.let{unit.put("visualReasons",JSONArray(it.visualReasons.toList()))}
+                                // Reject oversized model context explicitly; direct extraction has no model limit.
+                                check(nativeText.length<=24_000){"Bu bölgenin metni model bağlamına sığmıyor; PDF sayfalamasını büyütün/bölün"}
+                                val beforeRender=android.os.SystemClock.elapsedRealtime()
+                                val bitmap=reader.render(localPage,area)
+                                try {image.outputStream().use{check(bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG,100,it))}}finally{bitmap.recycle()}
+                                val renderMs=android.os.SystemClock.elapsedRealtime()-beforeRender
+                                val beforeGeneration=android.os.SystemClock.elapsedRealtime()
+                                inferenceCalls++
+                                val response=client.generate(model,config.gpu,ExamPrompts.system(config),ExamPrompts.request(config,source.getString("fileName"),page,regionIndex,nativeText,unit.getBoolean("reference")),image,GenerationOptions(config.visualTokens))
+                                val timings=JSONObject().put("textMs",textMs).put("renderMs",renderMs).put("inferenceMs",android.os.SystemClock.elapsedRealtime()-beforeGeneration)
+                                client.lastTiming()?.let{timings.put("native",it.json())};unit.put("timings",timings)
+                                unit.put("raw",response)
+                                val parsed=ExamResponse.parse(response,config.mode,nativeText,key)
+                                parsed.keys().forEach{field->unit.put(field,parsed.get(field))}
+                            }
                         }catch(e:CancellationException){throw e}catch(e:Exception){unit.put("status","FAILED").put("error",e.message ?: "Okunamadı").put("items",JSONArray())}
                         finally{image.delete()}
                         atomicJson(checkpoint,unit);done++
@@ -107,7 +123,7 @@ class ExamCompiler(private val context:Context,private val store:ExamStore,priva
             }
             val failures=(0 until keys.length()).count{readJson(store.unit(keys.getString(it))).optString("status")=="FAILED"}
             manifest.put("status",if(failures>0 || selected.any{it.optString("status") in setOf("FAILED","FALLBACK")})"INCOMPLETE" else "REVIEW")
-                .put("failedRegions",failures).put("reusedRegions",reused).put("generatedRegions",done-reused).put("elapsedMs",android.os.SystemClock.elapsedRealtime()-started)
+                .put("nativeTextRegions",nativeReadings).put("inferenceCalls",inferenceCalls).put("failedRegions",failures).put("reusedRegions",reused).put("generatedRegions",done-reused).put("elapsedMs",android.os.SystemClock.elapsedRealtime()-started)
             store.saveSession(manifest);progress(done,total,if(failures>0)"$failures bölge okunamadı; kapsam kaydını inceleyin" else "Taslak hazır; kaynak ve yanıtları kontrol edin")
             manifest
         }catch(e:CancellationException){manifest.put("status","CANCELLED");store.saveSession(manifest);throw e}
@@ -121,9 +137,12 @@ private class StudyPdfReader(private val scratch:File):AutoCloseable {
     private var path:String?=null;private var document:PDDocument?=null;private var renderer:DocumentView.PdfSession?=null
     fun open(file:File):PDDocument {
         if(path!=file.canonicalPath){close();val doc=loadPdf(file,scratch)
-            try{renderer=DocumentView.PdfSession(file);document=doc;path=file.canonicalPath}catch(e:Throwable){doc.close();throw e}}
+            document=doc;path=file.canonicalPath}
         return document!!
     }
-    fun render(page:Int,area:Slice)=renderer!!.render(page,1120,1536,area)
+    fun render(page:Int,area:Slice):android.graphics.Bitmap {
+        if(renderer==null)renderer=DocumentView.PdfSession(File(checkNotNull(path)))
+        return renderer!!.render(page,1120,1536,area)
+    }
     override fun close(){try{renderer?.close()}finally{renderer=null;try{document?.close()}finally{document=null;path=null}}}
 }

@@ -1,0 +1,17 @@
+StudyFuse 1.3.3 Android runtime validation
+Source: fab357083262e06a11aad0e3904eb3d4c900b639
+Run: https://github.com/atillahan00/studyfuse/actions/runs/41415165062
+Job: 125178380203; completed / success
+Android 15 / API 35, x86_64 google_apis, Pixel Tablet
+
+2026-11-02T08:51:41.5906870Z Starting 8 tests on emulator-5554 - 15
+2026-11-02T08:51:52.1923843Z Finished 8 tests on emulator-5554 - 15
+2026-11-02T08:51:53.3937255Z BUILD SUCCESSFUL in 3m 4s
+2026-11-02T08:52:15.6509440Z BUILD SUCCESSFUL in 8s
+
+Eight connected tests passed. The new deterministic-inference test uses real native PDF parsing/rendering:
+3 source pages require 3 overview requests, adding one detailed page requires 4 new requests,
+all-page close-ups then require 8 more, and an execution-backend change reuses all 15 units.
+Native source bytes remain unchanged. These are work-count/cache checks, not a neural speed benchmark.
+Earlier SDK-completion ABI, printed OCR, native PDF/image, recovery/privacy checks still pass.
+Final source c043dab changes only the completed-duration UI label and passed the full local suite.

@@ -23,9 +23,9 @@ object ExamExport {
             appendLine("### ${unit.getString("section")} · PDF ${unit.getInt("page")} · bölge ${unit.getInt("region")}")
             appendLine("Kaynak: ${unit.getString("sourceName")}${if(unit.optBoolean("reference"))" · EK BAŞVURU" else ""}")
             if(unit.optString("status")=="FAILED"){appendLine("**OKUNAMADI:** ${unit.optString("error")}\n");continue}
-            appendLine("Görsel okumadan kalan belirsizlikler: ${unit.getJSONArray("uncertainties")}.")
+            appendLine("Okuma yöntemi: ${if(unit.optString("readingMethod")=="native_pdf")"doğrudan PDF metni, AI kullanılmadı" else "görsel AI"}. Belirsizlikler: ${unit.getJSONArray("uncertainties")}.")
             for(item in unit.getJSONArray("items").objects().filter{it.getString("kind")=="note"})appendItem(item,review,true)
-            if(unit.getJSONArray("items").length()==0)appendLine("Bu bölge için çalışma maddesi üretilemedi; kaynak görseli inceleyin.")
+            if(unit.getJSONArray("items").length()==0)appendLine("Bu bölgede çalışma maddesi yok; önce kaynak okuması yapılmış olabilir. Kartları Koç bölümünden ayrıca üretebilirsiniz.")
             appendLine("Reddedilen maddeler: ${unit.getJSONArray("rejected").length()}\n")
         }
         appendLine("## Aktif hatırlama — yanıtları açmadan dene")
@@ -40,8 +40,8 @@ object ExamExport {
         for(unit in units)for(item in unit.optJSONArray("items")?.objects().orEmpty())review.optJSONObject(item.getString("id"))?.let{r->
             if(r.optInt("attempts",0)>0)appendLine("- ${item.getString("question")} [Kaynak PDF ${unit.getInt("page")}]: ${r.optInt("attempts")} deneme, ${r.optInt("lapses")} tekrar hatası. Sonraki gün: ${java.time.LocalDate.ofEpochDay(r.optLong("dueDay",0))}. Düzeltme: ${r.optString("correction")}")
         }
-        appendLine("## Görsel okuma kayıtları — doğrulanmamış transkripsiyon")
-        for(unit in units.filter{it.optString("status")!="FAILED"})appendLine("### PDF ${unit.getInt("page")} / bölge ${unit.getInt("region")}\n${unit.getString("transcription")}\nGörsel ilişkiler: ${unit.getString("observations")}\n")
+        appendLine("## Kaynak okuma kayıtları — yöntem ve belirsizlikler")
+        for(unit in units.filter{it.optString("status")!="FAILED"})appendLine("### PDF ${unit.getInt("page")} / bölge ${unit.getInt("region")}\nOkuma: ${if(unit.optString("readingMethod")=="native_pdf")"doğrudan PDF metni · AI kullanılmadı" else "görsel AI · doğrulanmamış"}\n${unit.getString("transcription")}\nGörsel ilişkiler: ${unit.getString("observations")}\n")
     }
     private fun label(item:JSONObject,review:JSONObject)=
         (if(item.getString("origin")=="ai_added")"MODEL EK BİLGİSİ — kaynak atfı yok" else "KAYNAK · ${item.getString("basis")}")+" · "+

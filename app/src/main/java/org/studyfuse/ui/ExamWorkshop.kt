@@ -131,17 +131,21 @@ private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val 
                     if(modelBusy)TextButton(onClick={model.cancelModelSetup()}){Text("Model işlemini iptal et")}
                     Text(if(ready)"Görüntü testi geçti; gerçek el yazısı doğruluğu ayrıca incelenmeli." else "Analizden önce seçili model/aygıt görüntü testini geçmeli.",style=MaterialTheme.typography.bodySmall)
                     HorizontalDivider();Text("İşlem süresi ve ayrıntı",style=MaterialTheme.typography.titleMedium)
-                    Text("Tek geçiş de yavaşsa ilk okuma çıktısını ve görsel token bütçesini azaltabilirsiniz. Orijinal PDF aynı kalır; daha düşük bütçe küçük el yazısını ve şekil etiketlerini kaçırabilir.",style=MaterialTheme.typography.bodySmall)
+                    Text("Metin ağırlıklı PDF’lerde Hızlı kaynak okuma uygun sayfalarda AI isteğini atlar. Görsel sayfalar yavaşsa çıktı ve görsel token bütçesini azaltabilirsiniz. Orijinal PDF aynı kalır; daha düşük bütçe küçük el yazısını ve şekil etiketlerini kaçırabilir.",style=MaterialTheme.typography.bodySmall)
                     FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){
-                        OutlinedButton(onClick={config=config.copy(detailed=false,detailPages="",readingOnly=true,visualTokens=280)},enabled=!busy){Text("Hızlı kaynak okuma")}
+                        OutlinedButton(onClick={config=config.copy(detailed=false,detailPages="",readingOnly=true,visualTokens=280,nativeTextFirst=true)},enabled=!busy){Text("Hızlı kaynak okuma")}
                         OutlinedButton(onClick={config=config.copy(detailed=false,detailPages="",readingOnly=false,visualTokens=560)},enabled=!busy){Text("Dengeli çalışma")}
                         OutlinedButton(onClick={config=config.copy(detailed=true,detailPages="",readingOnly=false,visualTokens=1120)},enabled=!busy){Text("Tam görsel ayrıntı")}
                     }
                     Row(verticalAlignment=Alignment.CenterVertically){Switch(config.readingOnly,{config=config.copy(readingOnly=it)},enabled=!busy);Text("Önce yalnızca kaynağı oku; kartları sonra üret")}
                     if(config.readingOnly)Text("Bu tur transkripsiyon, şekil/tablo ilişkileri ve belirsizlikleri çıkarır. Soru/kart üretmez. Sonra AI öğrenme merkezi → Koç → Yeni çalışma kartları ile seçtiğiniz konularda üretin.",style=MaterialTheme.typography.bodySmall)
+                    if(config.readingOnly){
+                        Row(verticalAlignment=Alignment.CenterVertically){Switch(config.nativeTextFirst,{config=config.copy(nativeTextFirst=it)},enabled=!busy);Text("Uygun sayfalarda PDF metnini doğrudan oku")}
+                        Text("Seçilebilir metni olan, çizim/görüntü saptanmayan sayfalarda AI isteği yapılmaz. Görüntü, çizim, tarama veya belirsiz metin varsa görsel AI kullanılır. Ayrıntılı/yakın plan seçilen sayfalar her zaman görsel okunur. Metin sırası kaynakla kontrol edilmelidir.",style=MaterialTheme.typography.bodySmall)
+                    }
                     Text("Gemma 4 görsel token bütçesi",style=MaterialTheme.typography.labelLarge)
                     FlowRow{listOf<Int?>(null,280,560,1120).forEach{budget->FilterChip(config.visualTokens==budget,{config=config.copy(visualTokens=budget)},enabled=!busy,label={Text(budget?.toString() ?: "Model ayarı")})}}
-                    workload?.let{Text("${it.pages} kaynak sayfası · ${it.calls} AI isteği planlanıyor. Önbellekte olanlar yeniden üretilmez.",style=MaterialTheme.typography.bodySmall)}
+                    workload?.let{Text("${it.pages} kaynak sayfası · en fazla ${it.calls} görsel istek. Doğrudan metin ve önbellek istek sayısını azaltır.",style=MaterialTheme.typography.bodySmall)}
                     Text("Gerçek tablet hızı ölçülmeden süre veya kat hızlanma garantisi verilemez. GPU/model ısındığında yavaşlama olabilir.",style=MaterialTheme.typography.bodySmall)
                     HorizontalDivider();Text("2 · Kaynak politikası",style=MaterialTheme.typography.titleMedium)
                     Row(verticalAlignment=Alignment.CenterVertically){
@@ -177,7 +181,7 @@ private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val 
                             if(unit.optString("status")=="FAILED")item{Text("Okunamadı: ${unit.optString("error")}",color=MaterialTheme.colorScheme.error)}
                             else {
                                 item{project.report?.let{StudyEvidencePane(File(it),unit)}}
-                                item{Text("PDF metni ve görsel ekler (AI ekleri doğrulanmamış)",style=MaterialTheme.typography.labelLarge);SelectionContainerText(unit.getString("transcription"));Text(unit.getString("observations"));Text("Belirsizlikler: ${unit.getJSONArray("uncertainties")}")}
+                                item{Text(if(unit.optString("readingMethod")=="native_pdf")"Doğrudan PDF metni · AI kullanılmadı" else "PDF metni ve görsel ekler (AI ekleri doğrulanmamış)",style=MaterialTheme.typography.labelLarge);SelectionContainerText(unit.getString("transcription"));Text(unit.getString("observations"));Text("Belirsizlikler: ${unit.getJSONArray("uncertainties")}")}
                                 items(unit.getJSONArray("items").objects(),key={it.getString("id")}){original->val item=effective(original);val id=item.getString("id");val state=review.optJSONObject(id)
                                     OutlinedCard(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
                                         Text(if(item.getString("origin")=="ai_added")"MODEL EK BİLGİSİ · kaynak atfı yok" else "KAYNAK · ${item.getString("basis")}",style=MaterialTheme.typography.labelSmall)
@@ -242,6 +246,7 @@ private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val 
                 }
                 else->LazyColumn(Modifier.weight(1f).padding(16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
                     item{Text("Kapsam kaydı",style=MaterialTheme.typography.titleLarge);Text("${units.size}/${session?.optInt("total",0) ?:0} bölge kaydı · ${units.count{it.optString("status")=="FAILED"}} başarısız. Bölge işlendi demek her çizginin doğru anlaşıldığı anlamına gelmez.")}
+                    session?.let{s->item{Text("${s.optInt("nativeTextRegions")} bölge doğrudan PDF metni · bu çalıştırmada ${s.optInt("inferenceCalls")} AI isteği · ${s.optInt("reusedRegions")} önbellek kaydı")}}
                     if(session==null)item{Text("Güncel çalışma taslağı yok; önce Hazırla bölümünden oluşturun.")}
                     session?.getJSONArray("files")?.objects()?.forEach{row->item{Text("${row.getString("fileName")} · ${row.getString("status")} · ${row.getInt("visualPages")} kaynak görsel sayfa",color=if(row.getString("status") in setOf("FAILED","FALLBACK"))MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface)}}
                     items(units){u->OutlinedCard(onClick={unitIndex=units.indexOf(u);tab=1},modifier=Modifier.fillMaxWidth()){Column(Modifier.padding(10.dp)){
