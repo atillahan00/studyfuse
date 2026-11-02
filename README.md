@@ -16,6 +16,8 @@ For **Yeni çalışma kartları**, **Seçili kaynakların tamamını sırayla i�
 
 Progress and coverage distinguish processed groups, accepted cards, rejected items, failures and excerpts without a card. Missing-card rows open the original PDF. Visiting a passage or linking one card does not guarantee that every fact is learned/tested. Original PDFs, existing source readings and the downloaded model are retained. See [source-link/card workflow](docs/COACH_RELIABILITY.md) and [validation](docs/VALIDATION.md).
 
+![Actual Compose tablet capture: full-source card controls](examples/tablet-coach-source-cards.png)
+
 ## 1.3.4: read text PDFs without a visual-model request on every page
 
 Choose **Sınav atölyesi → Hızlı kaynak okuma**. With **Uygun sayfalarda PDF metnini doğrudan oku** enabled, readable text pages without detected graphics use direct PDF extraction: no image rendering, model initialization or inference for that page. Text is retained verbatim, labelled **AI kullanılmadı**, and available to the source-cited coach and card tools. This pass reads sources; generate explanations and practice separately through **AI öğrenme merkezi → Koç**.
@@ -136,7 +138,7 @@ python3 scripts/verify_pdf_artifacts.py
 
 Gradle 8.13 is pinned with a verified distribution checksum. Build dependencies need network on the first build; document processing does not. MuPDF is a development-only verifier, not linked into the Android app. Test reports are under `core/build/reports/tests/` and `app/build/reports/tests/testDebugUnitTest/`; lint is under `app/build/reports/`.
 
-The current verification results are recorded in [validation](docs/VALIDATION.md). Source-link and card tests exercise app-owned quotes, invented references, partial success, Unicode, 100-page batch plans, cancellation/resume, checkpoint integrity, source changes, backup and UI controls. These are deterministic processing tests; they do not establish physical HONOR model speed or semantic answer accuracy. The [1.3.4 validation record](docs/VALIDATION-1.3.4.md) remains available.
+The update passed **148 local/hosted JVM/Robolectric tests**, lint and **10 native Android 15 tablet-emulator tests**. Exact source scope and evidence are recorded in [validation](docs/VALIDATION.md). Source-link and card tests exercise app-owned quotes, invented references, partial success, Unicode, 100-page batch plans, cancellation/resume, checkpoint integrity, source changes, backup and UI controls. These are deterministic processing tests; they do not establish physical HONOR model speed or semantic answer accuracy. The [1.3.4 validation record](docs/VALIDATION-1.3.4.md) remains available.
 
 For an independently managed production signing key, set `STUDYFUSE_SIGNING_STORE`, `STUDYFUSE_STORE_PASSWORD`, `STUDYFUSE_KEY_ALIAS`, and `STUDYFUSE_KEY_PASSWORD`, then build `:app:assembleRelease`. Keep the same key for updates and keep it private. No signing keys or passwords are committed. CI validation artifacts are not a substitute for a persistent release signing setup.
 

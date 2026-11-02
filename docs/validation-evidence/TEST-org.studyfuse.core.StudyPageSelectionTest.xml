@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.core.StudyPageSelectionTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-11-02T08:39:26.138Z" hostname="e48e5fe0e1c6" time="0.004">
+<testsuite name="org.studyfuse.core.StudyPageSelectionTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-11-02T12:42:00.929Z" hostname="e48e5fe0e1c6" time="0.006">
   <properties/>
   <testcase name="selectedPagesMustBeCoveredByActualSourcePages" classname="org.studyfuse.core.StudyPageSelectionTest" time="0.002"/>
   <testcase name="rangesMergeWithoutDuplicateRequests" classname="org.studyfuse.core.StudyPageSelectionTest" time="0.001"/>
   <testcase name="largeRangeIsNotExpanded" classname="org.studyfuse.core.StudyPageSelectionTest" time="0.0"/>
-  <testcase name="malformedSelectionsFailExplicitly" classname="org.studyfuse.core.StudyPageSelectionTest" time="0.001"/>
+  <testcase name="malformedSelectionsFailExplicitly" classname="org.studyfuse.core.StudyPageSelectionTest" time="0.002"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

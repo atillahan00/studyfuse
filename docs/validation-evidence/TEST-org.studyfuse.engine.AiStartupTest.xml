@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.engine.AiStartupTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-11-02T09:57:03.512Z" hostname="e48e5fe0e1c6" time="9.138">
+<testsuite name="org.studyfuse.engine.AiStartupTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-11-02T12:55:03.734Z" hostname="e48e5fe0e1c6" time="8.599">
   <properties/>
-  <testcase name="uncaughtFailureKeepsOnlyBoundedCodeFrames" classname="org.studyfuse.engine.AiStartupTest" time="5.599"/>
-  <testcase name="twoFailedBackendsReportFailureWithoutUnboundedRetries" classname="org.studyfuse.engine.AiStartupTest" time="0.119"/>
-  <testcase name="successfulBackendIsBoundToModelAndDevice" classname="org.studyfuse.engine.AiStartupTest" time="0.079"/>
-  <testcase name="gpuFailureRetriesCpuExactlyOnceAndKeepsDownloadedBytes" classname="org.studyfuse.engine.AiStartupTest" time="0.079"/>
-  <testcase name="completedTimingsRemainAvailableWhileNextPageRuns" classname="org.studyfuse.engine.AiStartupTest" time="0.05"/>
-  <testcase name="diagnosticsContainOnlyStartupMetadataNotErrorText" classname="org.studyfuse.engine.AiStartupTest" time="0.102"/>
-  <testcase name="cancellationNeverStartsAnotherNativeAttempt" classname="org.studyfuse.engine.AiStartupTest" time="0.061"/>
-  <testcase name="numericProgressAndTimingDoNotStoreResponseText" classname="org.studyfuse.engine.AiStartupTest" time="0.039"/>
-  <testcase name="cpuCompatibilityFailureIsNotDeclaredReady" classname="org.studyfuse.engine.AiStartupTest" time="0.075"/>
-  <testcase name="androidTenDiagnosticsDoNotRequireExitInfoApi" classname="org.studyfuse.engine.AiStartupTest" time="2.919"/>
+  <testcase name="uncaughtFailureKeepsOnlyBoundedCodeFrames" classname="org.studyfuse.engine.AiStartupTest" time="5.311"/>
+  <testcase name="twoFailedBackendsReportFailureWithoutUnboundedRetries" classname="org.studyfuse.engine.AiStartupTest" time="0.157"/>
+  <testcase name="successfulBackendIsBoundToModelAndDevice" classname="org.studyfuse.engine.AiStartupTest" time="0.096"/>
+  <testcase name="gpuFailureRetriesCpuExactlyOnceAndKeepsDownloadedBytes" classname="org.studyfuse.engine.AiStartupTest" time="0.046"/>
+  <testcase name="completedTimingsRemainAvailableWhileNextPageRuns" classname="org.studyfuse.engine.AiStartupTest" time="0.083"/>
+  <testcase name="diagnosticsContainOnlyStartupMetadataNotErrorText" classname="org.studyfuse.engine.AiStartupTest" time="0.076"/>
+  <testcase name="cancellationNeverStartsAnotherNativeAttempt" classname="org.studyfuse.engine.AiStartupTest" time="0.033"/>
+  <testcase name="numericProgressAndTimingDoNotStoreResponseText" classname="org.studyfuse.engine.AiStartupTest" time="0.088"/>
+  <testcase name="cpuCompatibilityFailureIsNotDeclaredReady" classname="org.studyfuse.engine.AiStartupTest" time="0.066"/>
+  <testcase name="androidTenDiagnosticsDoNotRequireExitInfoApi" classname="org.studyfuse.engine.AiStartupTest" time="2.621"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

@@ -1,10 +1,10 @@
 {
-  "source": "cef0fcac7cc91b78881ff34b9afb6a1b2045a3b3",
-  "run": 41425272166,
-  "artifactId": 13132038574,
-  "artifactSha256": "eca8897c65946987ac27dc4b4e9d81726e0d029bea546020c5f39172bf5011b5",
+  "source": "0cda70e819d879293a35ba8cfe733d1ecf64f0e6",
+  "run": 41449132106,
+  "artifactId": 13144616888,
+  "artifactSha256": "23af99d6d49fd7acb6952a24f01581abcf3185d85c48c72ce3c92e7d8448ad16",
   "totals": {
-    "tests": 9,
+    "tests": 10,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -16,6 +16,7 @@
     "readingFirstTargetedDetailsAndBackendChangesReuseCompletedPages",
     "modelNetworkingIsGrantedAndOcrTelemetryJobsAreAbsent",
     "examPipelineCoversFiveRegionsAndResumesAfterCancellation",
+    "coachSourceLabelsKeepValidCardsAndRestoreExactTurkishQuotes",
     "sdkCompletionAbiCrashIsReproducedAndAppBridgeCompletes",
     "platformRendererHandlesLosslessImages",
     "longImageRegionDecodeKeepsBottomPixels"

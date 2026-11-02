@@ -1,11 +1,11 @@
 # StudyFuse downloads
 
-- [StudyFuse-debug.apk](StudyFuse-debug.apk?raw=true): ARM64 Android 10+ evaluation build (version 1.3.4), suitable for HONOR MagicPad 2. Contains bundled printed-text OCR and the local AI runtime. Use in-app automatic setup to download and test a pinned vision model; manual import remains available. Model data is several GB and is not bundled in the APK.
+- [StudyFuse-debug.apk](StudyFuse-debug.apk?raw=true): ARM64 Android 10+ evaluation build (version 1.3.5), suitable for HONOR MagicPad 2. Contains bundled printed-text OCR and the local AI runtime. Use in-app automatic setup to download and test a pinned vision model; manual import remains available. Model data is several GB and is not bundled in the APK.
 - [StudyFuse-Android-Studio.zip](StudyFuse-Android-Studio.zip?raw=true): complete source project, Gradle wrapper, resources, fixtures, tests and documentation. SDKs, caches and signing keys are excluded.
 - [StudyFuse-device-tests.apk](StudyFuse-device-tests.apk?raw=true): instrumentation tests for a connected Android device; the matching debug app must be installed first.
 - [SHA256SUMS.txt](SHA256SUMS.txt): hashes of these download files.
 
-For text-heavy PDFs, select **Hızlı kaynak okuma** in Sınav atölyesi to extract eligible pages directly; graphics/handwriting retain visual AI. Keep the existing model when updating.
+For text-heavy PDFs, select **Hızlı kaynak okuma** in Sınav atölyesi to extract eligible pages directly; graphics/handwriting retain visual AI. Keep the existing model when updating. For cards use **Koç → Yeni çalışma kartları**; full-source batches and source links no longer require retyping source quotations.
 
 The build runs JVM/Robolectric tests and lint; a separate GitHub API 35 job runs connected Android checks. See the [validation record](../docs/VALIDATION.md) for the actual tested commit/results. Physical MagicPad 2/model handwriting benchmarks remain separate. See [model setup](../docs/LOCAL_AI.md) and [known limitations](../docs/KNOWN_LIMITATIONS.md). Office/OneNote require source-app PDF replacement; ML Kit OCR is printed-text only, while local model interpretations remain unverified AI drafts. StudyFuse's own network code downloads model data without sending documents or prompts. CI's general APK additionally supports x86_64 and may use a different debug key.
 

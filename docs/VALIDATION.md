@@ -1,5 +1,7 @@
 # StudyFuse 1.3.5 validation
 
+Processing source: `0cda70e819d879293a35ba8cfe733d1ecf64f0e6`. Subsequent documentation/evidence/download commits do not alter this application source.
+
 ## Local checks
 
 **148 JVM/Robolectric tests passed** (39 core, 109 Android JVM), zero failures/errors/skips. Lint: **0 errors, 8 warnings**. ARM64 application and instrumentation APKs built with JDK 21, Gradle 8.13, SDK 36 and Build Tools 35.0.0.
@@ -10,11 +12,11 @@ Independent MuPDF checks passed for all 200 tall-page markers, 29 report/output 
 
 ## Hosted checks
 
-GitHub Actions is being run on the updated processing source. The added connected test exercises the source-label protocol with actual Android JSON/storage/coroutines: a valid Turkish quote is attached literally, invented source references are rejected independently, valid cards are stored without automatic approval and completed work is reused. It uses a deterministic inference adapter, not model weights.
+[Run 41449132106](https://github.com/atillahan00/studyfuse/actions/runs/41449132106) passed the hosted build/tests/lint/APKs and public-model metadata/range checks. Its downloaded validation artifact confirms 148 JVM/Robolectric tests with zero failures/errors/skips; **10 native Android 15 / API 35 tablet-emulator tests also passed**, with zero failures/errors/skips confirmed in the downloaded runtime XML artifact. Raw logs and artifact digest/count summaries are in `validation-evidence/`. The added connected test exercises the source-label protocol with actual Android JSON/storage/coroutines: a valid Turkish quote is attached literally, invented source references are rejected independently, valid cards are stored without automatic approval and completed work is reused. It uses a deterministic inference adapter, not model weights.
 
 ## Delivered update and limits
 
-Version **1.3.5 / code 9**, `org.studyfuse`, ARM64, min API 29, target API 36. The development signing certificate remains `1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b`. Signature, 16 KiB ZIP alignment and unchanged native-library SHA/ELF load-segment alignment checks pass. No SDK/model/network-permission change is introduced. Update in place and retain the existing model, source PDFs, readings and reviewed cards; a source re-read is not required merely for this update.
+Version **1.3.5 / code 9**, size **87,659,218 bytes** (about 83.6 MiB), SHA-256 `1231736becba8d2e17cd306843240c737de4f5ce8c9a204ac21131d8a3fc533c`, `org.studyfuse`, ARM64, min API 29, target API 36. The development signing certificate remains `1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b`. Signature, 16 KiB ZIP alignment and unchanged native-library SHA/ELF load-segment alignment checks pass. No SDK/model/network-permission change is introduced. Update in place and retain the existing model, source PDFs, readings and reviewed cards; a source re-read is not required merely for this update.
 
 The reported screenshot demonstrates rejection by the old literal-quote validator. No actual failing model response was provided, so its exact formatting/translation mismatch is unknown. The new protocol removes the need to retype quotations and long source IDs, preserves valid cards and exposes rejected items. Citation existence is not semantic verification: a valid excerpt can still be irrelevant to a wrong generated answer. No physical MagicPad model-speed, handwriting or pedagogical-accuracy benchmark is claimed.
 

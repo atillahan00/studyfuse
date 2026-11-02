@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.core.StudyPlanningTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-02T08:39:26.143Z" hostname="e48e5fe0e1c6" time="0.049">
+<testsuite name="org.studyfuse.core.StudyPlanningTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-02T12:42:00.937Z" hostname="e48e5fe0e1c6" time="0.054">
   <properties/>
-  <testcase name="plannerPrioritizesDueWorkWithinAvailableTime" classname="org.studyfuse.core.StudyPlanningTest" time="0.001"/>
-  <testcase name="retrievalRespectsContextBudgetWithoutClippingPassages" classname="org.studyfuse.core.StudyPlanningTest" time="0.046"/>
-  <testcase name="searchFindsGermanTurkishAndExcludesUnrelatedPages" classname="org.studyfuse.core.StudyPlanningTest" time="0.002"/>
+  <testcase name="plannerPrioritizesDueWorkWithinAvailableTime" classname="org.studyfuse.core.StudyPlanningTest" time="0.0"/>
+  <testcase name="retrievalRespectsContextBudgetWithoutClippingPassages" classname="org.studyfuse.core.StudyPlanningTest" time="0.012"/>
+  <testcase name="searchFindsGermanTurkishAndExcludesUnrelatedPages" classname="org.studyfuse.core.StudyPlanningTest" time="0.005"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

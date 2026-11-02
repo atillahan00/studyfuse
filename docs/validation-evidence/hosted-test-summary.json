@@ -1,10 +1,10 @@
 {
-  "source": "cef0fcac7cc91b78881ff34b9afb6a1b2045a3b3",
-  "run": 41425272166,
-  "artifactId": 13131033630,
-  "artifactSha256": "0ddc25d7fa37d765b7357bf500248eb09699e842bbeff92a5542fc574e098653",
+  "source": "0cda70e819d879293a35ba8cfe733d1ecf64f0e6",
+  "run": 41449132106,
+  "artifactId": 13143752060,
+  "artifactSha256": "f7b72f143605cf43210c968de776bb91a04f37788fa4bc3feb17ac1b11aa3efc",
   "totals": {
-    "tests": 133,
+    "tests": 148,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -12,7 +12,7 @@
   "classes": [
     {
       "name": "org.studyfuse.core.LearningTest",
-      "tests": 8
+      "tests": 9
     },
     {
       "name": "org.studyfuse.core.ModelDownloadTest",
@@ -43,6 +43,10 @@
       "tests": 9
     },
     {
+      "name": "org.studyfuse.engine.CoachReliabilityTest",
+      "tests": 14
+    },
+    {
       "name": "org.studyfuse.engine.CompilerTest",
       "tests": 18
     },
@@ -55,12 +59,12 @@
       "tests": 12
     },
     {
-      "name": "org.studyfuse.engine.MigrationTest",
-      "tests": 1
-    },
-    {
       "name": "org.studyfuse.engine.NativePageReadingTest",
       "tests": 7
+    },
+    {
+      "name": "org.studyfuse.engine.MigrationTest",
+      "tests": 1
     },
     {
       "name": "org.studyfuse.engine.RepositoryTest",
