@@ -1,0 +1,17 @@
+StudyFuse 1.3.2 observed Android runtime validation
+Source: 0c41ffd92fc84909bee007fb6f34bf823104f25e
+Run: https://github.com/atillahan00/studyfuse/actions/runs/41216232004
+Job: 124581838069; completed / success
+Emulator: Android 15 / API 35, x86_64 google_apis, Pixel Tablet
+
+2026-10-31T15:51:22.7896711Z Starting 7 tests on emulator-5554 - 15
+2026-10-31T15:51:31.0935713Z Finished 7 tests on emulator-5554 - 15
+2026-10-31T15:51:32.5937335Z BUILD SUCCESSFUL in 3m 4s
+2026-10-31T15:51:58.0246161Z BUILD SUCCESSFUL in 12s
+
+Seven connected tests passed. The new test invokes the actual SDK Flow completion class,
+catches its NoSuchMethodError, then completes Unicode output from a callback thread through
+the app's production completion bridge. No neural model or substitute SDK class is used.
+Other checks cover PDF rendering, long-image regions, printed OCR, exam-region recovery,
+native-startup failure isolation/child PID metadata and known telemetry-component removal.
+This does not certify physical MagicPad 2 inference or handwriting accuracy.

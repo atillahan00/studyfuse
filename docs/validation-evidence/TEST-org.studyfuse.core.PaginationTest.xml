@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.core.PaginationTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-10-31T11:35:11.119Z" hostname="1b4ee2135e4b" time="0.205">
+<testsuite name="org.studyfuse.core.PaginationTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-11-02T08:39:25.936Z" hostname="e48e5fe0e1c6" time="0.201">
   <properties/>
-  <testcase name="normalPageIsOneSlice" classname="org.studyfuse.core.PaginationTest" time="0.002"/>
-  <testcase name="naturalSortingDoesNotOverflowAndHandlesUnicode" classname="org.studyfuse.core.PaginationTest" time="0.006"/>
-  <testcase name="coverageRejectsMissingStrip" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
+  <testcase name="normalPageIsOneSlice" classname="org.studyfuse.core.PaginationTest" time="0.007"/>
+  <testcase name="naturalSortingDoesNotOverflowAndHandlesUnicode" classname="org.studyfuse.core.PaginationTest" time="0.017"/>
+  <testcase name="coverageRejectsMissingStrip" classname="org.studyfuse.core.PaginationTest" time="0.029"/>
   <testcase name="pathologicalCanvasesFailBeforeUnboundedAllocation" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
-  <testcase name="randomizedCoverageAndBounds" classname="org.studyfuse.core.PaginationTest" time="0.145"/>
+  <testcase name="randomizedCoverageAndBounds" classname="org.studyfuse.core.PaginationTest" time="0.14"/>
   <testcase name="rejectsInvalidDimensions" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
-  <testcase name="tallOneNoteHasCompleteCoverage" classname="org.studyfuse.core.PaginationTest" time="0.0"/>
-  <testcase name="knownFormatsAndUnicodeNames" classname="org.studyfuse.core.PaginationTest" time="0.041"/>
-  <testcase name="originalRetainsDimensionsAndBorder" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
-  <testcase name="wideCanvasTilesHorizontally" classname="org.studyfuse.core.PaginationTest" time="0.002"/>
+  <testcase name="tallOneNoteHasCompleteCoverage" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
+  <testcase name="knownFormatsAndUnicodeNames" classname="org.studyfuse.core.PaginationTest" time="0.002"/>
+  <testcase name="originalRetainsDimensionsAndBorder" classname="org.studyfuse.core.PaginationTest" time="0.0"/>
+  <testcase name="wideCanvasTilesHorizontally" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
   <testcase name="naturalWhitespaceNeverOverflows" classname="org.studyfuse.core.PaginationTest" time="0.0"/>
-  <testcase name="smallTextSelectsLandscapeBeforeHorizontalTiling" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
-  <testcase name="overlapAndOrdering" classname="org.studyfuse.core.PaginationTest" time="0.0"/>
+  <testcase name="smallTextSelectsLandscapeBeforeHorizontalTiling" classname="org.studyfuse.core.PaginationTest" time="0.0"/>
+  <testcase name="overlapAndOrdering" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
   <testcase name="manualSplitsKeepAllPixelsAndOverlap" classname="org.studyfuse.core.PaginationTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

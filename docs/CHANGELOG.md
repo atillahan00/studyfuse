@@ -1,5 +1,14 @@
 # Changes
 
+## 1.3.3
+
+- Added explicit reading-first, balanced and full-detail AI profiles, configurable Gemma 4 visual budgets and selected-page close-ups. New settings default to one view; stored detailed settings are retained.
+- Retain extracted PDF text directly instead of asking the model to repeat it. Reading-first leaves exercise generation to the existing local coach.
+- Share equivalent overview/detail checkpoints across view plans and CPU/GPU backends, preserving existing reviewed item IDs. Quality/mode/source changes remain separated.
+- Reuse one PDFBox/native parser per output volume; cached regions avoid parsing/rendering. Progress updates avoid repeatedly loading the full study corpus.
+- Added numeric load/first-chunk/generation timing, live output-character progress and per-region extraction/render/inference timings. No response text is added to diagnostics.
+- Existing working device profiles survive failed/cancelled re-tests. Real MagicPad speed remains unbenchmarked; low visual budgets can reduce fine-detail recognition.
+
 ## 1.3.2
 
 - Reproduced the pinned SDK Flow adapter's NoSuchMethodError in its completion callback; switched production generation to the callback overload with app-compiled completion, bounded accumulation and cancellation.

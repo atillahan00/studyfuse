@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.engine.MigrationTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-31T15:42:10.061Z" hostname="1b4ee2135e4b" time="0.252">
+<testsuite name="org.studyfuse.engine.MigrationTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-02T08:49:29.124Z" hostname="e48e5fe0e1c6" time="0.214">
   <properties/>
-  <testcase name="versionOneProjectsMigrateWithoutDataLoss" classname="org.studyfuse.engine.MigrationTest" time="0.252"/>
+  <testcase name="versionOneProjectsMigrateWithoutDataLoss" classname="org.studyfuse.engine.MigrationTest" time="0.214"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

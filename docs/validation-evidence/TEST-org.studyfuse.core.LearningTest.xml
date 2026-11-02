@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.core.LearningTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-10-31T11:35:10.877Z" hostname="1b4ee2135e4b" time="0.136">
+<testsuite name="org.studyfuse.core.LearningTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-02T08:39:25.695Z" hostname="e48e5fe0e1c6" time="0.099">
   <properties/>
-  <testcase name="documentsOnlyCannotAcceptModelKnowledge" classname="org.studyfuse.core.LearningTest" time="0.039"/>
-  <testcase name="evidenceRequiresActualContiguousWords" classname="org.studyfuse.core.LearningTest" time="0.012"/>
-  <testcase name="hardAnswerShortensNextInterval" classname="org.studyfuse.core.LearningTest" time="0.02"/>
-  <testcase name="detailedRegionsCoverWholePageAndOverlap" classname="org.studyfuse.core.LearningTest" time="0.019"/>
-  <testcase name="optionalExamBoundsFutureReviewButPastDateDoesNotScheduleInPast" classname="org.studyfuse.core.LearningTest" time="0.001"/>
-  <testcase name="interleavePreservesAllItemsAndAlternatesTopics" classname="org.studyfuse.core.LearningTest" time="0.008"/>
+  <testcase name="documentsOnlyCannotAcceptModelKnowledge" classname="org.studyfuse.core.LearningTest" time="0.005"/>
+  <testcase name="evidenceRequiresActualContiguousWords" classname="org.studyfuse.core.LearningTest" time="0.009"/>
+  <testcase name="hardAnswerShortensNextInterval" classname="org.studyfuse.core.LearningTest" time="0.026"/>
+  <testcase name="detailedRegionsCoverWholePageAndOverlap" classname="org.studyfuse.core.LearningTest" time="0.051"/>
+  <testcase name="optionalExamBoundsFutureReviewButPastDateDoesNotScheduleInPast" classname="org.studyfuse.core.LearningTest" time="0.002"/>
+  <testcase name="interleavePreservesAllItemsAndAlternatesTopics" classname="org.studyfuse.core.LearningTest" time="0.003"/>
   <testcase name="successfulRecallExpandsIntervals" classname="org.studyfuse.core.LearningTest" time="0.0"/>
-  <testcase name="lapseResetsStageAndReturnsToday" classname="org.studyfuse.core.LearningTest" time="0.001"/>
+  <testcase name="lapseResetsStageAndReturnsToday" classname="org.studyfuse.core.LearningTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

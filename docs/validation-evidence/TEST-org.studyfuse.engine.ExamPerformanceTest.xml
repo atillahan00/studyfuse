@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.studyfuse.engine.ExamPerformanceTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-11-02T08:49:27.160Z" hostname="e48e5fe0e1c6" time="0.985">
+  <properties/>
+  <testcase name="nativeTextIsRetainedWithoutAskingModelToRepeatIt" classname="org.studyfuse.engine.ExamPerformanceTest" time="0.04"/>
+  <testcase name="legacySettingsRemainCompatibleAndNewOptionsRoundTrip" classname="org.studyfuse.engine.ExamPerformanceTest" time="0.028"/>
+  <testcase name="workloadIsOnePassOrTargetedOrAllCloseups" classname="org.studyfuse.engine.ExamPerformanceTest" time="0.023"/>
+  <testcase name="legacyDetailedOverviewIsReusedWithStableReviewedCardIds" classname="org.studyfuse.engine.ExamPerformanceTest" time="0.893"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

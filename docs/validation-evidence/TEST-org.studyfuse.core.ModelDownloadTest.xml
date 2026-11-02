@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.core.ModelDownloadTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-31T11:35:11.020Z" hostname="1b4ee2135e4b" time="0.096">
+<testsuite name="org.studyfuse.core.ModelDownloadTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-11-02T08:39:25.800Z" hostname="e48e5fe0e1c6" time="0.13">
   <properties/>
-  <testcase name="completeVerifiedFileNeedsNoNetwork" classname="org.studyfuse.core.ModelDownloadTest" time="0.036"/>
-  <testcase name="serverIgnoringRangeRestartsWithoutDuplicatingBytes" classname="org.studyfuse.core.ModelDownloadTest" time="0.007"/>
-  <testcase name="httpsTransportRejectsCleartextBeforeOpeningSocket" classname="org.studyfuse.core.ModelDownloadTest" time="0.002"/>
-  <testcase name="interruptedDownloadResumesWithExactRangeAndDigest" classname="org.studyfuse.core.ModelDownloadTest" time="0.009"/>
-  <testcase name="digestMismatchDeletesCorruptWeights" classname="org.studyfuse.core.ModelDownloadTest" time="0.004"/>
-  <testcase name="providerErrorKeepsPartialData" classname="org.studyfuse.core.ModelDownloadTest" time="0.004"/>
-  <testcase name="catalogUsesPinnedPublicVisionArtifacts" classname="org.studyfuse.core.ModelDownloadTest" time="0.001"/>
-  <testcase name="cancellationKeepsPartialData" classname="org.studyfuse.core.ModelDownloadTest" time="0.003"/>
-  <testcase name="mismatchedRangeCannotOverwritePreservedPrefix" classname="org.studyfuse.core.ModelDownloadTest" time="0.001"/>
+  <testcase name="completeVerifiedFileNeedsNoNetwork" classname="org.studyfuse.core.ModelDownloadTest" time="0.032"/>
+  <testcase name="serverIgnoringRangeRestartsWithoutDuplicatingBytes" classname="org.studyfuse.core.ModelDownloadTest" time="0.013"/>
+  <testcase name="httpsTransportRejectsCleartextBeforeOpeningSocket" classname="org.studyfuse.core.ModelDownloadTest" time="0.001"/>
+  <testcase name="interruptedDownloadResumesWithExactRangeAndDigest" classname="org.studyfuse.core.ModelDownloadTest" time="0.057"/>
+  <testcase name="digestMismatchDeletesCorruptWeights" classname="org.studyfuse.core.ModelDownloadTest" time="0.009"/>
+  <testcase name="providerErrorKeepsPartialData" classname="org.studyfuse.core.ModelDownloadTest" time="0.005"/>
+  <testcase name="catalogUsesPinnedPublicVisionArtifacts" classname="org.studyfuse.core.ModelDownloadTest" time="0.002"/>
+  <testcase name="cancellationKeepsPartialData" classname="org.studyfuse.core.ModelDownloadTest" time="0.002"/>
+  <testcase name="mismatchedRangeCannotOverwritePreservedPrefix" classname="org.studyfuse.core.ModelDownloadTest" time="0.002"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

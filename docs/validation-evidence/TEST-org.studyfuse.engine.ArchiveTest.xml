@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.engine.ArchiveTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-31T15:41:35.235Z" hostname="1b4ee2135e4b" time="3.606">
+<testsuite name="org.studyfuse.engine.ArchiveTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-02T08:49:06.107Z" hostname="e48e5fe0e1c6" time="1.996">
   <properties/>
-  <testcase name="removedSourcesCanBeRestoredWithoutDeletingTheirBytes" classname="org.studyfuse.engine.ArchiveTest" time="2.43"/>
-  <testcase name="zipTraversalAndUndeclaredFilesAreRejectedAtomically" classname="org.studyfuse.engine.ArchiveTest" time="0.393"/>
-  <testcase name="backupRetainsExamSettingsNotesAndReviewButExcludesModelAndScratch" classname="org.studyfuse.engine.ArchiveTest" time="0.192"/>
-  <testcase name="roundTripKeepsOriginalReplacementOrderCutsAndSettings" classname="org.studyfuse.engine.ArchiveTest" time="0.174"/>
-  <testcase name="backupRetainsRemovedSourceBytesAndUndoState" classname="org.studyfuse.engine.ArchiveTest" time="0.15"/>
-  <testcase name="truncatedBackupDoesNotPublishAPartialProject" classname="org.studyfuse.engine.ArchiveTest" time="0.169"/>
-  <testcase name="changedSourceBytesPreventMisleadingBackup" classname="org.studyfuse.engine.ArchiveTest" time="0.097"/>
+  <testcase name="removedSourcesCanBeRestoredWithoutDeletingTheirBytes" classname="org.studyfuse.engine.ArchiveTest" time="1.462"/>
+  <testcase name="zipTraversalAndUndeclaredFilesAreRejectedAtomically" classname="org.studyfuse.engine.ArchiveTest" time="0.116"/>
+  <testcase name="backupRetainsExamSettingsNotesAndReviewButExcludesModelAndScratch" classname="org.studyfuse.engine.ArchiveTest" time="0.083"/>
+  <testcase name="roundTripKeepsOriginalReplacementOrderCutsAndSettings" classname="org.studyfuse.engine.ArchiveTest" time="0.092"/>
+  <testcase name="backupRetainsRemovedSourceBytesAndUndoState" classname="org.studyfuse.engine.ArchiveTest" time="0.091"/>
+  <testcase name="truncatedBackupDoesNotPublishAPartialProject" classname="org.studyfuse.engine.ArchiveTest" time="0.084"/>
+  <testcase name="changedSourceBytesPreventMisleadingBackup" classname="org.studyfuse.engine.ArchiveTest" time="0.065"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
