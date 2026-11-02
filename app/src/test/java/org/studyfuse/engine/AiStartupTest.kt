@@ -59,6 +59,14 @@ class AiStartupTest {
         assertEquals("COMPLETED",d.snapshot().getString("stage"));assertFalse(d.snapshot().has("characters"));assertTrue(d.summary().contains("123 karakter"))
         assertFalse(d.snapshot().has("response"));assertFalse(d.snapshot().has("prompt"))
     }
+    @Test fun completedTimingsRemainAvailableWhileNextPageRuns(){
+        val d=AiDiagnostics(context);d.stage("VISION_GENERATION",true,true,280)
+        d.completedTiming(GenerationTiming(4000,3000,61000,4200))
+        d.stage("VISION_GENERATION",false,true,560);d.generationProgress(12,1000,50)
+        assertFalse(d.snapshot().has("timing"));assertEquals(61000,d.lastCompletedTiming()!!.getJSONObject("timing").getInt("generationMs"))
+        val report=d.summary();assertTrue(report.contains("Son tamamlanan istek (GPU, görsel bütçe 280)"));assertTrue(report.contains("üretim 61000 ms"))
+        assertFalse(d.lastCompletedTiming()!!.has("prompt"));assertFalse(d.lastCompletedTiming()!!.has("response"))
+    }
     @Test fun uncaughtFailureKeepsOnlyBoundedCodeFrames() {
         val d=AiDiagnostics(context);d.stage("VISION_GENERATION",false,true)
         val failure=NoSuchMethodError("PRIVATE NOTE CONTENT").apply{stackTrace=arrayOf(

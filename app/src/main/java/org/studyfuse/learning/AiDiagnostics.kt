@@ -23,7 +23,14 @@ class AiDiagnostics(private val context:Context) {
         val state=snapshot()
         if(state.optString("stage") in setOf("VISION_GENERATION","TEXT_GENERATION"))atomicJson(file,state.put("characters",characters).put("generationStartedElapsed",started).put("firstChunkMs",firstChunkMs ?: JSONObject.NULL))
     }
-    fun completedTiming(timing:GenerationTiming)=synchronized(stateLock){atomicJson(file,snapshot().put("timing",timing.json()))}
+    fun completedTiming(timing:GenerationTiming)=synchronized(stateLock){
+        val current=snapshot();atomicJson(file,current.put("timing",timing.json()))
+        // A batch immediately starts another page. Keep its last completed measurement separately.
+        atomicJson(File(context.filesDir,"local-models/ai-last-timing.json"),JSONObject()
+            .put("gpu",current.optBoolean("gpu")).put("visualTokens",current.opt("visualTokens") ?: JSONObject.NULL)
+            .put("completedAt",System.currentTimeMillis()).put("timing",timing.json()))
+    }
+    fun lastCompletedTiming():JSONObject?=runCatching{readJson(File(context.filesDir,"local-models/ai-last-timing.json"))}.getOrNull()
     fun javaFailure(error:Throwable)=synchronized(stateLock){runCatching{atomicJson(file,snapshot().put("errorClass",error.javaClass.simpleName))}}
     fun fatal(error:Throwable)=synchronized(stateLock){runCatching{
         val state=snapshot().put("pid",Process.myPid()).put("fatalClass",error.javaClass.name)
@@ -46,7 +53,12 @@ class AiDiagnostics(private val context:Context) {
             if(state.has("gpu"))appendLine("Dil: ${if(state.getBoolean("gpu"))"GPU" else "CPU"} · Görüntü: ${if(state.optBoolean("image"))"GPU" else "yok"}")
             if(state.has("availableBytes"))appendLine("Son aşamada boş RAM: ${state.getLong("availableBytes")/(1024*1024)} MiB · düşük bellek: ${state.optBoolean("lowMemory")}")
             if(state.has("visualTokens"))appendLine("Görsel token bütçesi: ${state.getInt("visualTokens")}")
-            state.optJSONObject("timing")?.let{appendLine("Son istek: model ${it.optLong("engineMs")} ms; ilk parça ${it.opt("firstChunkMs")} ms; üretim ${it.optLong("generationMs")} ms; ${it.optInt("characters")} karakter")}
+            val completed=lastCompletedTiming()
+            (completed?.optJSONObject("timing") ?: state.optJSONObject("timing"))?.let{
+                val gpu=completed?.optBoolean("gpu") ?: state.optBoolean("gpu")
+                val budget=completed?.opt("visualTokens") ?: state.opt("visualTokens") ?: "model ayarı"
+                appendLine("Son tamamlanan istek (${if(gpu)"GPU" else "CPU"}, görsel bütçe $budget): model ${it.optLong("engineMs")} ms; ilk parça ${it.opt("firstChunkMs")} ms; üretim ${it.optLong("generationMs")} ms; ${it.optInt("characters")} karakter")
+            }
             if(state.has("fatalClass")){appendLine("Yakalanmamış hata sınıfı: ${state.getString("fatalClass")}")
                 val frames=state.optJSONArray("fatalFrames");if(frames!=null)for(i in 0 until frames.length())appendLine(frames.getString(i))}
             if(state.has("errorClass"))appendLine("Java hatası: ${state.getString("errorClass")}")

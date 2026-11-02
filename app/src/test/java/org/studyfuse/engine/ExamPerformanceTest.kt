@@ -24,6 +24,11 @@ class ExamPerformanceTest {
         assertEquals(15,ExamWorkload.plan(report(),ExamConfig(detailed=true)).calls)
         try{ExamWorkload.plan(report(),ExamConfig(detailPages="1-4"));fail("TOC pages silently accepted")}catch(_:IllegalArgumentException){}
     }
+    @Test fun readingOnlySchemaNeverDemonstratesPracticeOutput(){
+        val fast=ExamPrompts.system(ExamConfig(readingOnly=true))
+        assertTrue(fast.contains("\"items\":[]"));assertFalse(fast.contains("\"question\""));assertFalse(fast.contains("\"kind\""))
+        assertTrue(ExamPrompts.system(ExamConfig(readingOnly=false)).contains("\"question\""))
+    }
     @Test fun legacySettingsRemainCompatibleAndNewOptionsRoundTrip(){
         val old=JSONObject("""{"mode":"DOCUMENTS_ONLY","language":"Deutsch","focus":"","examDate":"","detailed":true,"gpu":true,"references":[]}""")
         assertEquals(canonical(old),canonical(ExamConfig.decode(old).json()))
