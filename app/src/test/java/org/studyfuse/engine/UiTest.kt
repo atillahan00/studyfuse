@@ -71,6 +71,12 @@ class UiTest {
         ui.onNodeWithText("Model içe aktar").assertExists()
         ui.onNodeWithText("Otomatik çevrimdışı AI kurulumu").assertExists()
         screenshot("tablet-exam-workshop.png")
+        ui.onNodeWithText("Hızlı kaynak okuma").performScrollTo().clickMock()
+        ui.onNodeWithText("Tercihleri kaydet").performScrollTo().clickMock()
+        lateinit var owner:org.studyfuse.ui.StudyViewModel
+        ui.runOnIdle{owner=org.robolectric.util.ReflectionHelpers.callInstanceMethod(ui.activity,"getModel")}
+        ui.waitUntil(10000){ExamStore(owner.repo.directory(owner.selected.value!!)).config().readingOnly}
+        val saved=ExamStore(owner.repo.directory(owner.selected.value!!)).config();org.junit.Assert.assertFalse(saved.detailed);org.junit.Assert.assertEquals(280,saved.visualTokens)
         ui.onNodeWithText("Sınav hazırlığını oluştur / sürdür").performScrollTo().assertIsNotEnabled()
         ui.onNodeWithText("Notlar",useUnmergedTree=true).performClick()
         ui.onNodeWithText("Güncel çalışma maddesi yok.",substring=true).assertExists()

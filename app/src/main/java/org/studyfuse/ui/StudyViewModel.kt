@@ -95,24 +95,18 @@ class StudyViewModel(application:Application):AndroidViewModel(application) {
     }
     fun testLocalModel(gpu:Boolean) {
         if(modelBusy.value || setupWork.value.any{!it.state.isFinished})return;modelBusy.value=true;modelMessage.value="Model ve görüntü girişi sınanıyor; birkaç dakika sürebilir…"
-        modelSetupJob=viewModelScope.launch(Dispatchers.IO){var locked=false;val image=File(app.filesDir,"local-models/probe.png")
+        modelSetupJob=viewModelScope.launch(Dispatchers.IO){var locked=false
             try {locked=ExamStore.execution.tryLock();check(locked){"Başka bir AI işlemi sürüyor"}
-                File(app.filesDir,"local-models/vision-test.json").delete()
                 val local=ModelStore(app).selected() ?: error("Önce .litertlm modeli içe aktarın")
                 check(org.studyfuse.engine.sha256(local.file)==local.digest){"Model özeti değişmiş"}
-                val token="SF"+java.util.UUID.randomUUID().toString().take(8).uppercase()
-                val bitmap=android.graphics.Bitmap.createBitmap(1024,512,android.graphics.Bitmap.Config.ARGB_8888)
-                try{val canvas=android.graphics.Canvas(bitmap);canvas.drawColor(android.graphics.Color.WHITE)
-                    canvas.drawText(token,70f,250f,android.graphics.Paint().apply{color=android.graphics.Color.BLACK;textSize=80f;isAntiAlias=true})
-                    image.outputStream().use{bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG,100,it)}
-                }finally{bitmap.recycle()}
-                val answer=LocalAiClient(app).use{client->client.connect();client.generate(local,gpu,"Read the image literally.","Return only the exact alphanumeric code visible in the image.",image)}
-                check(answer.filter{it.isLetterOrDigit()}.contains(token)){"Görüntü kodu doğru okunamadı. Model yanıtı: $answer"}
+                VisionProbe.run(app,local,gpu)
                 atomicJson(File(app.filesDir,"local-models/vision-test.json"),org.json.JSONObject().put("sha256",local.digest).put("gpu",gpu).put("fingerprint",android.os.Build.FINGERPRINT))
-                modelMessage.value="Görüntü giriş testi geçti. Bu sentetik basılı kod testi el yazısı, matematik veya MagicPad doğruluk garantisi değildir."
-            }catch(e:Exception){modelMessage.value="Test başarısız: ${e.message}"}finally{image.delete();if(locked)ExamStore.execution.unlock();modelBusy.value=false;examRevision.value++}
+                modelMessage.value="${if(gpu)"GPU" else "CPU"} görüntü giriş testi geçti. Önceki çalışan profil, test başarısız olursa korunur. Gerçek el yazısı doğruluğunu ayrıca inceleyin."
+            }catch(e:CancellationException){throw e}catch(e:Exception){modelMessage.value="Test başarısız; önceki çalışan profil korundu: ${e.message}"}
+            finally{if(locked)ExamStore.execution.unlock();modelBusy.value=false;examRevision.value++}
         }
     }
+
     fun startExam(config:ExamConfig)=viewModelScope.launch {
         val id=selected.value ?: return@launch;val p=dao.project(id) ?: return@launch
         if(importing.value || modelBusy.value || p.status in setOf("RUNNING","QUEUED"))return@launch

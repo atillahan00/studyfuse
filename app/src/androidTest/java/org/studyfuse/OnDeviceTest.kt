@@ -86,18 +86,53 @@ class OnDeviceTest {
                 .put("uncertainties",JSONArray()).put("items",JSONArray().put(JSONObject().put("kind","recall").put("question","Was enthält die Zelle?")
                     .put("answer","DNA").put("evidence","Die Zelle enthält DNA.").put("origin","document"))).toString()
             val cancelled=ExamInference{_,_,_,_,image->assertTrue(image!!.length()>0);calls++;if(calls==2)throw kotlinx.coroutines.CancellationException("test cancellation");response}
-            try{ExamCompiler(context,store,cancelled).compile(compilation.report,model,ExamConfig()){_,_,_->};fail("Cancellation ignored")}catch(_:kotlinx.coroutines.CancellationException){}
+            try{ExamCompiler(context,store,cancelled).compile(compilation.report,model,ExamConfig(detailed=true)){_,_,_->};fail("Cancellation ignored")}catch(_:kotlinx.coroutines.CancellationException){}
             assertEquals("CANCELLED",store.session()!!.getString("status"))
             var resumedCalls=0
             val resumed=ExamInference{_,_,_,_,image->assertTrue(image!!.length()>0);resumedCalls++;response}
-            val result=ExamCompiler(context,store,resumed).compile(compilation.report,model,ExamConfig()){_,_,_->}
+            val result=ExamCompiler(context,store,resumed).compile(compilation.report,model,ExamConfig(detailed=true)){_,_,_->}
             assertEquals(5,result.getInt("total"));assertEquals(4,resumedCalls)
-            val units=store.currentUnits(store.signature(compilation.report,model,ExamConfig()))
+            val units=store.currentUnits(store.signature(compilation.report,model,ExamConfig(detailed=true)))
             assertEquals(5,units.size);assertEquals(setOf(0,1,2,3,4),units.map{it.getInt("region")}.toSet())
             assertTrue(units.all{it.getString("status")=="REVIEW"});assertFalse(store.review().keys().hasNext())
             var cachedCalls=0
-            ExamCompiler(context,store,ExamInference{_,_,_,_,_->cachedCalls++;response}).compile(compilation.report,model,ExamConfig()){_,_,_->}
+            ExamCompiler(context,store,ExamInference{_,_,_,_,_->cachedCalls++;response}).compile(compilation.report,model,ExamConfig(detailed=true)){_,_,_->}
             assertEquals(0,cachedCalls)
+        }finally{project.deleteRecursively()}
+    }
+    /** Native PDF parsing/rendering plus deterministic inference: validates work reuse, not neural speed. */
+    @Test fun readingFirstTargetedDetailsAndBackendChangesReuseCompletedPages()=runBlocking {
+        com.tom_roush.pdfbox.android.PDFBoxResourceLoader.init(context)
+        val project=File(context.filesDir,"projects/perf-${UUID.randomUUID()}").apply{mkdirs()}
+        try {
+            val file=File(project,"Biologie.pdf")
+            newPdf(project).use{doc->repeat(3){index->val page=com.tom_roush.pdfbox.pdmodel.PDPage(com.tom_roush.pdfbox.pdmodel.common.PDRectangle.A4);doc.addPage(page)
+                com.tom_roush.pdfbox.pdmodel.PDPageContentStream(doc,page).use{PdfText(context,doc).draw(it,"Die Zelle enthält DNA. Seite ${index+1}",40f,740f)}};doc.save(file)}
+            val before=sha256(file);val source=Source("perf-source","device",file.name,"Zelle",0,file.path,file.path,file.length(),before,"PDF")
+            val compilation=org.studyfuse.engine.Compiler(context,File(project,"exports/run").apply{mkdirs()}).compile(listOf(source),ExportSettings())
+            val first=readJson(compilation.report).getJSONArray("files").getJSONObject(0).getInt("contentStart")
+            val weights=File(project,"test-model").apply{writeText("controlled inference fixture, not neural weights")};val model=LocalModel("fixture",weights,sha256(weights),weights.length())
+            val store=ExamStore(project);var calls=0
+            val engine=object:ExamInference {
+                override suspend fun generate(m:LocalModel,gpu:Boolean,system:String,prompt:String,image:File?):String=error("Options must be passed")
+                override suspend fun generate(m:LocalModel,gpu:Boolean,system:String,prompt:String,image:File?,options:GenerationOptions):String {
+                    assertEquals(280,options.visualTokens);assertTrue(image!!.length()>0);assertTrue(system.contains("items as an empty array"));calls++
+                    return JSONObject().put("transcription","").put("observations","deterministic diagram fixture").put("uncertainties",JSONArray()).put("items",JSONArray()).toString()
+                }
+            }
+            val fast=ExamConfig(readingOnly=true,visualTokens=280)
+            val overview=ExamCompiler(context,store,engine).compile(compilation.report,model,fast){_,_,_->}
+            assertEquals(3,calls);assertEquals(3,overview.getInt("total"))
+            val overviewKeys=overview.getJSONArray("units").let{a->(0 until a.length()).map{a.getString(it)}}
+            assertTrue(store.currentUnits(store.signature(compilation.report,model,fast)).all{it.getString("transcription").contains("Die Zelle enthält DNA.") && it.has("timings")})
+            calls=0;val targeted=ExamCompiler(context,store,engine).compile(compilation.report,model,fast.copy(detailPages="${first+1}")){_,_,_->}
+            assertEquals(4,calls);assertEquals(7,targeted.getInt("total"));assertEquals(3,targeted.getInt("reusedRegions"))
+            assertTrue(overviewKeys.all{k->targeted.getJSONArray("units").toString().contains(k)})
+            calls=0;val detailed=fast.copy(detailed=true)
+            val all=ExamCompiler(context,store,engine).compile(compilation.report,model,detailed){_,_,_->}
+            assertEquals(8,calls);assertEquals(15,all.getInt("total"));assertEquals(7,all.getInt("reusedRegions"))
+            calls=0;val otherBackend=ExamCompiler(context,store,engine).compile(compilation.report,model,detailed.copy(gpu=false)){_,_,_->}
+            assertEquals(0,calls);assertEquals(15,otherBackend.getInt("reusedRegions"));assertEquals(before,sha256(file))
         }finally{project.deleteRecursively()}
     }
     /** Actual pinned SDK completion bytecode, followed by the production bridge; no neural weights. */

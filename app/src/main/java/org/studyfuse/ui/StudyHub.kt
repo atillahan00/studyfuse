@@ -35,7 +35,7 @@ private data class HubSnapshot(val config:ExamConfig,val signature:String?,val u
     val workers by model.examWork.collectAsStateWithLifecycle();val revision by model.examRevision.collectAsStateWithLifecycle()
     val busy=project.status in setOf("RUNNING","QUEUED")
     val workerError=workers.firstOrNull{it.id.toString()==project.workId}?.outputData?.getString("error")
-    LaunchedEffect(project.report,workers,revision,refresh){
+    LaunchedEffect(project.report,workers.map{it.id to it.state},revision,refresh){
         try{
             val state=withContext(Dispatchers.IO){val saved=store.config();val models=ModelStore(model.repo.context);val tested=models.testedGpu()
                 val cfg=if(tested!=null && tested!=saved.gpu)saved.copy(gpu=tested).also{store.saveConfig(it)}else saved
@@ -58,6 +58,7 @@ private data class HubSnapshot(val config:ExamConfig,val signature:String?,val u
             Text("${if(config.mode==KnowledgeMode.DOCUMENTS_ONLY)"Yalnızca belgelerim" else "Ek kaynaklarla öğren"} · ${config.language} · AI taslakları kaynakla kontrol edilmelidir",Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.bodySmall)
             PrimaryTabRow(selectedTabIndex=tab){listOf("Koç","Kartlar","Deneme","Plan").forEachIndexed{i,t->Tab(tab==i,{tab=i},text={Text(t)})}}
             if(error!=null || workerError!=null)Text(error ?: workerError!!,Modifier.padding(12.dp),color=MaterialTheme.colorScheme.error)
+            if(busy)AiRuntimeProgress(true)
             if(busy)Row(verticalAlignment=Alignment.CenterVertically){LinearProgressIndicator(Modifier.weight(1f));TextButton(onClick={model.cancelExam()}){Text("İptal")}}
             if(units.isEmpty())Column(Modifier.padding(16.dp)){Text("Önce kaynak PDF'yi derleyip Sınav atölyesi'nde görsel okumayı oluşturun. Bu merkez o kaynak kayıtlarını kullanır.");Button(onClick=onPrepare){Text("Kurulum ve sınav atölyesi")}}
             else{

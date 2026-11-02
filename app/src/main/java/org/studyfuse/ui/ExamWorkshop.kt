@@ -22,11 +22,11 @@ import java.time.LocalDate
 
 private data class PracticeItem(val item:JSONObject,val unit:JSONObject)
 private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val signature:String?,val session:JSONObject?,
-    val units:List<JSONObject>,val review:JSONObject,val cards:List<JSONObject>)
+    val units:List<JSONObject>,val review:JSONObject,val cards:List<JSONObject>,val workload:ExamWorkload?)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun ExamWorkshop(project:Project,sources:List<Source>,model:StudyViewModel,onImportModel:()->Unit,
-    onSave:(File)->Unit,onShare:(List<File>)->Unit,onDismiss:()->Unit) {
+    onSave:(File)->Unit,onShare:(List<File>)->Unit,onStudyHub:()->Unit,onDismiss:()->Unit) {
     val context=LocalContext.current;val scope=rememberCoroutineScope()
     val store=remember(project.id){ExamStore(model.repo.directory(project.id))}
     var config by remember(project.id){mutableStateOf(ExamConfig())}
@@ -39,6 +39,7 @@ private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val 
     var review by remember{mutableStateOf(JSONObject())}
     var practiceCards by remember{mutableStateOf<List<JSONObject>>(emptyList())}
     var ready by remember{mutableStateOf(false)}
+    var workload by remember{mutableStateOf<ExamWorkload?>(null)}
     var refresh by remember{mutableIntStateOf(0)}
     var signature by remember{mutableStateOf<String?>(null)}
     var unitIndex by remember{mutableIntStateOf(0)}
@@ -62,16 +63,17 @@ private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val 
             if(tested!=null && tested!=config.gpu){config=config.copy(gpu=tested);withContext(Dispatchers.IO){store.saveConfig(config)}}
         }
     }
-    LaunchedEffect(loaded,config,revision,workers,setupWorkers,refresh,project.report) {
+    LaunchedEffect(loaded,config,revision,workers.map{it.id to it.state},setupWorkers.map{it.id to it.state},refresh,project.report) {
         if(!loaded)return@LaunchedEffect
         try {
             val state=withContext(Dispatchers.IO){
                 val local=ModelStore(context).selected();val sig=project.report?.let{path->local?.let{store.signature(File(path),it,config)}}
                 val readings=sig?.let{store.currentUnits(it)} ?: emptyList();val reviews=store.review()
                 WorkshopSnapshot(local,visionReady(context,config.gpu),sig,store.session()?.takeIf{it.optString("signature")==sig},readings,reviews,
-                    sig?.let{StudyTools(store).cards(it,readings,reviews)} ?: emptyList())
+                    sig?.let{StudyTools(store).cards(it,readings,reviews)} ?: emptyList(),
+                    project.report?.let{runCatching{ExamWorkload.plan(readJson(File(it)),config)}.getOrNull()})
             }
-            selectedModel=state.model;ready=state.ready;signature=state.signature;session=state.session;units=state.units;review=state.review;practiceCards=state.cards
+            selectedModel=state.model;ready=state.ready;signature=state.signature;session=state.session;units=state.units;review=state.review;practiceCards=state.cards;workload=state.workload
         }catch(e:CancellationException){throw e}catch(e:Exception){error=e.message;session=null;units=emptyList()}
     }
     fun sourcePreview(unit:JSONObject){
@@ -107,6 +109,8 @@ private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val 
                 val done=active.progress.getInt("processed",0);val total=active.progress.getInt("total",0)
                 LinearProgressIndicator(progress={if(total>0)done.toFloat()/total else 0f},modifier=Modifier.fillMaxWidth())
                 Text("$done/$total · ${active.progress.getString("message") ?: project.message}",style=MaterialTheme.typography.bodySmall)
+                AiRuntimeProgress(true)
+                TextButton(onClick={refresh++}){Text("Tamamlanan okumaları yenile")}
                 TextButton(onClick={model.cancelExam()}){Text("AI işlemini iptal et")}
             }}
             when(tab) {
@@ -115,7 +119,7 @@ private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val 
                     Text("1 · Yerel görüntü modeli",style=MaterialTheme.typography.titleMedium)
                     AutomaticSetup(model,enabled=!busy)
                     Text(selectedModel?.let{"${it.name} · ${sizeLabel(it.bytes)} · SHA-256 ${it.digest.take(16)}…"} ?: "Henüz model yok. Model APK'ya dahil değildir.")
-                    Text("MagicPad 2 için başlangıç adayı: görüntü destekli Gemma 4 E4B .litertlm; daha hafif seçenek E2B. GGUF/.task dosyaları desteklenmez. Aygıtın GPU sürücüsü ayrıca sınanmalıdır.",style=MaterialTheme.typography.bodySmall)
+                    Text("Hız için mevcut E2B ile başlayın; daha büyük E4B daha hızlı olma garantisi vermez. GGUF/.task dosyaları desteklenmez. GPU sürücüsü ayrıca sınanmalıdır.",style=MaterialTheme.typography.bodySmall)
                     FlowRow {
                         OutlinedButton(onClick=onImportModel,enabled=!busy && !settingUp){Text("Model içe aktar")}
                         TextButton(onClick={runCatching{context.startActivity(Intent(Intent.ACTION_VIEW,Uri.parse("https://huggingface.co/litert-community/gemma-4-E4B-it-litert-lm")))}.onFailure{error="Tarayıcı açılamadı"}}){Text("Model indirme sayfası")}
@@ -126,6 +130,19 @@ private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val 
                     if(modelMessage.isNotBlank())Text(modelMessage,style=MaterialTheme.typography.bodySmall)
                     if(modelBusy)TextButton(onClick={model.cancelModelSetup()}){Text("Model işlemini iptal et")}
                     Text(if(ready)"Görüntü testi geçti; gerçek el yazısı doğruluğu ayrıca incelenmeli." else "Analizden önce seçili model/aygıt görüntü testini geçmeli.",style=MaterialTheme.typography.bodySmall)
+                    HorizontalDivider();Text("İşlem süresi ve ayrıntı",style=MaterialTheme.typography.titleMedium)
+                    Text("Tek geçiş de yavaşsa ilk okuma çıktısını ve görsel token bütçesini azaltabilirsiniz. Orijinal PDF aynı kalır; daha düşük bütçe küçük el yazısını ve şekil etiketlerini kaçırabilir.",style=MaterialTheme.typography.bodySmall)
+                    FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                        OutlinedButton(onClick={config=config.copy(detailed=false,detailPages="",readingOnly=true,visualTokens=280)},enabled=!busy){Text("Hızlı kaynak okuma")}
+                        OutlinedButton(onClick={config=config.copy(detailed=false,detailPages="",readingOnly=false,visualTokens=560)},enabled=!busy){Text("Dengeli çalışma")}
+                        OutlinedButton(onClick={config=config.copy(detailed=true,detailPages="",readingOnly=false,visualTokens=1120)},enabled=!busy){Text("Tam görsel ayrıntı")}
+                    }
+                    Row(verticalAlignment=Alignment.CenterVertically){Switch(config.readingOnly,{config=config.copy(readingOnly=it)},enabled=!busy);Text("Önce yalnızca kaynağı oku; kartları sonra üret")}
+                    if(config.readingOnly)Text("Bu tur transkripsiyon, şekil/tablo ilişkileri ve belirsizlikleri çıkarır. Soru/kart üretmez. Sonra AI öğrenme merkezi → Koç → Yeni çalışma kartları ile seçtiğiniz konularda üretin.",style=MaterialTheme.typography.bodySmall)
+                    Text("Gemma 4 görsel token bütçesi",style=MaterialTheme.typography.labelLarge)
+                    FlowRow{listOf<Int?>(null,280,560,1120).forEach{budget->FilterChip(config.visualTokens==budget,{config=config.copy(visualTokens=budget)},enabled=!busy,label={Text(budget?.toString() ?: "Model ayarı")})}}
+                    workload?.let{Text("${it.pages} kaynak sayfası · ${it.calls} AI isteği planlanıyor. Önbellekte olanlar yeniden üretilmez.",style=MaterialTheme.typography.bodySmall)}
+                    Text("Gerçek tablet hızı ölçülmeden süre veya kat hızlanma garantisi verilemez. GPU/model ısındığında yavaşlama olabilir.",style=MaterialTheme.typography.bodySmall)
                     HorizontalDivider();Text("2 · Kaynak politikası",style=MaterialTheme.typography.titleMedium)
                     Row(verticalAlignment=Alignment.CenterVertically){
                         Switch(config.mode==KnowledgeMode.ENRICHED,{config=config.copy(mode=if(it)KnowledgeMode.ENRICHED else KnowledgeMode.DOCUMENTS_ONLY)},enabled=!busy)
@@ -140,13 +157,15 @@ private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val 
                     OutlinedTextField(config.focus,{config=config.copy(focus=it)},label={Text("Sınav kapsamı / öğretmen beklentisi (isteğe bağlı)")},enabled=!busy,modifier=Modifier.fillMaxWidth())
                     OutlinedTextField(config.examDate,{config=config.copy(examDate=it)},label={Text("Sınav tarihi: YYYY-MM-DD (isteğe bağlı)")},enabled=!busy,singleLine=true)
                     Row(verticalAlignment=Alignment.CenterVertically){Switch(config.detailed,{config=config.copy(detailed=it)},enabled=!busy);Text("Ayrıntılı görsel okuma: tam sayfa + 4 örtüşen bölge")}
-                    Text("Açıkken küçük yazılar için daha fazla inceleme yapılır; işlem daha uzun sürer. Büyük partiler ısı/batarya nedeniyle yavaşlayabilir. İptalde tamamlanan bölgeler korunur.",style=MaterialTheme.typography.bodySmall)
+                    Text("Açıkken her sayfada beş istek yapılır. Kapalıyken tek tam sayfa isteği vardır; aşağıdan sadece zor sayfalara dört yakın plan ekleyebilirsiniz. İptalde tamamlanan bölgeler korunur.",style=MaterialTheme.typography.bodySmall)
+                    if(!config.detailed)OutlinedTextField(config.detailPages,{config=config.copy(detailPages=it)},label={Text("Yakın plan eklenecek derlenmiş PDF sayfaları: 3,5-7")},enabled=!busy,modifier=Modifier.fillMaxWidth())
                     TextButton(onClick={scope.launch{try{withContext(Dispatchers.IO){store.saveConfig(config)};refresh++}catch(e:Exception){error="Tercihler kaydedilemedi: ${e.message}"}}},enabled=!busy){Text("Tercihleri kaydet")}
                     Button(onClick={try{config.validate();model.startExam(config)}catch(e:Exception){error="Ayarları kontrol edin: ${e.message}"}},enabled=project.report!=null && ready && !busy,modifier=Modifier.fillMaxWidth()){Text("Sınav hazırlığını oluştur / sürdür")}
                     if(project.report==null)Text("Önce ana ekranda PDF oluşturun. Desteklenmeyen Office/OneNote kaynakları için PDF yerine koyun.")
                     if(session==null)Text("Bu model, kaynak politikası ve ayarlar için güncel taslak yok. Ayar değişikliğinde eski içerik gösterilmez.",style=MaterialTheme.typography.bodySmall)
                 }
                 1->{
+                    if(config.readingOnly)TextButton(onClick=onStudyHub){Text("Okumadan çalışma kartları üret")}
                     if(units.isEmpty())EmptyExam(Modifier.weight(1f))else{
                         val unit=units[unitIndex.coerceIn(0,units.lastIndex)]
                         LazyColumn(Modifier.weight(1f).padding(16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
@@ -158,7 +177,7 @@ private data class WorkshopSnapshot(val model:LocalModel?,val ready:Boolean,val 
                             if(unit.optString("status")=="FAILED")item{Text("Okunamadı: ${unit.optString("error")}",color=MaterialTheme.colorScheme.error)}
                             else {
                                 item{project.report?.let{StudyEvidencePane(File(it),unit)}}
-                                item{Text("Görsel transkripsiyon (AI; doğrulanmamış)",style=MaterialTheme.typography.labelLarge);SelectionContainerText(unit.getString("transcription"));Text(unit.getString("observations"));Text("Belirsizlikler: ${unit.getJSONArray("uncertainties")}")}
+                                item{Text("PDF metni ve görsel ekler (AI ekleri doğrulanmamış)",style=MaterialTheme.typography.labelLarge);SelectionContainerText(unit.getString("transcription"));Text(unit.getString("observations"));Text("Belirsizlikler: ${unit.getJSONArray("uncertainties")}")}
                                 items(unit.getJSONArray("items").objects(),key={it.getString("id")}){original->val item=effective(original);val id=item.getString("id");val state=review.optJSONObject(id)
                                     OutlinedCard(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
                                         Text(if(item.getString("origin")=="ai_added")"MODEL EK BİLGİSİ · kaynak atfı yok" else "KAYNAK · ${item.getString("basis")}",style=MaterialTheme.typography.labelSmall)

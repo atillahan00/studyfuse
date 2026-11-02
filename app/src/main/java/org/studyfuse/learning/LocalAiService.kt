@@ -25,33 +25,45 @@ class LocalAiService:Service() {
     })
     override fun onCreate(){super.onCreate();scope.launch{for(request in queue){active=launch{respond(request)};active?.join()}}}
     override fun onBind(intent:Intent):IBinder=messenger.binder
+    @OptIn(ExperimentalApi::class)
     private suspend fun respond(request:android.os.Message) {
         val result=Bundle()
         try {
-            val data=request.data;val path=data.getString("model") ?: error("Model yok")
+            val data=request.data
+            val options=GenerationOptions(if(data.containsKey("visualTokens"))data.getInt("visualTokens")else null,data.getInt("maxOutputTokens",2200)).also{it.validate()}
+            ExperimentalFlags.visualTokenBudget=options.visualTokens
+            var engineMs=0L
+            val path=data.getString("model") ?: error("Model yok")
             require(File(path).canonicalPath.startsWith(File(filesDir,"local-models").canonicalPath+"/"))
             val gpu=data.getBoolean("gpu",true);val imageInput=data.getString("image")!=null;val key="$path|$gpu"
-            fun stage(name:String)=diagnostics.stage(name,gpu,imageInput)
+            fun stage(name:String)=diagnostics.stage(name,gpu,imageInput,options.visualTokens)
             if(key!=engineKey || engine==null) {
                 stage("CLOSING_PREVIOUS_ENGINE");engine?.close();engine=null;engineKey=""
                 stage("CREATING_ENGINE")
                 val e=Engine(EngineConfig(modelPath=path,backend=if(gpu)Backend.GPU()else Backend.CPU(threadCount=4),
                     visionBackend=Backend.GPU(),maxNumTokens=8192,maxNumImages=1,cacheDir=File(cacheDir,"litert-v2-${File(path).nameWithoutExtension.take(16)}-${if(gpu)"gpu" else "cpu"}").apply{mkdirs()}.path))
-                try {stage("INITIALIZING_ENGINE");e.initialize();engine=e;engineKey=key}catch(t:Throwable){runCatching{e.close()};throw t}
+                try {stage("INITIALIZING_ENGINE");val before=SystemClock.elapsedRealtime();e.initialize();engineMs=SystemClock.elapsedRealtime()-before;engine=e;engineKey=key}catch(t:Throwable){runCatching{e.close()};throw t}
             }
             stage("CREATING_CONVERSATION")
+            val firstChunkMs=java.util.concurrent.atomic.AtomicLong(-1);var generatedAt=0L;val lastProgress=java.util.concurrent.atomic.AtomicLong(0)
             val text=withTimeout(300_000){
                 engine!!.createConversation(ConversationConfig(systemInstruction=Contents.of(data.getString("system") ?: ""),
-                    samplerConfig=SamplerConfig(1,.9,.1),maxOutputToken=2200,thinkingConfig=ThinkingConfig(false),automaticToolCalling=false)).use{conversation->
+                    samplerConfig=SamplerConfig(1,.9,.1),maxOutputToken=options.maxOutputTokens,thinkingConfig=ThinkingConfig(false),automaticToolCalling=false)).use{conversation->
                     val parts=mutableListOf<Content>()
                     data.getString("image")?.let{image->require(File(image).canonicalPath.startsWith(filesDir.canonicalPath+"/"));parts+=Content.ImageFile(image)}
                     parts+=Content.Text(data.getString("prompt") ?: "")
                     stage(if(imageInput)"VISION_GENERATION" else "TEXT_GENERATION")
+                    generatedAt=SystemClock.elapsedRealtime()
+                    diagnostics.generationProgress(0,generatedAt,null)
                     CallbackGeneration.run(start={callback->conversation.sendMessageAsync(Contents.of(parts),callback)},
-                        cancel={conversation.cancelProcess()})
+                        cancel={conversation.cancelProcess()},onCharacters={characters->
+                            val now=SystemClock.elapsedRealtime();if(characters>0)firstChunkMs.compareAndSet(-1,now-generatedAt)
+                            val previous=lastProgress.get();if(now-previous>=2000 && lastProgress.compareAndSet(previous,now))diagnostics.generationProgress(characters,generatedAt,firstChunkMs.get().takeIf{it>=0})
+                        })
                 }
             }
-            stage("COMPLETED")
+            val timing=GenerationTiming(engineMs,firstChunkMs.get().takeIf{it>=0},SystemClock.elapsedRealtime()-generatedAt,text.length)
+            stage("COMPLETED");diagnostics.completedTiming(timing);result.putString("timing",timing.json().toString())
             check(text.isNotBlank()){"Model boş yanıt verdi"};result.putString("text",text)
         }catch(t:Throwable){diagnostics.javaFailure(t);result.putString("error",if(t is CancellationException)"İşlem iptal edildi veya zaman aşımı" else "${t.javaClass.simpleName}: ${t.message}")}
         finally{runCatching{request.replyTo.send(android.os.Message.obtain().apply{what=1;arg1=request.arg1;data=result})}}
@@ -64,6 +76,8 @@ class LocalAiService:Service() {
 
 fun interface ExamInference {
     suspend fun generate(model:LocalModel,gpu:Boolean,system:String,prompt:String,image:File?):String
+    suspend fun generate(model:LocalModel,gpu:Boolean,system:String,prompt:String,image:File?,options:GenerationOptions):String = generate(model,gpu,system,prompt,image)
+    fun lastTiming():GenerationTiming?=null
 }
 class LocalAiClient(private val context:Context):AutoCloseable,ExamInference {
     private var remote:Messenger?=null
@@ -71,9 +85,12 @@ class LocalAiClient(private val context:Context):AutoCloseable,ExamInference {
     private val ready=CompletableDeferred<Unit>()
     private var pending:CompletableDeferred<String>?=null
     private var nextId=0
+    private var timing:GenerationTiming?=null
+    override fun lastTiming()=timing
     private val replies=Messenger(object:Handler(Looper.getMainLooper()){
         override fun handleMessage(message:android.os.Message){
             if(message.arg1!=nextId)return
+            timing=message.data.getString("timing")?.let{raw->runCatching{val j=org.json.JSONObject(raw);GenerationTiming(j.getLong("engineMs"),if(j.isNull("firstChunkMs"))null else j.getLong("firstChunkMs"),j.getLong("generationMs"),j.getInt("characters"))}.getOrNull()}
             val error=message.data.getString("error")
             if(error!=null)pending?.completeExceptionally(IllegalStateException(error))else pending?.complete(message.data.getString("text") ?: "")
         }
@@ -87,9 +104,13 @@ class LocalAiClient(private val context:Context):AutoCloseable,ExamInference {
     private fun fail(message:String){val error=AiProcessStopped(message);ready.completeExceptionally(error);pending?.completeExceptionally(error);remote=null}
     suspend fun connect(){withContext(Dispatchers.Main){bound=context.bindService(Intent(context,LocalAiService::class.java),connection,Context.BIND_AUTO_CREATE or Context.BIND_IMPORTANT);check(bound){"Yerel AI servisi bağlanamadı"}};withTimeout(30_000){ready.await()}}
     override suspend fun generate(model:LocalModel,gpu:Boolean,system:String,prompt:String,image:File?):String {
+        return generate(model,gpu,system,prompt,image,GenerationOptions())
+    }
+    override suspend fun generate(model:LocalModel,gpu:Boolean,system:String,prompt:String,image:File?,options:GenerationOptions):String {
+        options.validate();timing=null
         check(pending?.isActive!=true);val response=CompletableDeferred<String>();pending=response;nextId++
         val message=android.os.Message.obtain().apply{what=1;arg1=nextId;replyTo=replies;data=Bundle().apply{
-            putString("model",model.file.path);putBoolean("gpu",gpu);putString("system",system);putString("prompt",prompt);putString("image",image?.path)}}
+            putString("model",model.file.path);putBoolean("gpu",gpu);putString("system",system);putString("prompt",prompt);putString("image",image?.path);putInt("maxOutputTokens",options.maxOutputTokens);options.visualTokens?.let{putInt("visualTokens",it)}}}
         try {checkNotNull(remote){"AI bağlantısı yok"}.send(message);return withTimeout(330_000){response.await()}}
         catch(e:Exception){
             if(e is AiProcessStopped || e is RemoteException){

@@ -23,6 +23,28 @@ import java.io.File
 import kotlin.math.*
 
 object DocumentView {
+    private fun paintPdf(p:PdfRenderer.Page,bitmap:Bitmap,width:Int,height:Int,zoom:Float,pan:Offset,area:Slice?){
+                    val a=area ?: Slice(0.0,0.0,p.width.toDouble(),p.height.toDouble())
+                    val scale=min(width/a.width,height/a.height).toFloat()*zoom
+                    val tx=(width-a.width*scale).toFloat()/2+pan.x-a.left.toFloat()*scale
+                    val ty=(height-a.height*scale).toFloat()/2+pan.y-a.top.toFloat()*scale
+                    val matrix=Matrix().apply{setScale(scale,scale);postTranslate(tx,ty)}
+                    val clip=Rect(floor(tx+a.left*scale).toInt().coerceIn(0,width),floor(ty+a.top*scale).toInt().coerceIn(0,height),
+                        ceil(tx+a.right*scale).toInt().coerceIn(0,width),ceil(ty+a.bottom*scale).toInt().coerceIn(0,height))
+                    if(clip.width()>0 && clip.height()>0)p.render(bitmap,clip,matrix,PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+    }
+    /** One native parser per output volume while compiling a study batch. */
+    class PdfSession(file:File):AutoCloseable {
+        private val fd=ParcelFileDescriptor.open(file,ParcelFileDescriptor.MODE_READ_ONLY)
+        private val renderer=try{PdfRenderer(fd)}catch(e:Throwable){fd.close();throw e}
+        fun render(page:Int,width:Int,height:Int,area:Slice):Bitmap {
+            val bitmap=Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888);bitmap.eraseColor(Color.WHITE)
+            try{renderer.openPage(page).use{paintPdf(it,bitmap,width,height,1f,Offset.Zero,area)};return bitmap}
+            catch(e:Throwable){bitmap.recycle();throw e}
+        }
+        override fun close(){try{renderer.close()}finally{fd.close()}}
+    }
+
     fun isPdf(file:File)=file.inputStream().use {String(it.readPrefix(5),Charsets.US_ASCII)=="%PDF-"}
     fun count(file:File):Int = if(isPdf(file)) ParcelFileDescriptor.open(file,ParcelFileDescriptor.MODE_READ_ONLY).use {fd->PdfRenderer(fd).use{it.pageCount}} else 1
     /** Render only the viewport; zoom never allocates a full-height long-page bitmap. */
@@ -33,14 +55,7 @@ object DocumentView {
         try {
             if(isPdf(file)) ParcelFileDescriptor.open(file,ParcelFileDescriptor.MODE_READ_ONLY).use {fd->
                 PdfRenderer(fd).use{renderer->renderer.openPage(page.coerceIn(0,renderer.pageCount-1)).use{p->
-                    val a=area ?: Slice(0.0,0.0,p.width.toDouble(),p.height.toDouble())
-                    val scale=min(width/a.width,height/a.height).toFloat()*zoom
-                    val tx=(width-a.width*scale).toFloat()/2+pan.x-a.left.toFloat()*scale
-                    val ty=(height-a.height*scale).toFloat()/2+pan.y-a.top.toFloat()*scale
-                    val matrix=Matrix().apply{setScale(scale,scale);postTranslate(tx,ty)}
-                    val clip=Rect(floor(tx+a.left*scale).toInt().coerceIn(0,width),floor(ty+a.top*scale).toInt().coerceIn(0,height),
-                        ceil(tx+a.right*scale).toInt().coerceIn(0,width),ceil(ty+a.bottom*scale).toInt().coerceIn(0,height))
-                    if(clip.width()>0 && clip.height()>0)p.render(bitmap,clip,matrix,PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                    paintPdf(p,bitmap,width,height,zoom,pan,area)
                 }}
             } else ImageSource(file).use {image->
                 val a=area ?: Slice(0.0,0.0,image.width.toDouble(),image.height.toDouble())

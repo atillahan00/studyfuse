@@ -127,7 +127,7 @@ fun StudyFuseUi(model:StudyViewModel,onImport:()->Unit,onFolder:()->Unit,onRepla
         preview?.let { (file,name) -> PreviewDialog(file,name,{preview=null}) }
         editor?.let{s->PaginationEditor(s,SettingsCodec.decode(project?.settings ?: "{}"),{editor=null}){model.pagination(s,it)}}
         if(conversions)ConversionWizard(sources,onReplace,onBulkReplace,{conversions=false})
-        if(workshop && project!=null)ExamWorkshop(project!!,sources,model,onImportModel,onSave,onShare,{workshop=false})
+        if(workshop && project!=null)ExamWorkshop(project!!,sources,model,onImportModel,onSave,onShare,{workshop=false;studyHub=true},{workshop=false})
         if(studyHub && project!=null)StudyHub(project!!,model,onSave,{studyHub=false;workshop=true},{studyHub=false})
         if(automaticSetup)AlertDialog(onDismissRequest={automaticSetup=false},title={Text("Çevrimdışı AI")},text={Column(Modifier.heightIn(max=520.dp).verticalScroll(rememberScrollState())){AutomaticSetup(model)}},confirmButton={TextButton(onClick={automaticSetup=false}){Text("Kapat")}})
         if(replacements.isNotEmpty())AlertDialog(onDismissRequest={model.replacements.value=emptyList()},title={Text("PDF eşleştirmelerini onayla")},

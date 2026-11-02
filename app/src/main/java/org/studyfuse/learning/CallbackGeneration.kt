@@ -12,19 +12,19 @@ import kotlinx.coroutines.ensureActive
  * The SDK callback overload does not use that bridge. No model response is dropped.
  */
 object CallbackGeneration {
-    suspend fun run(maxCharacters:Int=90_000,start:(MessageCallback)->Unit,cancel:()->Unit):String {
+    suspend fun run(maxCharacters:Int=90_000,start:(MessageCallback)->Unit,cancel:()->Unit,onCharacters:(Int)->Unit={}):String {
         require(maxCharacters>0)
         val result=CompletableDeferred<String>();val output=StringBuilder();val lock=Any()
         var completedNormally=false
         val callback=object:MessageCallback {
-            override fun onMessage(message:Message){synchronized(lock){
+            override fun onMessage(message:Message){val count=synchronized(lock){
                 if(!result.isCompleted){
                     try{val chunk=message.toString()
                         check(chunk.length<=maxCharacters-output.length){"Model yanıtı güvenli boyutu aştı"}
                         output.append(chunk)
                     }catch(t:Throwable){result.completeExceptionally(t)}
-                }
-            }}
+                };if(result.isCompleted)null else output.length
+            };if(count!=null)runCatching{onCharacters(count)}}
             override fun onDone(){synchronized(lock){if(!result.isCompleted)result.complete(output.toString())}}
             override fun onError(throwable:Throwable){synchronized(lock){if(!result.isCompleted)result.completeExceptionally(throwable)}}
         }

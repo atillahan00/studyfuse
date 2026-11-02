@@ -45,11 +45,19 @@ class AiStartupTest {
     @Test fun diagnosticsContainOnlyStartupMetadataNotErrorText() {
         val d=AiDiagnostics(context);d.stage("INITIALIZING_ENGINE",false,true)
         d.javaFailure(IllegalStateException("PRIVATE TEACHER DOCUMENT AND PROMPT"))
-        assertEquals(setOf("stage","pid","at","gpu","image","availableBytes","lowMemory","errorClass"),d.snapshot().keys().asSequence().toSet())
+        assertEquals(setOf("stage","pid","at","gpu","image","availableBytes","lowMemory","errorClass","phaseStartedElapsed"),d.snapshot().keys().asSequence().toSet())
         assertFalse(d.snapshot().toString().contains("PRIVATE"));assertFalse(d.summary().contains("PRIVATE"))
         assertTrue(d.summary().contains("INITIALIZING_ENGINE"));assertTrue(d.summary().contains("CPU"))
         assertTrue(AiDiagnostics.exitReason(ApplicationExitInfo.REASON_LOW_MEMORY).contains("LOW_MEMORY"))
         assertTrue(AiDiagnostics.exitReason(ApplicationExitInfo.REASON_CRASH_NATIVE).contains("CRASH_NATIVE"))
+    }
+    @Test fun numericProgressAndTimingDoNotStoreResponseText(){
+        val d=AiDiagnostics(context);d.stage("VISION_GENERATION",true,true,280)
+        d.generationProgress(123,1000,45);assertEquals(123,d.snapshot().getInt("characters"));assertEquals(280,d.snapshot().getInt("visualTokens"))
+        d.stage("COMPLETED",true,true,280);d.completedTiming(GenerationTiming(0,45,2000,123))
+        d.generationProgress(456,1000,45)
+        assertEquals("COMPLETED",d.snapshot().getString("stage"));assertFalse(d.snapshot().has("characters"));assertTrue(d.summary().contains("123 karakter"))
+        assertFalse(d.snapshot().has("response"));assertFalse(d.snapshot().has("prompt"))
     }
     @Test fun uncaughtFailureKeepsOnlyBoundedCodeFrames() {
         val d=AiDiagnostics(context);d.stage("VISION_GENERATION",false,true)

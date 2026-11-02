@@ -23,6 +23,11 @@ class CallbackGenerationTest {
         val answer=CallbackGeneration.run(start={c->c.onMessage(message("äöüß · "));c.onMessage(message("ğışç ∑x²"));c.onDone()},cancel={cancels++})
         assertEquals("äöüß · ğışç ∑x²",answer);assertEquals(0,cancels)
     }
+    @Test fun failingTelemetryObserverCannotBreakGeneration()=runBlocking {
+        var observed=0
+        val answer=CallbackGeneration.run(start={it.onMessage(message("all text"));it.onDone()},cancel={fail("Cancelled success")},onCharacters={observed=it;throw java.io.IOException("telemetry disk error")})
+        assertEquals("all text",answer);assertEquals(8,observed)
+    }
     @Test fun callbackThreadCanFinishWithoutSdkFlowBridge()=runBlocking {
         var thread:Thread?=null
         val answer=CallbackGeneration.run(start={c->thread=Thread{c.onMessage(message("complete"));c.onDone()}.apply{start()}},cancel={})
