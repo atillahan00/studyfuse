@@ -6,7 +6,8 @@
       16384,
       16384,
       16384
-    ]
+    ],
+    "unchangedFrom133": true
   },
   {
     "library": "lib/arm64-v8a/liblitertlm_jni.so",
@@ -15,7 +16,8 @@
       16384,
       16384,
       16384
-    ]
+    ],
+    "unchangedFrom133": true
   },
   {
     "library": "lib/arm64-v8a/libmlkit_google_ocr_pipeline.so",
@@ -24,6 +26,7 @@
       16384,
       16384,
       16384
-    ]
+    ],
+    "unchangedFrom133": true
   }
 ]

@@ -1,5 +1,7 @@
 # StudyFuse 1.3.4 validation
 
+Processing source: `cef0fcac7cc91b78881ff34b9afb6a1b2045a3b3`. Documentation/evidence/download-only commits do not change this application source.
+
 ## Local checks
 
 **133 JVM/Robolectric tests passed** (38 core, 95 Android JVM), zero failures/errors/skips. Lint: **0 errors, 8 warnings**. Both ARM64 application and instrumentation APKs built with JDK 21, Gradle 8.13, SDK 36 and Build Tools 35.0.0.
@@ -16,10 +18,10 @@ Independent MuPDF source/output render comparisons examined all 37 mapped region
 
 ## Hosted checks
 
-Updated source is awaiting GitHub Actions build/model-catalog/native Android 15 / API 35 tablet-emulator checks. The added native test uses real Android parsing/rendering and a deterministic inference adapter to verify that plain text skips inference while a drawn line retains it, full-visual override is honored, Unicode remains readable and original input bytes remain unchanged. It is not a neural speed/accuracy benchmark.
+[Run 41425272166](https://github.com/atillahan00/studyfuse/actions/runs/41425272166) passed build/tests/lint/APKs, public-model metadata/range validation and **nine native Android 15 / API 35 tablet-emulator tests** on the processing source above. The hosted validation artifact independently confirms 133 JVM/Robolectric tests with zero failures/errors/skips; the runtime artifact confirms nine connected tests with zero failures/errors/skips. Raw logs, XML results and artifact digest/count summaries are in `validation-evidence/`. The added native test uses real Android parsing/rendering and a deterministic inference adapter to verify that plain text skips inference while a drawn line retains it, full-visual override is honored, Unicode remains readable and original input bytes remain unchanged. It is not a neural speed/accuracy benchmark.
 
 ## APK and limits
 
-Version **1.3.4 / code 8**, `org.studyfuse`, ARM64, min API 29, target API 36. Signature and 16 KiB ZIP alignment pass. The development certificate remains `1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b`; update in place to keep projects and cached weights. No SDK/model/permission change or model re-download is required.
+Version **1.3.4 / code 8**, `org.studyfuse`, ARM64, min API 29, target API 36. Size: **86,180,377 bytes** (about 82.2 MiB). SHA-256: `b85b3e5b4a589b21c7b43eb11cd57aa0f67e78982853909b35c7a96ec61650fd`. Signature and 16 KiB ZIP alignment pass. All three native-library hashes match 1.3.3 and their ELF load-segment alignments remain at least 16 KiB. The development certificate remains `1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b`; update in place to keep projects and cached weights. No SDK/model/permission change or model re-download is required.
 
 Text-first applies to reading-first pages without detailed/selected close-ups. Ambiguous extraction or graphics retains vision; disabling the switch requests full visual reading. Text ordering, glyph mapping and formatting still need source review. Scans/handwriting remain expensive model work. No physical HONOR latency, thermal or accuracy benchmark was possible here. See [performance workflow](AI_PERFORMANCE.md), [limitations](KNOWN_LIMITATIONS.md) and the [previous validation record](VALIDATION-1.3.3.md).

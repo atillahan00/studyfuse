@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="org.studyfuse.engine.CompilerTest" tests="18" skipped="0" failures="0" errors="0" timestamp="2026-11-02T08:49:08.413Z" hostname="e48e5fe0e1c6" time="18.738">
+<testsuite name="org.studyfuse.engine.CompilerTest" tests="18" skipped="0" failures="0" errors="0" timestamp="2026-11-02T09:57:16.622Z" hostname="e48e5fe0e1c6" time="35.285">
   <properties/>
-  <testcase name="sourceDigestDetectsModification" classname="org.studyfuse.engine.CompilerTest" time="3.47"/>
-  <testcase name="tallHandwrittenFixturePreservesEveryBandAndVectorContent" classname="org.studyfuse.engine.CompilerTest" time="10.689"/>
-  <testcase name="textMalformedUtf8IsReportedInsteadOfReplacementCharacters" classname="org.studyfuse.engine.CompilerTest" time="0.188"/>
-  <testcase name="splittingUsesActualSizesAndKeepsAllPageNumbers" classname="org.studyfuse.engine.CompilerTest" time="1.04"/>
-  <testcase name="hundredFileBatchHasNoArtificialLimit" classname="org.studyfuse.engine.CompilerTest" time="1.118"/>
-  <testcase name="damagedCacheIsRebuiltInsteadOfBeingPublished" classname="org.studyfuse.engine.CompilerTest" time="0.298"/>
-  <testcase name="unicodeGermanTurkishAndMathAreSearchable" classname="org.studyfuse.engine.CompilerTest" time="0.148"/>
-  <testcase name="unsupportedJpxDecoderIsFlaggedAndEncodedImageRetained" classname="org.studyfuse.engine.CompilerTest" time="0.173"/>
-  <testcase name="rotationsAndNonzeroOriginDoNotStretchOrClip" classname="org.studyfuse.engine.CompilerTest" time="0.07"/>
-  <testcase name="corruptionDoesNotSilentlySkipAndOtherFilesContinue" classname="org.studyfuse.engine.CompilerTest" time="0.187"/>
-  <testcase name="officeFallbackIsExplicitAndOriginalUnchanged" classname="org.studyfuse.engine.CompilerTest" time="0.13"/>
-  <testcase name="repeatedExportsReuseVerifiedSourceAndSettingsInvalidateCache" classname="org.studyfuse.engine.CompilerTest" time="0.292"/>
-  <testcase name="cancellationLeavesOriginalsAndCleansScratch" classname="org.studyfuse.engine.CompilerTest" time="0.1"/>
-  <testcase name="standardPdfMergingOrderingAndPageNumbers" classname="org.studyfuse.engine.CompilerTest" time="0.131"/>
-  <testcase name="inkAnnotationIsFlattenedAndStillVisible" classname="org.studyfuse.engine.CompilerTest" time="0.17"/>
-  <testcase name="aiModeTocAndSourceRangesAgree" classname="org.studyfuse.engine.CompilerTest" time="0.205"/>
-  <testcase name="companionFiltersOffPageTextAndDeduplicatesOverlap" classname="org.studyfuse.engine.CompilerTest" time="0.135"/>
-  <testcase name="mixedImageAndPdfPreservesPixels" classname="org.studyfuse.engine.CompilerTest" time="0.183"/>
+  <testcase name="sourceDigestDetectsModification" classname="org.studyfuse.engine.CompilerTest" time="7.081"/>
+  <testcase name="tallHandwrittenFixturePreservesEveryBandAndVectorContent" classname="org.studyfuse.engine.CompilerTest" time="21.287"/>
+  <testcase name="textMalformedUtf8IsReportedInsteadOfReplacementCharacters" classname="org.studyfuse.engine.CompilerTest" time="0.351"/>
+  <testcase name="splittingUsesActualSizesAndKeepsAllPageNumbers" classname="org.studyfuse.engine.CompilerTest" time="1.295"/>
+  <testcase name="hundredFileBatchHasNoArtificialLimit" classname="org.studyfuse.engine.CompilerTest" time="1.802"/>
+  <testcase name="damagedCacheIsRebuiltInsteadOfBeingPublished" classname="org.studyfuse.engine.CompilerTest" time="0.277"/>
+  <testcase name="unicodeGermanTurkishAndMathAreSearchable" classname="org.studyfuse.engine.CompilerTest" time="0.317"/>
+  <testcase name="unsupportedJpxDecoderIsFlaggedAndEncodedImageRetained" classname="org.studyfuse.engine.CompilerTest" time="0.2"/>
+  <testcase name="rotationsAndNonzeroOriginDoNotStretchOrClip" classname="org.studyfuse.engine.CompilerTest" time="0.152"/>
+  <testcase name="corruptionDoesNotSilentlySkipAndOtherFilesContinue" classname="org.studyfuse.engine.CompilerTest" time="0.4"/>
+  <testcase name="officeFallbackIsExplicitAndOriginalUnchanged" classname="org.studyfuse.engine.CompilerTest" time="0.225"/>
+  <testcase name="repeatedExportsReuseVerifiedSourceAndSettingsInvalidateCache" classname="org.studyfuse.engine.CompilerTest" time="0.506"/>
+  <testcase name="cancellationLeavesOriginalsAndCleansScratch" classname="org.studyfuse.engine.CompilerTest" time="0.166"/>
+  <testcase name="standardPdfMergingOrderingAndPageNumbers" classname="org.studyfuse.engine.CompilerTest" time="0.21"/>
+  <testcase name="inkAnnotationIsFlattenedAndStillVisible" classname="org.studyfuse.engine.CompilerTest" time="0.188"/>
+  <testcase name="aiModeTocAndSourceRangesAgree" classname="org.studyfuse.engine.CompilerTest" time="0.408"/>
+  <testcase name="companionFiltersOffPageTextAndDeduplicatesOverlap" classname="org.studyfuse.engine.CompilerTest" time="0.23"/>
+  <testcase name="mixedImageAndPdfPreservesPixels" classname="org.studyfuse.engine.CompilerTest" time="0.184"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

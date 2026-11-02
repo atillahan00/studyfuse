@@ -1,0 +1,78 @@
+{
+  "source": "cef0fcac7cc91b78881ff34b9afb6a1b2045a3b3",
+  "run": 41425272166,
+  "artifactId": 13131033630,
+  "artifactSha256": "0ddc25d7fa37d765b7357bf500248eb09699e842bbeff92a5542fc574e098653",
+  "totals": {
+    "tests": 133,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "classes": [
+    {
+      "name": "org.studyfuse.core.LearningTest",
+      "tests": 8
+    },
+    {
+      "name": "org.studyfuse.core.ModelDownloadTest",
+      "tests": 9
+    },
+    {
+      "name": "org.studyfuse.core.PaginationTest",
+      "tests": 14
+    },
+    {
+      "name": "org.studyfuse.core.StudyPageSelectionTest",
+      "tests": 4
+    },
+    {
+      "name": "org.studyfuse.core.StudyPlanningTest",
+      "tests": 3
+    },
+    {
+      "name": "org.studyfuse.engine.AiStartupTest",
+      "tests": 10
+    },
+    {
+      "name": "org.studyfuse.engine.ArchiveTest",
+      "tests": 7
+    },
+    {
+      "name": "org.studyfuse.engine.CallbackGenerationTest",
+      "tests": 9
+    },
+    {
+      "name": "org.studyfuse.engine.CompilerTest",
+      "tests": 18
+    },
+    {
+      "name": "org.studyfuse.engine.ExamPerformanceTest",
+      "tests": 5
+    },
+    {
+      "name": "org.studyfuse.engine.ExamTest",
+      "tests": 12
+    },
+    {
+      "name": "org.studyfuse.engine.MigrationTest",
+      "tests": 1
+    },
+    {
+      "name": "org.studyfuse.engine.NativePageReadingTest",
+      "tests": 7
+    },
+    {
+      "name": "org.studyfuse.engine.RepositoryTest",
+      "tests": 5
+    },
+    {
+      "name": "org.studyfuse.engine.StudyToolsTest",
+      "tests": 14
+    },
+    {
+      "name": "org.studyfuse.engine.UiTest",
+      "tests": 7
+    }
+  ]
+}

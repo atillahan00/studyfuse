@@ -41,11 +41,19 @@
   },
   {
     "name": "org.studyfuse.engine.AiStartupTest",
-    "tests": "9",
+    "tests": "10",
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "4.459"
+    "time": "9.138"
+  },
+  {
+    "name": "org.studyfuse.engine.NativePageReadingTest",
+    "tests": "7",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "5.241"
   },
   {
     "name": "org.studyfuse.engine.UiTest",
@@ -53,7 +61,7 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "6.425"
+    "time": "15.279"
   },
   {
     "name": "org.studyfuse.engine.RepositoryTest",
@@ -61,7 +69,7 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "0.307"
+    "time": "0.728"
   },
   {
     "name": "org.studyfuse.engine.CallbackGenerationTest",
@@ -69,15 +77,15 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "0.206"
+    "time": "0.296"
   },
   {
     "name": "org.studyfuse.engine.ExamPerformanceTest",
-    "tests": "4",
+    "tests": "5",
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "0.985"
+    "time": "1.883"
   },
   {
     "name": "org.studyfuse.engine.StudyToolsTest",
@@ -85,7 +93,7 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "0.408"
+    "time": "1.194"
   },
   {
     "name": "org.studyfuse.engine.ArchiveTest",
@@ -93,7 +101,7 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "1.996"
+    "time": "3.348"
   },
   {
     "name": "org.studyfuse.engine.MigrationTest",
@@ -101,7 +109,7 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "0.214"
+    "time": "0.181"
   },
   {
     "name": "org.studyfuse.engine.CompilerTest",
@@ -109,7 +117,7 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "18.738"
+    "time": "35.285"
   },
   {
     "name": "org.studyfuse.engine.ExamTest",
@@ -117,6 +125,6 @@
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "0.928"
+    "time": "1.173"
   }
 ]

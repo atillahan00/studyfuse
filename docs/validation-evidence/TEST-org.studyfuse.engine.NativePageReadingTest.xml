@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.studyfuse.engine.NativePageReadingTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-02T09:57:55.247Z" hostname="e48e5fe0e1c6" time="5.241">
+  <properties/>
+  <testcase name="annotationsInvisibleTextAndUnknownOperatorsRetainVisualReading" classname="org.studyfuse.engine.NativePageReadingTest" time="0.288"/>
+  <testcase name="plainUnicodeAndClipOnlyPathsCanUseNativeText" classname="org.studyfuse.engine.NativePageReadingTest" time="0.158"/>
+  <testcase name="selectableTextNeverHidesAnImageOrVectorDrawing" classname="org.studyfuse.engine.NativePageReadingTest" time="0.139"/>
+  <testcase name="compiledNestedFormsReadDirectlyWithoutInvokingTheModelAndResume" classname="org.studyfuse.engine.NativePageReadingTest" time="0.754"/>
+  <testcase name="nestedFormGraphicsRequireVisualRequestAndAreLabelled" classname="org.studyfuse.engine.NativePageReadingTest" time="1.024"/>
+  <testcase name="cancellationStillCheckpointsDirectReadings" classname="org.studyfuse.engine.NativePageReadingTest" time="0.873"/>
+  <testcase name="explicitVisualOverrideAndCloseupsNeverReuseDirectReading" classname="org.studyfuse.engine.NativePageReadingTest" time="1.99"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

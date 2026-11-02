@@ -16,7 +16,7 @@ Independent PyMuPDF checks passed for all 200 tall-page markers including the la
 
 The added connected test uses actual PDF creation, conversion, native rendering and an explicit deterministic inference adapter. Three source pages take three overview calls; adding close-ups to one page takes four new calls; extending to all close-ups takes eight additional calls; switching GPU/CPU then takes zero new calls with 15 cached units. Original PDF bytes are verified unchanged, existing overview keys are reused and options reach the pipeline adapter. This demonstrates reduced work/reuse and numeric timing storage, **not** a measured MagicPad model speedup or successful neural execution of every visual-budget setting.
 
-Existing connected checks still cover native image/PDF fidelity, printed OCR, cancellation/recovery, failure isolation/child metadata, removed known OCR telemetry services and the actual SDK completion ABI workaround. See `android-runtime.txt`, `github-build.txt` and `model-catalog.txt` in the evidence directory.
+Existing connected checks still cover native image/PDF fidelity, printed OCR, cancellation/recovery, failure isolation/child metadata, removed known OCR telemetry services and the actual SDK completion ABI workaround. See `android-runtime-1.3.3.txt`, `github-build-1.3.3.txt` and `model-catalog-1.3.3.txt` in the evidence directory.
 
 ## Delivered APK
 
@@ -26,7 +26,7 @@ Existing connected checks still cover native image/PDF fidelity, printed OCR, ca
 1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b
 ```
 
-Update in place to retain projects and the existing E2B weights. No SDK/model download change, private signing key or additional Android permission is introduced. The public APK was downloaded again and matched the delivered size and SHA-256: `245c6658b21bb78227f10853f75d49d4be2ab8a1be7247cc04b46295c7b3c9bd`. See `public-apk-download.json`; all downloads are checksummed in downloads/SHA256SUMS.txt.
+Update in place to retain projects and the existing E2B weights. No SDK/model download change, private signing key or additional Android permission is introduced. The public APK was downloaded again and matched the delivered size and SHA-256: `245c6658b21bb78227f10853f75d49d4be2ab8a1be7247cc04b46295c7b3c9bd`. See `public-apk-download-1.3.3.json`; all downloads are checksummed in downloads/SHA256SUMS.txt.
 
 ## Performance limits
 
