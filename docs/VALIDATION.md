@@ -26,7 +26,7 @@ Existing connected checks still cover native image/PDF fidelity, printed OCR, ca
 1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b
 ```
 
-Update in place to retain projects and the existing E2B weights. No SDK/model download change, private signing key or additional Android permission is introduced. The public APK/source ZIP are verified after publication and checksummed in downloads/SHA256SUMS.txt.
+Update in place to retain projects and the existing E2B weights. No SDK/model download change, private signing key or additional Android permission is introduced. The public APK was downloaded again and matched the delivered size and SHA-256: `245c6658b21bb78227f10853f75d49d4be2ab8a1be7247cc04b46295c7b3c9bd`. See `public-apk-download.json`; all downloads are checksummed in downloads/SHA256SUMS.txt.
 
 ## Performance limits
 
