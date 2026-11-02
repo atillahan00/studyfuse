@@ -136,6 +136,10 @@ class UiTest {
         }
         // Control countdown frames explicitly; exercise accessible button actions
         // independently of Robolectric touch-dispatch timing and asynchronous saves.
+        ui.onNodeWithText("Yeni çalışma kartları").performScrollTo().clickMock()
+        ui.onNodeWithText("Seçili kaynakların tamamını sırayla işle").assertExists()
+        ui.onNodeWithText("Yerel AI ile çalış").performScrollTo().assertIsEnabled()
+        screenshot("tablet-coach-source-cards.png")
         ui.mainClock.autoAdvance=false
         ui.onNodeWithText("Deneme").clickMock()
         awaitMock{ui.onAllNodesWithText("Yeni deneme başlat").fetchSemanticsNodes().isNotEmpty()}

@@ -28,7 +28,7 @@ object RecallSchedule {
 }
 
 object EvidenceRules {
-    fun normalize(s:String)=s.replace(Regex("\\s+")," ").trim()
+    fun normalize(s:String)=java.text.Normalizer.normalize(s,java.text.Normalizer.Form.NFC).replace(Regex("[\\s\\p{Z}]+")," ").trim()
     fun contains(text:String,quote:String):Boolean = normalize(quote).let{it.length>=8 && normalize(text).contains(it)}
     fun permitted(mode:KnowledgeMode,origin:String)=origin=="document" || (mode==KnowledgeMode.ENRICHED && origin=="ai_added")
 }

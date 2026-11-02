@@ -4,7 +4,7 @@ import java.text.Normalizer
 import java.util.Locale
 import kotlin.math.*
 
-data class EvidencePassage(val id:String,val text:String,val section:String,val page:Int,val source:String,val reference:Boolean=false,val sourceId:String=source)
+data class EvidencePassage(val id:String,val text:String,val section:String,val page:Int,val source:String,val reference:Boolean=false,val sourceId:String=source,val unverifiedVisualReading:Boolean=true)
 object StudySearch {
     fun tokens(text:String):List<String> = Regex("[\\p{L}\\p{N}]{2,}").findAll(Normalizer.normalize(text.lowercase(Locale.ROOT).replace('ı','i').replace("ß","ss"),Normalizer.Form.NFD).replace(Regex("\\p{M}"),""))
         .map{it.value}.filter{it !in setOf("the","and","der","die","das","und","bir","ile","what","was","wie","neden","explain","erklare")}.toList()

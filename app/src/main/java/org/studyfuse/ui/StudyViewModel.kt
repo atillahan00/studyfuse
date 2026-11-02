@@ -63,7 +63,7 @@ class StudyViewModel(application:Application):AndroidViewModel(application) {
             atomicJson(File(store.directory(),"setup.json"),org.json.JSONObject().put("status","CLEANED").put("message","Seçili kurulumun önbelleği temizlendi; çalışan model ve belgeler korundu."))
         }};examRevision.value++}catch(e:Exception){notice.value=e.message}
     }
-    fun askCoach(task:CoachTask,query:String,attempt:String,topic:String,signature:String)=viewModelScope.launch {
+    fun askCoach(task:CoachTask,query:String,attempt:String,topic:String,signature:String,allSources:Boolean=task==CoachTask.CARDS)=viewModelScope.launch {
         val id=selected.value ?: return@launch;val p=dao.project(id) ?: return@launch
         if(p.status in setOf("RUNNING","QUEUED") || modelBusy.value)return@launch
         try {
@@ -71,7 +71,7 @@ class StudyViewModel(application:Application):AndroidViewModel(application) {
             withContext(Dispatchers.IO){val store=ExamStore(repo.directory(id));val config=store.config()
                 check(query.isNotBlank() && query.length<=1000 && attempt.length<=3000)
                 atomicJson(File(store.root,"requests/${request.id}.json"),org.json.JSONObject().put("config",config.json()).put("task",task.name).put("query",query)
-                    .put("attempt",attempt).put("topic",topic).put("signature",signature))}
+                    .put("attempt",attempt).put("topic",topic).put("signature",signature).put("allSources",allSources))}
             dao.queueExam(id,p.report ?: error("Önce kaynak PDF oluşturun"),request.id.toString())
             try{withContext(Dispatchers.IO){WorkManager.getInstance(app).enqueueUniqueWork("exam-$id",ExistingWorkPolicy.REPLACE,request).result.get()}}
             catch(e:Exception){dao.workStatus(id,request.id.toString(),p.status,"Koç sıraya alınamadı");throw e}

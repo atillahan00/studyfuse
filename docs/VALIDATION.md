@@ -1,27 +1,21 @@
-# StudyFuse 1.3.4 validation
-
-Processing source: `cef0fcac7cc91b78881ff34b9afb6a1b2045a3b3`. Documentation/evidence/download-only commits do not change this application source.
+# StudyFuse 1.3.5 validation
 
 ## Local checks
 
-**133 JVM/Robolectric tests passed** (38 core, 95 Android JVM), zero failures/errors/skips. Lint: **0 errors, 8 warnings**. Both ARM64 application and instrumentation APKs built with JDK 21, Gradle 8.13, SDK 36 and Build Tools 35.0.0.
+**148 JVM/Robolectric tests passed** (39 core, 109 Android JVM), zero failures/errors/skips. Lint: **0 errors, 8 warnings**. ARM64 application and instrumentation APKs built with JDK 21, Gradle 8.13, SDK 36 and Build Tools 35.0.0.
 
-Seven new direct-text tests cover Unicode/clip-only streams, images and painted vectors beside text, annotations/invisible text/unknown operators, nested compiled forms, verbatim extraction, cache reuse, full-visual overrides, close-ups and cancellation. Routing tests use deterministic raster/inference adapters; they do not claim native rendering fidelity or neural accuracy. Existing tests also cover the corrected reading-first schema and retention of completed numeric inference timing while the next request runs.
+New coach checks cover app-owned literal Unicode quotes/short evidence labels, conventional-ID compatibility, explicit task-specific JSON examples, partial valid/invalid card responses, unchanged rejection of invented references/legacy changed-negation quotes, honest insufficient-evidence answers, native-text provenance/metadata exclusion, 100-page batch plans, one bounded repair, no repair when valid cards already exist, cancellation/resume, missing-passage targeting, changed-source cache invalidation, corrupt checkpoint references and idempotent recovery after interrupted deck writes. Existing archive tests now retain the coverage record. The actual Compose tablet capture verifies full-source mode and optional focus controls; mocked model weights do not establish real neural quality.
 
-Independent MuPDF checks passed for all 200 tall-page markers, 29 report/output pages, mixed source colours and retained JPX imagery.
-
-## Private source verification
-
-Two user-supplied PDFs were inspected locally, including rendered representative pages. The Android-compatible PDF parser/paint traversal found 35 original pages in one source (34 text-only) and one page with vector marks in the other. Existing pagination turns these into **37 source study pages**: **34 direct-text units and 3 visual requests**. Each of the 34 direct-text checkpoint strings matched its compiled page extraction verbatim. This is real parsing/routing with controlled raster/inference adapters, not actual model execution. Inputs, extracted text, titles and the private harness are excluded from GitHub/source ZIP.
-
-Independent MuPDF source/output render comparisons examined all 37 mapped regions using a coarse 12 × 16 grid of ink occupancy. No source ink cell above the check threshold disappeared; maximum cell occupancy difference was 0.0168. Representative output pages were also inspected visually. This is a practical completeness check with subpixel tolerance, not proof that every glyph is semantically correct.
+Independent MuPDF checks passed for all 200 tall-page markers, 29 report/output pages, mixed source colours and retained JPX imagery. The PDF/image conversion pipeline is unchanged by the coach update.
 
 ## Hosted checks
 
-[Run 41425272166](https://github.com/atillahan00/studyfuse/actions/runs/41425272166) passed build/tests/lint/APKs, public-model metadata/range validation and **nine native Android 15 / API 35 tablet-emulator tests** on the processing source above. The hosted validation artifact independently confirms 133 JVM/Robolectric tests with zero failures/errors/skips; the runtime artifact confirms nine connected tests with zero failures/errors/skips. Raw logs, XML results and artifact digest/count summaries are in `validation-evidence/`. The added native test uses real Android parsing/rendering and a deterministic inference adapter to verify that plain text skips inference while a drawn line retains it, full-visual override is honored, Unicode remains readable and original input bytes remain unchanged. It is not a neural speed/accuracy benchmark.
+GitHub Actions is being run on the updated processing source. The added connected test exercises the source-label protocol with actual Android JSON/storage/coroutines: a valid Turkish quote is attached literally, invented source references are rejected independently, valid cards are stored without automatic approval and completed work is reused. It uses a deterministic inference adapter, not model weights.
 
-## APK and limits
+## Delivered update and limits
 
-Version **1.3.4 / code 8**, `org.studyfuse`, ARM64, min API 29, target API 36. Size: **86,180,377 bytes** (about 82.2 MiB). SHA-256: `b85b3e5b4a589b21c7b43eb11cd57aa0f67e78982853909b35c7a96ec61650fd`. Signature and 16 KiB ZIP alignment pass. All three native-library hashes match 1.3.3 and their ELF load-segment alignments remain at least 16 KiB. The development certificate remains `1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b`; update in place to keep projects and cached weights. No SDK/model/permission change or model re-download is required. The public GitHub APK was downloaded again and matched the delivered byte count and SHA-256; see `validation-evidence/public-apk-download.json`. All download files are checksummed in `downloads/SHA256SUMS.txt`.
+Version **1.3.5 / code 9**, `org.studyfuse`, ARM64, min API 29, target API 36. The development signing certificate remains `1bc145b386fae06945b5b41c38ec2ce29a4c26f97001f29b69308fc8f661c24b`. Signature, 16 KiB ZIP alignment and unchanged native-library SHA/ELF load-segment alignment checks pass. No SDK/model/network-permission change is introduced. Update in place and retain the existing model, source PDFs, readings and reviewed cards; a source re-read is not required merely for this update.
 
-Text-first applies to reading-first pages without detailed/selected close-ups. Ambiguous extraction or graphics retains vision; disabling the switch requests full visual reading. Text ordering, glyph mapping and formatting still need source review. Scans/handwriting remain expensive model work. No physical HONOR latency, thermal or accuracy benchmark was possible here. See [performance workflow](AI_PERFORMANCE.md), [limitations](KNOWN_LIMITATIONS.md) and the [previous validation record](VALIDATION-1.3.3.md).
+The reported screenshot demonstrates rejection by the old literal-quote validator. No actual failing model response was provided, so its exact formatting/translation mismatch is unknown. The new protocol removes the need to retype quotations and long source IDs, preserves valid cards and exposes rejected items. Citation existence is not semantic verification: a valid excerpt can still be irrelevant to a wrong generated answer. No physical MagicPad model-speed, handwriting or pedagogical-accuracy benchmark is claimed.
+
+Full-source mode visits available reading fragments in bounded batches. Coverage records distinguish passages with a card from those still without cards and do not claim every fact is represented. Cancellation/cache reuse are tested, not a guarantee against every Android/OEM interruption. See [source-link/card workflow](COACH_RELIABILITY.md), [limitations](KNOWN_LIMITATIONS.md) and [1.3.4 validation](VALIDATION-1.3.4.md).

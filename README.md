@@ -1,10 +1,20 @@
-# StudyFuse 1.3.4 — Automatic offline AI and a source-based study workspace
+# StudyFuse 1.3.5 — Automatic offline AI and a source-based study workspace
 
 Compile PDFs, handwritten-note screenshots and UTF-8 text into one organized study document, then prepare source-linked exam notes with an automatically installed on-device vision model. Native Kotlin, Jetpack Compose and Material 3, with a Turkish tablet interface. Android 10+; targets Android 16. The direct APK is **ARM64**, suitable for the HONOR MagicPad 2; CI also builds x86_64 support for emulator testing.
 
 [Download APK](https://github.com/atillahan00/studyfuse/raw/refs/heads/main/downloads/StudyFuse-debug.apk) · [Android Studio project ZIP](https://github.com/atillahan00/studyfuse/raw/refs/heads/main/downloads/StudyFuse-Android-Studio.zip) · [Download checksums](downloads/SHA256SUMS.txt) · [Builds and Android tests](https://github.com/atillahan00/studyfuse/actions/workflows/android.yml)
 
 **Office and OneNote files require source-app PDF export/replacement.** Unsupported sources receive explicit warning pages. Bundled ML Kit OCR recognizes printed Latin text. The separately installed visual language model can interpret handwriting, images, graphs and equations, but those interpretations are **unverified AI drafts**, not guaranteed recognition. The app uses Internet for student-initiated public model downloads, with no mandatory paid API or remote inference. Documents and prompts stay on device; study processing works offline after setup.
+
+## 1.3.5: source links and resumable full-source cards
+
+The old coach asked the model to retype an exact quotation and a long source ID; one mismatch rejected the entire card response. The coach now supplies short evidence labels and the app attaches the corresponding original quote/page. Legacy literal quotes remain supported, including canonical Unicode and PDF-space normalization. Invented references are rejected. Legacy literal quotes with changed facts or negation still fail source matching; source links do **not** verify the meaning or correctness of an answer.
+
+Valid cards survive an invalid sibling card or overview citation. Rejected items are reported separately; cards are never approved automatically. A malformed response or invalid-reference-only card response gets at most one repair attempt. Native/runtime failures and cancellation do not launch that repair loop. The card prompt avoids a redundant explanation/quotation echo.
+
+For **Yeni çalışma kartları**, **Seçili kaynakların tamamını sırayla işle** is on by default. It visits all available reading excerpts in the selected topic scope using bounded batches, rather than taking only a few search hits. The optional focus can be left blank. Completed cards are saved as batches finish. **Eksik kartları tamamla / sürdür** targets excerpts still without cards and reuses completed groups without duplicate history or automatic approval. Turn the switch off for a targeted question/search workflow.
+
+Progress and coverage distinguish processed groups, accepted cards, rejected items, failures and excerpts without a card. Missing-card rows open the original PDF. Visiting a passage or linking one card does not guarantee that every fact is learned/tested. Original PDFs, existing source readings and the downloaded model are retained. See [source-link/card workflow](docs/COACH_RELIABILITY.md) and [validation](docs/VALIDATION.md).
 
 ## 1.3.4: read text PDFs without a visual-model request on every page
 
@@ -89,7 +99,7 @@ Model storage/download size is several GB; runtime memory is additional. Text ex
 
 ## Install and update
 
-Install `StudyFuse-debug.apk` on an ARM64 Android 10+ device. This is an evaluation/debug APK, not a Play Store production release. Android may request permission to install from the application opening it. The directly downloadable 1.3.4 APK retains the previous direct download's development signing key; back up important projects before updating.
+Install `StudyFuse-debug.apk` on an ARM64 Android 10+ device. This is an evaluation/debug APK, not a Play Store production release. Android may request permission to install from the application opening it. The directly downloadable 1.3.5 APK retains the previous direct download's development signing key; back up important projects before updating.
 
 CI-generated debug APKs may have a different signing key. Do not uninstall an existing installation to switch keys until its projects have been backed up. Physical-tablet/OEM behavior and arbitrary Office export fidelity are not universally certified.
 
@@ -126,7 +136,7 @@ python3 scripts/verify_pdf_artifacts.py
 
 Gradle 8.13 is pinned with a verified distribution checksum. Build dependencies need network on the first build; document processing does not. MuPDF is a development-only verifier, not linked into the Android app. Test reports are under `core/build/reports/tests/` and `app/build/reports/tests/testDebugUnitTest/`; lint is under `app/build/reports/`.
 
-The 1.3.4 local build passed **133 JVM/Robolectric tests** and lint (0 errors, 8 warnings); ARM64 application/instrumentation APKs built successfully. Independent MuPDF checks retain every tall-page marker and original JPX imagery. Synthetic routing tests cover Unicode, mixed graphics, explicit visual overrides, cache reuse and cancellation. [GitHub Actions](https://github.com/atillahan00/studyfuse/actions/runs/41425272166) also passed the full build/model checks and **nine native Android 15 tablet-emulator tests**, including direct-text/graphics routing with real Android parsing/rendering. See [current evidence](docs/VALIDATION.md) for exact source scope. No physical HONOR model-speed or handwriting-accuracy benchmark is claimed. The [1.3.3 validation record](docs/VALIDATION-1.3.3.md) remains available.
+The current verification results are recorded in [validation](docs/VALIDATION.md). Source-link and card tests exercise app-owned quotes, invented references, partial success, Unicode, 100-page batch plans, cancellation/resume, checkpoint integrity, source changes, backup and UI controls. These are deterministic processing tests; they do not establish physical HONOR model speed or semantic answer accuracy. The [1.3.4 validation record](docs/VALIDATION-1.3.4.md) remains available.
 
 For an independently managed production signing key, set `STUDYFUSE_SIGNING_STORE`, `STUDYFUSE_STORE_PASSWORD`, `STUDYFUSE_KEY_ALIAS`, and `STUDYFUSE_KEY_PASSWORD`, then build `:app:assembleRelease`. Keep the same key for updates and keep it private. No signing keys or passwords are committed. CI validation artifacts are not a substitute for a persistent release signing setup.
 

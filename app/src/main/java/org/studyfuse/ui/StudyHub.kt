@@ -20,7 +20,7 @@ import java.io.File
 import java.time.LocalDate
 
 private data class HubSnapshot(val config:ExamConfig,val signature:String?,val units:List<JSONObject>,val review:JSONObject,
-    val cards:List<JSONObject>,val history:List<JSONObject>,val mock:JSONObject?)
+    val cards:List<JSONObject>,val history:List<JSONObject>,val mock:JSONObject?,val run:JSONObject?)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable fun StudyHub(project:Project,model:StudyViewModel,onSave:(File)->Unit,onPrepare:()->Unit,onDismiss:()->Unit) {
@@ -28,7 +28,7 @@ private data class HubSnapshot(val config:ExamConfig,val signature:String?,val u
     var config by remember{mutableStateOf(ExamConfig())};var signature by remember{mutableStateOf<String?>(null)}
     var units by remember{mutableStateOf<List<JSONObject>>(emptyList())};var review by remember{mutableStateOf(JSONObject())}
     var cards by remember{mutableStateOf<List<JSONObject>>(emptyList())};var history by remember{mutableStateOf<List<JSONObject>>(emptyList())}
-    var mock by remember{mutableStateOf<JSONObject?>(null)};var error by remember{mutableStateOf<String?>(null)};var refresh by remember{mutableIntStateOf(0)}
+    var mock by remember{mutableStateOf<JSONObject?>(null)};var cardRun by remember{mutableStateOf<JSONObject?>(null)};var error by remember{mutableStateOf<String?>(null)};var refresh by remember{mutableIntStateOf(0)}
     var tab by remember{mutableIntStateOf(0)};var topic by remember{mutableStateOf("")};var extra by remember{mutableStateOf(false)}
     var preview by remember{mutableStateOf<Pair<File,Int>?>(null)}
     val persistence=remember{Mutex()};var saving by remember{mutableIntStateOf(0)}
@@ -43,9 +43,9 @@ private data class HubSnapshot(val config:ExamConfig,val signature:String?,val u
                 val sig=if(local!=null && project.report!=null)store.signature(File(project.report),local,cfg)else null
                 val readings=sig?.let{store.currentUnits(it)} ?: emptyList();val reviews=store.review()
                 HubSnapshot(cfg,sig,readings,reviews,sig?.let{tools.cards(it,readings,reviews)} ?: emptyList(),
-                    tools.data("coach.json").optJSONArray("entries")?.objects().orEmpty().filter{it.getString("signature")==sig},tools.data("mock.json").takeIf{it.optString("signature")==sig})
+                    tools.data("coach.json").optJSONArray("entries")?.objects().orEmpty().filter{it.getString("signature")==sig},tools.data("mock.json").takeIf{it.optString("signature")==sig},tools.data("coach-run.json").takeIf{it.optString("signature")==sig})
             }
-            config=state.config;signature=state.signature;units=state.units;review=state.review;cards=state.cards;history=state.history;mock=state.mock
+            config=state.config;signature=state.signature;units=state.units;review=state.review;cards=state.cards;history=state.history;mock=state.mock;cardRun=state.run
         }catch(e:CancellationException){throw e}catch(e:Exception){error=e.message;signature=null;units=emptyList();cards=emptyList();history=emptyList();mock=null}
     }
     fun action(reload:Boolean=true,block:()->Unit){saving++;scope.launch{try{persistence.withLock{withContext(Dispatchers.IO){block()}};if(reload)refresh++}catch(e:Exception){error=e.message}finally{saving--}}}
@@ -57,9 +57,13 @@ private data class HubSnapshot(val config:ExamConfig,val signature:String?,val u
             Row(Modifier.padding(12.dp),verticalAlignment=Alignment.CenterVertically){Text("AI öğrenme merkezi",Modifier.weight(1f),style=MaterialTheme.typography.titleLarge);if(saving>0)Text("Kaydediliyor…");TextButton(onClick=onDismiss,enabled=saving==0){Text("Kapat")}}
             Text("${if(config.mode==KnowledgeMode.DOCUMENTS_ONLY)"Yalnızca belgelerim" else "Ek kaynaklarla öğren"} · ${config.language} · AI taslakları kaynakla kontrol edilmelidir",Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.bodySmall)
             PrimaryTabRow(selectedTabIndex=tab){listOf("Koç","Kartlar","Deneme","Plan").forEachIndexed{i,t->Tab(tab==i,{tab=i},text={Text(t)})}}
-            if(error!=null || workerError!=null)Text(error ?: workerError!!,Modifier.padding(12.dp),color=MaterialTheme.colorScheme.error)
+            if(error!=null || workerError!=null)Text(error ?: "Son çalışma: $workerError",Modifier.padding(12.dp),color=MaterialTheme.colorScheme.error)
             if(busy)AiRuntimeProgress(true)
-            if(busy)Row(verticalAlignment=Alignment.CenterVertically){LinearProgressIndicator(Modifier.weight(1f));TextButton(onClick={model.cancelExam()}){Text("İptal")}}
+            if(busy){val active=workers.firstOrNull{it.id.toString()==project.workId}
+                Row(verticalAlignment=Alignment.CenterVertically){LinearProgressIndicator(Modifier.weight(1f));TextButton(onClick={model.cancelExam()}){Text("İptal")}}
+                Text(active?.progress?.getString("message") ?: project.message,Modifier.padding(horizontal=16.dp),style=MaterialTheme.typography.bodySmall)
+                TextButton(onClick={refresh++}){Text("Tamamlanan kartları yenile")}
+            }
             if(units.isEmpty())Column(Modifier.padding(16.dp)){Text("Önce kaynak PDF'yi derleyip Sınav atölyesi'nde görsel okumayı oluşturun. Bu merkez o kaynak kayıtlarını kullanır.");Button(onClick=onPrepare){Text("Kurulum ve sınav atölyesi")}}
             else{
                 LazyRow(Modifier.padding(horizontal=12.dp),horizontalArrangement=Arrangement.spacedBy(6.dp)){
@@ -68,18 +72,36 @@ private data class HubSnapshot(val config:ExamConfig,val signature:String?,val u
                 }
                 if(config.mode==KnowledgeMode.ENRICHED && tab!=0)Row(verticalAlignment=Alignment.CenterVertically){Switch(extra,{extra=it});Text("Ek bağlam sorularını dahil et")}
                 when(tab){
-                    0->{var task by remember{mutableStateOf(CoachTask.QUESTION)};var query by remember{mutableStateOf("")};var attempt by remember{mutableStateOf("")}
+                    0->{var task by remember{mutableStateOf(CoachTask.QUESTION)};var allSources by remember{mutableStateOf(true)};var query by remember{mutableStateOf("")};var attempt by remember{mutableStateOf("")}
                         LazyColumn(Modifier.weight(1f).padding(16.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
                             item{Text("Kaynaklı çalışma koçu",style=MaterialTheme.typography.titleMedium);Text("Her istek ilgili kaynak alıntılarıyla yanıtlanır. Bu, tüm belgelerin eksiksiz anlaşıldığı veya yanıtın doğrulandığı anlamına gelmez. Bir konu/terim yazın; belirsiz el yazısını kaynak görselinde kontrol edin.",style=MaterialTheme.typography.bodySmall)
                                 FlowRow(horizontalArrangement=Arrangement.spacedBy(6.dp)){CoachTask.entries.forEach{t->FilterChip(task==t,{task=t},enabled=!busy,label={Text(t.title)})}}
-                                OutlinedTextField(query,{query=it.take(1000)},label={Text("Konu veya sorun (en fazla 1000 karakter)")},modifier=Modifier.fillMaxWidth(),enabled=!busy)
+                                if(units.any{it.optString("status")=="FAILED"})Text("${units.count{it.optString("status")=="FAILED"}} kaynak okuması eksik. Kartlar yalnızca tamamlanan okumalardan hazırlanır.",color=MaterialTheme.colorScheme.error)
+                                if(task==CoachTask.CARDS){
+                                    Row(verticalAlignment=Alignment.CenterVertically){Switch(allSources,{allSources=it},enabled=!busy);Text("Seçili kaynakların tamamını sırayla işle")}
+                                    Text(if(allSources)"Seçili konu filtresindeki tüm okuma parçaları gruplar halinde işlenir. Tamamlanan kartlar kaydedilir; aynı istek iptalden sonra sürdürülebilir. Her bilginin karta dönüştüğü garanti edilmez." else "Yalnızca yazdığınız konuyla ilgili birkaç kaynak parçası kullanılır; tüm belgeleri kapsamaz.",style=MaterialTheme.typography.bodySmall)
+                                }
+                                OutlinedTextField(query,{query=it.take(1000)},label={Text(if(task==CoachTask.CARDS && allSources)"Kart odağı / özel istek (isteğe bağlı)" else "Konu veya sorun (en fazla 1000 karakter)")},modifier=Modifier.fillMaxWidth(),enabled=!busy)
                                 if(task==CoachTask.FEEDBACK)OutlinedTextField(attempt,{attempt=it.take(3000)},label={Text("Önce kendi yanıtını yaz")},modifier=Modifier.fillMaxWidth(),enabled=!busy)
-                                Button(onClick={model.askCoach(task,query,attempt,topic,signature!!)},enabled=!busy && signature!=null && query.isNotBlank() && (task!=CoachTask.FEEDBACK || attempt.isNotBlank())){Text("Yerel AI ile çalış")}
+                                Button(onClick={model.askCoach(task,query.ifBlank{"Seçili kaynaklardan sınav için çalışma kartları oluştur."},attempt,topic,signature!!,allSources)},enabled=!busy && signature!=null && (query.isNotBlank() || (task==CoachTask.CARDS && allSources)) && (task!=CoachTask.FEEDBACK || attempt.isNotBlank())){Text("Yerel AI ile çalış")}
                             }
+                            cardRun?.let{run->item{
+                                val statusLabel=when(run.optString("status")){"RUNNING"->"Sürüyor";"PARTIAL"->"Eksikler var";"CANCELLED"->"İptal edildi";"REVIEW"->"İnceleme bekliyor";else->"Tamamlanamadı"}
+                                Text("Son kart çalışması · $statusLabel · ${run.optInt("processedBatches")}/${run.optInt("totalBatches")} grup · ${run.optInt("acceptedCards")} kart",style=MaterialTheme.typography.titleSmall)
+                                Text("${run.optInt("passagesWithCards")}/${run.optInt("totalPassages")} kaynak parçasına kart bağlandı · ${run.optInt("failedBatches")} eksik grup · ${run.optInt("rejectedItems")} ayrılan öğe. Bu sayılar öğrenme veya sınava hazır olma puanı değildir.",style=MaterialTheme.typography.bodySmall)
+                                var expanded by remember(run.toString()){mutableStateOf(false)}
+                                val missing=run.optJSONArray("passagesWithoutCards")?.objects().orEmpty()
+                                (if(expanded)missing else missing.take(8)).forEach{p->TextButton(onClick={openSource(p.getInt("page"))}){Text("Henüz kart bağlı değil: ${p.getString("source")} · PDF ${p.getInt("page")}")}}
+                                if(missing.size>8)TextButton(onClick={expanded=!expanded}){Text(if(expanded)"Kapsam listesini kısalt" else "Tüm ${missing.size} kapsam kaydını göster")}
+                                if(missing.isNotEmpty() || run.optInt("failedBatches")>0)TextButton(onClick={model.askCoach(CoachTask.CARDS,run.getString("query"),"",run.optString("topic"),signature!!,true)},enabled=!busy){Text("Eksik kartları tamamla / sürdür")}
+                                run.optJSONArray("failures")?.objects()?.forEach{f->Text("Grup ${f.optInt("batch")}: ${f.optString("reason")}",color=MaterialTheme.colorScheme.error)}
+                            }}
                             items(history.asReversed()){entry->val result=entry.getJSONObject("result");OutlinedCard(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
                                 Text(entry.getString("query"),style=MaterialTheme.typography.titleMedium)
                                 Text(result.getString("answer"));if(result.getString("additional").isNotBlank()){Text("MODEL EK BİLGİSİ · belge kanıtı değildir",color=MaterialTheme.colorScheme.primary);Text(result.getString("additional"))}
                                 Text("Belirsizlikler: ${result.getJSONArray("uncertainties")}",style=MaterialTheme.typography.bodySmall)
+                                Text("Kaynak bağlantısı alıntının yerini gösterir; yanıtın doğru olduğu anlamına gelmez.",style=MaterialTheme.typography.bodySmall)
+                                result.optJSONArray("rejected")?.objects()?.forEach{r->Text("Ayrılan ${if(r.optString("type")=="card")"kart" else "bağlantı"} ${r.optInt("index")}: ${r.optString("reason")}",style=MaterialTheme.typography.bodySmall)}
                                 result.getJSONArray("citations").objects().forEach{cite->val source=entry.getJSONArray("passages").objects().first{it.getString("id")==cite.getString("id")}
                                     TextButton(onClick={openSource(source.getInt("page"))}){Text("${source.getString("source")} · PDF ${source.getInt("page")}: ${cite.getString("quote")}")}}
                                 if(result.getJSONArray("cards").length()>0)Text("${result.getJSONArray("cards").length()} yeni kart Kartlar bölümüne eklendi; inceleme bekliyor.")

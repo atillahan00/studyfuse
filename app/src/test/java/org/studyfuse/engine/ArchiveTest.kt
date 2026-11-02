@@ -81,6 +81,7 @@ class ArchiveTest {
         val store=org.studyfuse.learning.ExamStore(repo.directory(id));store.saveConfig(org.studyfuse.learning.ExamConfig(mode=org.studyfuse.core.KnowledgeMode.ENRICHED))
         store.updateReview("card"){it.put("approved",true).put("lapses",2).put("dueDay",10)}
         org.studyfuse.learning.atomicJson(File(store.root,"coach.json"),JSONObject().put("entries",JSONArray()))
+        org.studyfuse.learning.atomicJson(File(store.root,"coach-run.json"),JSONObject().put("note","saved coverage"))
         org.studyfuse.learning.atomicJson(File(store.root,"mock.json"),JSONObject().put("savedAnswer","ğ ü ş ı ö ç"))
         val key="a".repeat(64);org.studyfuse.learning.atomicJson(store.unit(key),JSONObject().put("key",key).put("transcription","Die Zelle enthält DNA."))
         File(store.root,"scratch/image.png").apply{parentFile!!.mkdirs();writeText("temporary")}
@@ -90,5 +91,6 @@ class ArchiveTest {
         assertEquals("Die Zelle enthält DNA.",org.studyfuse.learning.readJson(restored.unit(key)).getString("transcription"));assertFalse(File(restored.root,"scratch").exists())
         assertEquals("ğ ü ş ı ö ç",org.studyfuse.learning.readJson(File(restored.root,"mock.json")).getString("savedAnswer"))
         assertTrue(File(restored.root,"coach.json").exists())
+        assertEquals("saved coverage",org.studyfuse.learning.readJson(File(restored.root,"coach-run.json")).getString("note"))
     }
 }

@@ -165,6 +165,26 @@ class OnDeviceTest {
             assertEquals(2,calls);assertEquals(before,sha256(input))
         }finally{project.deleteRecursively()}
     }
+    /** Source-reference protocol and partial-card persistence; no neural weights or accuracy claim. */
+    @Test fun coachSourceLabelsKeepValidCardsAndRestoreExactTurkishQuotes()=runBlocking {
+        val project=File(context.filesDir,"projects/coach-${UUID.randomUUID()}").apply{mkdirs()}
+        try {
+            val tools=StudyTools(ExamStore(project));val text="Şiirde ölçü ve uyak incelenir. ğ ü ş ı ö ç ä ß"
+            val p=EvidencePassage("source:0",text,"Şiir",3,"source.pdf",unverifiedVisualReading=false)
+            val raw="""{"answer":"model summary","additional":"","uncertainties":[],"citations":[{"evidence":"unknown"}],"cards":[{"evidence":"E1","question":"Neler incelenir?","answer":"Ölçü ve uyak."},{"evidence":"E999","question":"bad","answer":"bad"}]}"""
+            val result=tools.validate(raw,KnowledgeMode.DOCUMENTS_ONLY,listOf(p),CoachTask.CARDS)
+            assertEquals(1,result.getJSONArray("cards").length());assertEquals(2,result.getJSONArray("rejected").length())
+            assertEquals(text,result.getJSONArray("citations").getJSONObject(0).getString("quote"))
+            val weights=File(project,"fixture").apply{writeText("not a neural model")};val m=LocalModel("fixture",weights,sha256(weights),weights.length())
+            var calls=0
+            val runner=CoachRunner(tools,ExamInference{_,_,_,_,_->calls++;raw})
+            runner.cards("a".repeat(64),m,ExamConfig(),"all",listOf(p)){_,_,_->}
+            assertEquals(1,calls);assertEquals(1,tools.cards("a".repeat(64),emptyList(),JSONObject()).size)
+            assertEquals(0,tools.store.review().length())
+            runner.cards("a".repeat(64),m,ExamConfig(),"all",listOf(p)){_,_,_->}
+            assertEquals(1,calls)
+        }finally{project.deleteRecursively()}
+    }
     /** Actual pinned SDK completion bytecode, followed by the production bridge; no neural weights. */
     @Test fun sdkCompletionAbiCrashIsReproducedAndAppBridgeCompletes()=runBlocking {
         val scope=java.lang.reflect.Proxy.newProxyInstance(kotlinx.coroutines.channels.ProducerScope::class.java.classLoader,
